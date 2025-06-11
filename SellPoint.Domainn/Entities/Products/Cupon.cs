@@ -2,7 +2,7 @@
 
 namespace SellPoint.Domainn.Entities.Products
 {
-    internal class Cupon
+    public sealed class Cupon
     {
     }
 }
