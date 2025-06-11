@@ -1,6 +1,8 @@
-﻿namespace SellPoint.Domain.Entities.Users
+﻿using SellPoint.Domainn.Base;
+
+namespace SellPoint.Domain.Entities.Users
 {
-    public sealed class Sesion
+    public sealed class Sesion : AuditiEntity
     {
     }
 }

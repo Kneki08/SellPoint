@@ -1,8 +1,10 @@
 ﻿
 
+using SellPoint.Domainn.Base;
+
 namespace SellPoint.Domainn.Entities.Products
 {
-    public sealed class Catergoria
+    public sealed class Catergoria : AuditiEntity
     {
     }
 }

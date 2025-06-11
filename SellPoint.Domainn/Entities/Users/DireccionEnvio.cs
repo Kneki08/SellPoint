@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SellPoint.Domainn.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.Domain.Entities.Users
 {
-    public sealed class DireccionEnvio
+    public sealed class DireccionEnvio : AuditiEntity
     {
     }
 }
