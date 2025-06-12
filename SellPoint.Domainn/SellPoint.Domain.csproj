@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Constract\Managers\" />
-    <Folder Include="Constract\Services\" />
+    <Compile Remove="Constract\**" />
+    <EmbeddedResource Remove="Constract\**" />
+    <None Remove="Constract\**" />
   </ItemGroup>
 
 </Project>
