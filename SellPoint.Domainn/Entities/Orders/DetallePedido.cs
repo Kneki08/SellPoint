@@ -4,7 +4,7 @@ using SellPoint.Domainn.Base;
 
 namespace SellPoint.Domain.Entities.Orders
 {
-    public sealed class DetallePedido : AuditiEntity
+    public sealed class DetallePedido : AuditEntity
     {
 
         public int Pedidoid { get; set; } 

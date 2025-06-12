@@ -2,7 +2,7 @@
 
 namespace SellPoint.Domainn.Base
 {
-    public abstract class Usuario : AuditiEntity
+    public abstract class Usuario : AuditEntity
     {
      public string? Nombre {  get; set; }
      public string? Apellido {  get; set; }

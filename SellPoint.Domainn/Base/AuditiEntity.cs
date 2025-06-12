@@ -2,7 +2,7 @@
 
 namespace SellPoint.Domainn.Base
 {
-    public abstract class AuditiEntity
+    public abstract class AuditEntity
     {
       public DateTime Fecha_creacion {  get; set; } = DateTime.UtcNow;
         public string? Usuario_creo { get; set; }

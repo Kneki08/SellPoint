@@ -4,7 +4,7 @@ using SellPoint.Domainn.Base;
 
 namespace SellPoint.Domainn.Entities.Orders
 {
-    public class Pedido : AuditiEntity
+    public class Pedido : AuditEntity
     {
         public int UsuarioId { get; set; }
         public string NumeroPedido { get; set; } = string.Empty;

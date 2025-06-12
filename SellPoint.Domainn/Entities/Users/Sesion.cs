@@ -2,7 +2,7 @@
 
 namespace SellPoint.Domain.Entities.Users
 {
-    public sealed class Sesion : AuditiEntity
+    public sealed class Sesion : AuditEntity
     {
       public int UsuarioId { get; set; }
       public DateTime FechaInicioSesion { get; set; }

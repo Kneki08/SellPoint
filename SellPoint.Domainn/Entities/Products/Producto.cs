@@ -4,7 +4,7 @@ using SellPoint.Domainn.Base;
 
 namespace SellPoint.Domainn.Entities.Products
 {
-    public class Producto : AuditiEntity
+    public class Producto : AuditEntity
     {
         public string Nombre { get; set; } = string.Empty;
         public string? Descripcion { get; set; }

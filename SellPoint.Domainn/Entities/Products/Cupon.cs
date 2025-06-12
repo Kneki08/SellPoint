@@ -4,7 +4,7 @@ using SellPoint.Domainn.Base;
 
 namespace SellPoint.Domainn.Entities.Products
 {
-    public sealed class Cupon : AuditiEntity
+    public sealed class Cupon : AuditEntity
     {
 
         public string Codigo { get; set; } = string.Empty;
