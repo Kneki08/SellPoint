@@ -73,7 +73,7 @@
   <Class Name="SellPoint.Domain.Entities.Users.Sesion">
     <Position X="16" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAABAAAAAAAAQAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAgAAAAwABAAAAAAAAAAAIAAAAAgAAAAAAAAAAA=</HashCode>
       <FileName>Entities\Users\Sesion.cs</FileName>
     </TypeIdentifier>
   </Class>
