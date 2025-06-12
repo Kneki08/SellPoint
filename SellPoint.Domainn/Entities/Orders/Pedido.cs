@@ -12,7 +12,7 @@ namespace SellPoint.Domainn.Entities.Orders
         public decimal Subtotal { get; set; }
         public decimal Descuento { get; set; } = 0m;
         public decimal CostoEnvio { get; set; }
-        public decimal Total { get; set; }
+        public decimal Total => Subtotal - Descuento + CostoEnvio;
 
         public EstadoPedido Estado { get; set; } = EstadoPedido.EnPreparacion;
         public MetodoPago MetodoPago { get; set; }
