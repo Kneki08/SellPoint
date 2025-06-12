@@ -11,8 +11,6 @@ namespace SellPoint.Domainn.Entities.Products
 
         public string Descripcion { get; set; } = string.Empty;
 
-        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
-
-        public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
+        
     }
 }
