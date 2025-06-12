@@ -4,14 +4,14 @@
     <Position X="5.5" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAIAEAAAQgAAAAAAAAAAAAAAAAgAAAAA=</HashCode>
-      <FileName>Base\Usuario.cs</FileName>
+      <FileName>Base\UsuarioBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SellPoint.Domainn.Base.AuditEntity">
     <Position X="14.25" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAAgAAAAAQAAAAAAAAAAAAIARAAAAAAAAAAQAAAAAA=</HashCode>
-      <FileName>Base\AuditiEntity.cs</FileName>
+      <FileName>Base\AuditEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SellPoint.Domainn.Entities.Users.Administrador">
