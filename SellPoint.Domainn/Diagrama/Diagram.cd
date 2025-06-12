@@ -25,7 +25,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="SellPoint.Domainn.Entities.Users.Administrador">
-    <Position X="2.5" Y="5.25" Width="1.5" />
+    <Position X="4.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Entities\Users\Administrador.cs</FileName>
@@ -41,21 +41,21 @@
   <Class Name="SellPoint.Domainn.Entities.Orders.Pedido">
     <Position X="18" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAgEAQABEAAgAAAAAAAgAAIAQQAIAAAACAAAABAg=</HashCode>
       <FileName>Entities\Orders\Pedido.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SellPoint.Domain.Entities.Orders.DetallePedido">
     <Position X="17.5" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AQAAAAQAAAAAAAAAAAAAAAQAAAAAABAAAAgAQAAAAAA=</HashCode>
       <FileName>Entities\Orders\DetallePedido.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SellPoint.Domain.Entities.Orders.Carrito">
     <Position X="18" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAEAAAAAAAgABAAAAAAAAIAAAAAAAAAAAAAAAEA=</HashCode>
       <FileName>Entities\Orders\Carrito.cs</FileName>
     </TypeIdentifier>
   </Class>
