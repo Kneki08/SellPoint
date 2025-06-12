@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="SellPoint.Domainn.Base.Usuario">
+  <Class Name="SellPoint.Domainn.Base.UsuarioBase">
     <Position X="5.5" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAIAEAAAQgAAAAAAAAAAAAAAAAgAAAAA=</HashCode>
