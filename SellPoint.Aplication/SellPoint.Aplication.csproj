@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Base\" />
     <Folder Include="Dtos\" />
   </ItemGroup>
 
