@@ -2,32 +2,28 @@
 namespace SellPoint.Domain.Base
 {
 
-    public class OperationResult
+    public class OperationResult<T> where T : class
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;
-        public dynamic? Data { get; set; }
-
+        public T? Data { get; set; }
         // Constructores estáticos para claridad al retornar
-        public static OperationResult Success(dynamic? data = null, string message = "Operación exitosa.")
+        public static OperationResult<T> Success(T? data = null, string message = "Operación exitosa.")
         {
-            return new OperationResult
+            return new OperationResult<T>
             {
                 IsSuccess = true,
                 Message = message,
                 Data = data
             };
         }
-
-        public static OperationResult Failure(string message = "Ocurrió un error.")
+        public static OperationResult<T> Failure(string message = "Ocurrió un error.")
         {
-            return new OperationResult
+            return new OperationResult<T>
             {
                 IsSuccess = false,
                 Message = message
             };
         }
-
-
     }
 }
