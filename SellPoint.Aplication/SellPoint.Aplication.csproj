@@ -8,8 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Base\" />
-    <Folder Include="Dtos\" />
+    <Folder Include="Dtos\DireccionEnvio\" />
+    <Folder Include="Dtos\Pedido\" />
+    <Folder Include="Interfaces\Repositorios\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SellPoint.Domainn\SellPoint.Domain.csproj" />
   </ItemGroup>
 
 </Project>
