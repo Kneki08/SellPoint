@@ -31,7 +31,7 @@ namespace SellPoint.Persistence.Repositorios
                     FechaAgregado = DateTime.UtcNow,
                     FechaActualizacion = DateTime.UtcNow,
                     UsuarioId = 1 
-                };
+                }
                 await _connectionString.Carritos.AddAsync(carrito);
             }
 
@@ -68,7 +68,7 @@ namespace SellPoint.Persistence.Repositorios
                 Success = true,
                 Data = items,
                 Message = "Productos del carrito obtenidos correctamente."
-            };
+            }
         }
 
         public async Task<OperationResult<decimal>> GetTotalAsync()
@@ -89,7 +89,7 @@ namespace SellPoint.Persistence.Repositorios
                 Success = true,
                 Data = total,
                 Message = "Total del carrito calculado correctamente."
-            };
+            }
         }
 
         public async Task<OperationResult> UpdateCantidadAsync(int productoId, int nuevaCantidad)
