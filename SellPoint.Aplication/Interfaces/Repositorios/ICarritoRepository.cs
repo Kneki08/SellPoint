@@ -3,6 +3,11 @@ namespace SellPoint.Aplication.Interfaces.Repositorios
 {
     public interface ICarritoRepository
     {
-    
+        Task<OperationResult> AddProductAsync(int productoId, int cantidad);
+        Task<OperationResult> DeleteProductAsync(int productoId);
+        Task<OperationResult> CleanCarritoAsync();
+        Task<OperationResult<List<CarritoItem>>> GetItemsAsync();
+        Task<OperationResult<decimal>> GetTotalAsync();
+        Task<OperationResult> UpdateCantidadAsync(int productoId, int nuevaCantidad);
     }
 }
