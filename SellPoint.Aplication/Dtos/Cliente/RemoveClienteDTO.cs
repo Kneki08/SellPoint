@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.Aplication.Dtos.Cliente
 {
-    public class RemoveClienteDTO
+    public record RemoveClienteDTO
     {
     }
 }
