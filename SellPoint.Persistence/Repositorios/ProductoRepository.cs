@@ -2,7 +2,7 @@ namespace SellPoint.Persistence.Repositorios
 {
     public class ProductoRepository : GenericRepository<Producto>, IProductoRepository
     {
-        public ProductoRepository(string connectionString) : base(context) { }
+        public ProductoRepository(string connectionString) : base(connectionString) { }
        
     public async Task<OperationResult<List<Producto>>> GetByCategoriaAsync(int categoriaId)
     {
