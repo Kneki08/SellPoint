@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.Aplication.Dtos.Carrito
 {
-    public class UpdateCarritoDTO
+    public record UpdateCarritoDTO
     {
     }
 }
