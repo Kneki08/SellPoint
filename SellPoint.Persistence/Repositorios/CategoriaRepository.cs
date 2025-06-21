@@ -7,7 +7,7 @@ namespace SellPoint.Persistence.Repositorios
         {
             _connectionString = connectionString;
         }
- public async Task<OperationResult> CreateCategoriaAsync(Catergoria categoria)
+        public async Task<OperationResult> CreateCategoriaAsync(Catergoria categoria)
         {
             await _connectionString.Categorias.AddAsync(categoria);
             await _connectionString.SaveChangesAsync();
