@@ -2,7 +2,7 @@
 
 namespace SellPoint.Aplication.Dtos.Cupon
 {
-    public class SaveCuponDTO
+    public record SaveCuponDTO
     {
     }
 }
