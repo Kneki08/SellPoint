@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.Aplication.Dtos.Cupon
 {
-    public class RemoveCuponDTIO
+    public record RemoveCuponDTIO
     {
     }
 }
