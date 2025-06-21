@@ -1,13 +1,15 @@
+
 using SellPoint.Domain.Base;
+using SellPoint.Domain.Entities.Orders;
+using SellPoint.Aplication.Interfaces.Base;
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {
-    public interface ICarritoRepository
+    public interface ICarritoRepository : IRepository<Carrito>
     {
-        Task<OperationResult> AddProductoAsync(int productoId, int cantidad);
-        Task<OperationResult> DeleteProductoAsync(int productoId);
-        Task<OperationResult> CleanCarritoAsync();
-        Task<OperationResult<List<CarritoItem>>> GetItemsAsync();
-        Task<OperationResult<decimal>> GetTotalAsync();
-        Task<OperationResult> UpdateCantidadAsync(int productoId, int nuevaCantidad);
+        Task<OperationResult> ObtenerPorUsuarioIdAsync(int usuarioId);
+        Task<OperationResult> AgregarProductoAsync(int carritoId, int productoId, int cantidad);
+        Task<OperationResult> EliminarProductoAsync(int carritoId, int productoId);
+        Task<OperationResult> VaciarCarritoAsync(int carritoId);
     }
+
 }

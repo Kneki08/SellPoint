@@ -1,9 +1,13 @@
+
 using SellPoint.Domain.Base;
 using SellPoint.Domain.Entities.Orders;
+using SellPoint.Aplication.Interfaces.Base;
+
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {
-    public interface IDetallePedidoRepository : IGenericRepository<DetallePedido>
+    public interface IDetallePedidoRepository : IRepository<DetallePedido>
     {
-        Task<OperationResult<List<DetallePedido>>> GetDetallesByPedidoIdAsync(int pedidoId);
+        Task<OperationResult> ObtenerPorPedidoIdAsync(int pedidoId);
     }
+
 }

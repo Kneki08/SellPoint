@@ -1,13 +1,11 @@
-﻿using SellPoint.Domain.Base;
+﻿using SellPoint.Aplication.Interfaces.Base;
+using SellPoint.Domain.Base;
 
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {
-    public interface  IUsuarioService
+    public interface IUsuarioRepository : IRepository<Usuario>
     {
-        Task<OperationResult<List<UsuarioBase>>> ObtenerUsuariosAsync();
-        Task<OperationResult<Usuario>> ObtenerPorEmailAsync(string email);
-        Task<OperationResult> CrearUsuarioAsync(Usuario usuario);
-        Task<OperationResult> ActualizarUsuarioAsync(Usuario usuario);
-        Task<OperationResult> EliminarUsuarioAsync(int id);
+        Task<OperationResult> ObtenerPorEmailAsync(string email);
     }
+
 }

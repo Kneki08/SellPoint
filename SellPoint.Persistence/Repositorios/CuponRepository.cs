@@ -1,3 +1,5 @@
+
+
 namespace SellPoint.Persistence.Repositorios
 {
     public class CuponRepository : GenericRepository<Cupon>, ICuponRepository

@@ -1,13 +1,15 @@
 
+using SellPoint.Aplication.Interfaces.Base;
 using SellPoint.Domain.Base;
-using SellPoint.Domain.Entities.Orders;
 using SellPoint.Domainn.Entities.Orders;
 
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {
-    public interface IPedidoRepository : IGenericRepository<DetallePedido>
+    public interface IPedidoRepository : IRepository<Pedido>
     {
-        Task<OperationResult<List<Pedido>>> GetPedidosByClienteIdAsync(int clienteId);
-        Task<OperationResult> ChangeStatusPedidoAsync(int pedidoId, string nuevoEstado);
+        Task<OperationResult> ObtenerPorUsuarioAsync(int usuarioId);
+        Task<OperationResult> ObtenerPedidoConDetallesAsync(int pedidoId);
+        Task<OperationResult> CambiarEstadoAsync(int pedidoId, string nuevoEstado);
     }
+
 }

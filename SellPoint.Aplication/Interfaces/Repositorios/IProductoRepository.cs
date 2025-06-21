@@ -1,9 +1,14 @@
+using SellPoint.Aplication.Interfaces.Base;
+using SellPoint.Domain.Base;
+using SellPoint.Domainn.Entities.Products;
+
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {
-    public interface IProductoRepository : IGenericRepository<Producto>
+    public interface IProductoRepository : IRepository<Producto>
     {
-    Task<OperationResult<List<Producto>>> GetByCategoriaAsync(int categoriaId);
-    Task<OperationResult<List<Producto>>> SearchByNombreAsync(string nombre);
-    Task<OperationResult> ChangeStatusAsync(int productoId, bool activo);
+        Task<OperationResult> ObtenerPorCategoriaAsync(int categoriaId);
+        Task<OperationResult> BuscarPorNombreAsync(string nombre);
     }
+
+
 }

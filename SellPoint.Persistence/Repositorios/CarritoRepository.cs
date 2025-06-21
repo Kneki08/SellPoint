@@ -1,5 +1,8 @@
 
 
+
+using SellPoint.Domain.Base;
+
 namespace SellPoint.Persistence.Repositorios
 {
     public class CarritoRepository : ICarritoRepository
