@@ -10,7 +10,7 @@
   <ItemGroup>
     <Folder Include="Dtos\DireccionEnvio\" />
     <Folder Include="Dtos\Pedido\" />
-    <Folder Include="Interfaces\Repositorios\" />
+    <Folder Include="Interfaces\Servicios\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using SellPoint.Domain.Base;
 
-namespace SellPoint.Aplication.Interfaces.Servicios
+namespace SellPoint.Aplication.Interfaces.Repositorios
 {
     public interface  IUsuarioService
     {
