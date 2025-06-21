@@ -3,7 +3,7 @@ namespace SellPoint.Persistence.Repositorios
     public class DetallePedidoRepository : GenericRepository<DetallePedido>, IDetallePedidoRepository
     {
 
-        public DetallePedidoRepository(string connectionString) base(connectionString) { }
+        public DetallePedidoRepository(string connectionString) : base(connectionString) { }
        
         public async Task<OperationResult<List<DetallePedido>>> GetDetallesByPedidoIdAsync(int pedidoId)
         {
