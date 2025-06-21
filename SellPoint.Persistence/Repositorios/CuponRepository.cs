@@ -2,7 +2,7 @@ namespace SellPoint.Persistence.Repositorios
 {
     public class CuponRepository : GenericRepository<Cupon>, ICuponRepository
     {
-       public CuponRepository(string connectionString) : base(context) { }
+       public CuponRepository(string connectionString) : base(connectionString) { }
         
        public async Task<OperationResult<Cupon>> ValidateCodigoCuponAsync(string codigo)
      {
