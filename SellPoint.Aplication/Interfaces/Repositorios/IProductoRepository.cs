@@ -1,6 +1,6 @@
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {
-    public interface IProductoRepository
+    public interface IProductoRepository : IGenericRepository<Producto>
     {
     Task<OperationResult<List<Producto>>> GetByCategoriaAsync(int categoriaId);
     Task<OperationResult<List<Producto>>> SearchByNombreAsync(string nombre);
