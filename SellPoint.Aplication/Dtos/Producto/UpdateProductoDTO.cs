@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.Aplication.Dtos.Producto
 {
-    internal class UpdateProductoDTO
+    internal record UpdateProductoDTO
     {
     }
 }
