@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.Aplication.Dtos.Producto
 {
-    public class SaveProductoDTO : ProductoDTO
+    public class SaveProductoDTO 
     {
      
     }
