@@ -1,5 +1,7 @@
 ﻿
 
+using Microsoft.Extensions.Logging;
+using SellPoint.Aplication.Dtos.Carrito;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
 using SellPoint.Domain.Entities.Orders;
@@ -8,27 +10,25 @@ namespace SellPoint.Persistence.Repositories
 {
     public class CarritoRepository : ICarritoRepository
     {
-        public Task<OperationResult> ActualizarAsync(Carrito entidad)
+        private readonly string _connectionString;
+        private readonly ILogger<CarritoRepository> _logger;
+
+        public CarritoRepository(string connectionString, ILogger<CarritoRepository> logger)
+        {
+            _connectionString = connectionString;
+            _logger = logger;
+        }
+        public Task<OperationResult> ActualizarAsync(UpdateCarritoDTO entidad)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> AgregarAsync(Carrito entidad)
+        public Task<OperationResult> AgregarAsync(SaveCarritoDTO entidad)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> AgregarProductoAsync(int carritoId, int productoId, int cantidad)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> EliminarAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> EliminarProductoAsync(int carritoId, int productoId)
+        public Task<OperationResult> EliminarAsync(RemoveCarritoDTO entidad)
         {
             throw new NotImplementedException();
         }
@@ -38,19 +38,8 @@ namespace SellPoint.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> ObtenerPorUsuarioIdAsync(int usuarioId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<OperationResult> ObtenerTodosAsync()
         {
             throw new NotImplementedException();
         }
-
-        public Task<OperationResult> VaciarCarritoAsync(int carritoId)
-        {
-            throw new NotImplementedException();
-        }
     }
-}
