@@ -8,6 +8,8 @@ namespace SellPoint.Aplication.Dtos.Carrito
 {
     public record UpdateCarritoDTO
     {
-
+        public int UsuarioId { get; init; }
+        public int ProductoId { get; init; }
+        public int NuevaCantidad { get; init; }
     }
 }

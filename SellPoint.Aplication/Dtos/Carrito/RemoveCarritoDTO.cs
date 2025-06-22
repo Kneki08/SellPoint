@@ -8,5 +8,7 @@ namespace SellPoint.Aplication.Dtos.Carrito
 {
     public record RemoveCarritoDTO
     {
+        public int UsuarioId { get; init; }
+        public int ProductoId { get; init; }
     }
 }
