@@ -7,9 +7,9 @@ namespace SellPoint.Aplication.Interfaces.Repositorios
     {
         Task<OperationResult> ObtenerPorIdAsync(int id);
         Task<OperationResult> ObtenerTodosAsync();
-        Task<OperationResult> AgregarAsync(SaveCarritoDTO entidad);
-        Task<OperationResult> ActualizarAsync(UpdateCarritoDTO entidad);
-        Task<OperationResult> EliminarAsync(RemoveCarritoDTO entidad);
+        Task<OperationResult> AgregarAsync(SaveCarritoDTO saveCarrito);
+        Task<OperationResult> ActualizarAsync(UpdateCarritoDTO updateCarrito);
+        Task<OperationResult> EliminarAsync(RemoveCarritoDTO EliminarCarrito);
     }
 
 }
