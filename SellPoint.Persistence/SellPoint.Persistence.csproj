@@ -8,10 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Base\" />
-    <Folder Include="Context\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Repository\" />
+    <Compile Remove="Base\**" />
+    <Compile Remove="Context\**" />
+    <Compile Remove="Interfaces\**" />
+    <Compile Remove="Repository\**" />
+    <EmbeddedResource Remove="Base\**" />
+    <EmbeddedResource Remove="Context\**" />
+    <EmbeddedResource Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Repository\**" />
+    <None Remove="Base\**" />
+    <None Remove="Context\**" />
+    <None Remove="Interfaces\**" />
+    <None Remove="Repository\**" />
   </ItemGroup>
 
   <ItemGroup>
