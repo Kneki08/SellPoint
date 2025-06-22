@@ -1,6 +1,9 @@
+using SellPoint.Aplication.Interfaces.Base;
+using SellPoint.Domain.Base;
+
 namespace SellPoint.Persistence.Repositorios
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IRepository<T> where T : class
     {
         protected readonly DbSet<T> _dbSet;
         private readonly string _connectionString;
