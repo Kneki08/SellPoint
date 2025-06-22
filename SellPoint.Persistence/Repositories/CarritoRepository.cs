@@ -1,10 +1,9 @@
 ﻿
-
 using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Carrito;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
-using SellPoint.Domain.Entities.Orders;
+
 
 namespace SellPoint.Persistence.Repositories
 {
@@ -43,3 +42,4 @@ namespace SellPoint.Persistence.Repositories
             throw new NotImplementedException();
         }
     }
+}
