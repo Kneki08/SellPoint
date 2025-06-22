@@ -8,5 +8,6 @@ namespace SellPoint.Aplication.Dtos.Carrito
 {
     public record UpdateCarritoDTO
     {
+
     }
 }
