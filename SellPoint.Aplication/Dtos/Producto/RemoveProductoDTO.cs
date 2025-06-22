@@ -2,9 +2,9 @@
 
 namespace SellPoint.Aplication.Dtos.ProductoDTO
 {
-    public  record RemoveProductoDTO 
+    public record RemoveProductoDTO
     {
-       public int Id { get; set; }
-       public bool Remove { get; set; }
+        public int Id { get; set; }
+        public bool EsEliminado { get; set; }
     }
 }

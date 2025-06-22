@@ -8,5 +8,6 @@ namespace SellPoint.Aplication.Dtos.Cupon
 {
     public record RemoveCuponDTIO
     {
+        public int Id { get; init; }
     }
 }
