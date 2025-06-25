@@ -1,32 +1,22 @@
-﻿using SellPoint.Aplication.Interfaces.Repositorios;
+﻿using SellPoint.Aplication.Dtos.Categoria;
+using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
-using SellPoint.Domainn.Entities.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SellPoint.Persistence.Repositories
 {
     public class CategoriaRepository : ICategoriaRepository
     {
-        public Task<OperationResult> ActualizarAsync(Categoria entidad)
+        public Task<OperationResult> ActualizarAsync(UpdateCategoriaDTO updateCategoria)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> AgregarAsync(Categoria entidad)
+        public Task<OperationResult> AgregarAsync(SaveCategoriaDTO saveCategoria)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> EliminarAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> ObtenerConProductosAsync(int categoriaId)
+        public Task<OperationResult> EliminarAsync(RemoveCategoriaDTO removeCategoria)
         {
             throw new NotImplementedException();
         }
@@ -35,12 +25,6 @@ namespace SellPoint.Persistence.Repositories
         {
             throw new NotImplementedException();
         }
-
-        public Task<OperationResult> ObtenerPorNombreAsync(string nombre)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<OperationResult> ObtenerTodosAsync()
         {
             throw new NotImplementedException();

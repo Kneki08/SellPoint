@@ -11,9 +11,9 @@ namespace SellPoint.Aplication.Interfaces.Repositorios
     {
         Task<OperationResult> ObtenerPorIdAsync(int id);
         Task<OperationResult> ObtenerTodosAsync();
-        Task<OperationResult> AgregarAsync(SaveCarritoDTO entidad);
-        Task<OperationResult> ActualizarAsync(UpdateCarritoDTO entidad);
-        Task<OperationResult> EliminarAsync(RemoveCuponDTIO entidad);
+        Task<OperationResult> AgregarAsync(SaveCuponDTO saveCupon);
+        Task<OperationResult> ActualizarAsync(UpdateCuponDTO updateCupon);
+        Task<OperationResult> EliminarAsync(RemoveCuponDTIO removeCupon);
     }
 
 }

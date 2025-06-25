@@ -1,5 +1,6 @@
 
 using SellPoint.Aplication.Dtos.Carrito;
+using SellPoint.Aplication.Dtos.Pedido;
 using SellPoint.Aplication.Interfaces.Base;
 using SellPoint.Domain.Base;
 using SellPoint.Domainn.Entities.Orders;
@@ -10,9 +11,9 @@ namespace SellPoint.Aplication.Interfaces.Repositorios
     {
         Task<OperationResult> ObtenerPorIdAsync(int id);
         Task<OperationResult> ObtenerTodosAsync();
-        Task<OperationResult> AgregarAsync(SaveCarritoDTO entidad);
-        Task<OperationResult> ActualizarAsync(UpdateCarritoDTO entidad);
-        Task<OperationResult> EliminarAsync(RemoveCarritoDTO entidad);
+        Task<OperationResult> AgregarAsync(SavePedidoDTO savePedido);
+        Task<OperationResult> ActualizarAsync(UpdatePedidoDTO updatePedido);
+        Task<OperationResult> EliminarAsync(RemovePedidoDTO removePedido);
     }
 
 }

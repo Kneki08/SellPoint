@@ -1,33 +1,23 @@
-﻿using SellPoint.Aplication.Interfaces.Repositorios;
+﻿using SellPoint.Aplication.Dtos.Cupon;
+using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
-using SellPoint.Domainn.Entities.Products;
 
 
 namespace SellPoint.Persistence.Repositories
 {
     public class CuponRepository : ICuponRepository
     {
-        public Task<OperationResult> ActualizarAsync(Cupon entidad)
+        public Task<OperationResult> ActualizarAsync(UpdateCuponDTO entidad)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> AgregarAsync(Cupon entidad)
+        public Task<OperationResult> AgregarAsync(SaveCuponDTO entidad)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> EliminarAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> MarcarComoUsadoAsync(string codigo, int usuarioId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> ObtenerPorCodigoAsync(string codigo)
+        public Task<OperationResult> EliminarAsync(RemoveCuponDTIO entidad)
         {
             throw new NotImplementedException();
         }
@@ -38,11 +28,6 @@ namespace SellPoint.Persistence.Repositories
         }
 
         public Task<OperationResult> ObtenerTodosAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> ValidarCuponAsync(string codigo)
         {
             throw new NotImplementedException();
         }

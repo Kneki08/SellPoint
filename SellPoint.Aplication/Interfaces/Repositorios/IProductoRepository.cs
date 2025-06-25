@@ -1,8 +1,8 @@
-using SellPoint.Aplication.Dtos.Carrito;
+
 using SellPoint.Aplication.Dtos.Producto;
-using SellPoint.Aplication.Interfaces.Base;
+using SellPoint.Aplication.Dtos.ProductoDTO;
 using SellPoint.Domain.Base;
-using SellPoint.Domainn.Entities.Products;
+
 
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {

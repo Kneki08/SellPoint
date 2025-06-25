@@ -8,8 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\DireccionEnvio\" />
-    <Folder Include="Dtos\Pedido\" />
     <Folder Include="Interfaces\Servicios\" />
   </ItemGroup>
 
