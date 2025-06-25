@@ -8,5 +8,6 @@ namespace SellPoint.Aplication.Dtos.DetallePedido
 {
     public record RemoveDetallePedidoDTO
     {
+        public int Id { get; init; }
     }
 }
