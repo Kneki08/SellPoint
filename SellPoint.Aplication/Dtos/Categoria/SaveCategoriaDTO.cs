@@ -8,5 +8,7 @@ namespace SellPoint.Aplication.Dtos.Categoria
 {
     public record SaveCategoriaDTO
     {
+        public string Nombre { get; init; } = string.Empty;
+        public string? Descripcion { get; init; }
     }
 }

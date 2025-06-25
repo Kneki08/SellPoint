@@ -8,5 +8,6 @@ namespace SellPoint.Aplication.Dtos.Categoria
 {
     public record RemoveCategoriaDTO
     {
+        public int Id { get; init; }
     }
 }
