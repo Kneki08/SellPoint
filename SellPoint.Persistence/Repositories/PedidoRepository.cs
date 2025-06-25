@@ -33,4 +33,4 @@ namespace SellPoint.Persistence.Repositories
         }
     }
 }
-}
+
