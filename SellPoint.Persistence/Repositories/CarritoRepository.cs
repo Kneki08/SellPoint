@@ -146,7 +146,26 @@ namespace SellPoint.Persistence.Repositories
             OperationResult Presult = OperationResult.Success();
             try
             {
-              _logger.LogInformation("EliminarAsync {UsuarioId}", removeCarrito.UsuarioId);
+                if (removeCarrito is null)
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "La entidad no puede ser nula.";
+                    return Presult;
+                }
+                if (int.IsNegative(removeCarrito.UsuarioId))
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "El UsuarioId no puede ser negativo.";
+                    return Presult;
+                }
+                if (int.IsNegative(removeCarrito.ProductoId))
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "El ProductoId no puede ser negativo.";
+                    return Presult;
+                }
+
+                _logger.LogInformation("EliminarAsync {UsuarioId}", removeCarrito.UsuarioId);
                 using (var context = new SqlConnection(_connectionString))
                 {
                     using (var command = new SqlCommand("sp_EliminarCarrito", context))
