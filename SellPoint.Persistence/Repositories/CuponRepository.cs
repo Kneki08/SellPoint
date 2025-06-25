@@ -7,17 +7,17 @@ namespace SellPoint.Persistence.Repositories
 {
     public class CuponRepository : ICuponRepository
     {
-        public Task<OperationResult> ActualizarAsync(UpdateCuponDTO entidad)
+        public Task<OperationResult> ActualizarAsync(UpdateCuponDTO updateCupon)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> AgregarAsync(SaveCuponDTO entidad)
+        public Task<OperationResult> AgregarAsync(SaveCuponDTO saveCupon)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> EliminarAsync(RemoveCuponDTIO entidad)
+        public Task<OperationResult> EliminarAsync(RemoveCuponDTIO removeCupon)
         {
             throw new NotImplementedException();
         }

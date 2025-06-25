@@ -1,4 +1,5 @@
-﻿using SellPoint.Aplication.Interfaces.Repositorios;
+﻿using SellPoint.Aplication.Dtos.Pedido;
+using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
 using SellPoint.Domainn.Entities.Orders;
 
@@ -6,27 +7,17 @@ namespace SellPoint.Persistence.Repositories
 {
     public class PedidoRepository : IPedidoRepository
     {
-        public Task<OperationResult> ActualizarAsync(Pedido entidad)
+        public Task<OperationResult> ActualizarAsync(UpdatePedidoDTO updatePedido)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> AgregarAsync(Pedido entidad)
+        public Task<OperationResult> AgregarAsync(SavePedidoDTO savePedido)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> CambiarEstadoAsync(int pedidoId, string nuevoEstado)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> EliminarAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<OperationResult> ObtenerPedidoConDetallesAsync(int pedidoId)
+        public Task<OperationResult> EliminarAsync(RemovePedidoDTO removePedido)
         {
             throw new NotImplementedException();
         }
@@ -36,14 +27,10 @@ namespace SellPoint.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> ObtenerPorUsuarioAsync(int usuarioId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<OperationResult> ObtenerTodosAsync()
         {
             throw new NotImplementedException();
         }
     }
+}
 }
