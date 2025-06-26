@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
-using SellPoint.Domainn.Entities.Products;
+
 
 namespace SellPoint.Persistence.Repositories
 {
