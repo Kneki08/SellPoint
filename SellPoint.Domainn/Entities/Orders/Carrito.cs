@@ -11,6 +11,7 @@ namespace SellPoint.Domain.Entities.Orders
         public int Cantidad { get; set; }
         public DateTime FechaAgregado { get; set; }
         public DateTime FechaActualizacion { get; set; }
+
         public bool EsCantidadValida() => Cantidad > 0;
 
 

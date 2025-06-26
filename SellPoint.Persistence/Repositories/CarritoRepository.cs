@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Carrito;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
+using System.Data;
 
 
 namespace SellPoint.Persistence.Repositories
@@ -196,9 +197,49 @@ namespace SellPoint.Persistence.Repositories
             return Presult;
         }
 
-        public Task<OperationResult> ObtenerPorIdAsync(int id)
+        public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            OperationResult result = OperationResult.Success();
+            try
+            {
+
+               List<ObtenerCarritoDTO> items = new List<ObtenerCarritoDTO>();
+
+                using (var context = new SqlConnection(this._connectionString))
+                {
+                    using (var command = new SqlCommand("sp_ObtenerCarritoPorUsuario", context))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@UsuarioId", id);
+                        await context.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                items.Add(new ObtenerCarritoDTO
+                                {
+                                    ProductoId = reader.GetInt32("ProductoId"),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Precio = reader.GetDecimal("Precio"),
+                                    Cantidad = reader.GetInt32("Cantidad"),
+                                    Subtotal = reader.GetDecimal("Subtotal")
+                                });
+                            }
+                        }
+                    }
+                }
+
+                result.Data = items;
+                result.IsSuccess = true;
+                result.Message = "Carrito cargado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener el carrito por UsuarioId", ex);
+            }
+
+            return result;
         }
 
         public Task<OperationResult> ObtenerTodosAsync()
