@@ -6,6 +6,7 @@ using SellPoint.Aplication.Dtos.ProductoDTO;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
 using SellPoint.Domainn.Entities.Products;
+using System.Data;
 
 namespace SellPoint.Persistence.Repositories
 {
@@ -142,14 +143,102 @@ namespace SellPoint.Persistence.Repositories
             return Presult;
         }
 
-        public Task<OperationResult> ObtenerPorIdAsync(int id)
+        public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            OperationResult Presult = OperationResult.Success();
+            try
+            {
+                _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
+
+                using var connection = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerProductoPorId", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@Id", id);
+
+                await connection.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var producto = new ProductoDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                        Descripcion = reader.IsDBNull(reader.GetOrdinal("Descripcion")) ? null : reader.GetString(reader.GetOrdinal("Descripcion")),
+                        Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                        Stock = reader.GetInt32(reader.GetOrdinal("Stock")),
+                        CategoriaId = reader.IsDBNull(reader.GetOrdinal("CategoriaId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CategoriaId")),
+                        ImagenUri = reader.IsDBNull(reader.GetOrdinal("ImagenUri")) ? null : reader.GetString(reader.GetOrdinal("ImagenUri")),
+                        Activo = reader.GetBoolean(reader.GetOrdinal("Activo"))
+                    };
+
+                    Presult.Data = producto;
+                    Presult.IsSuccess = true;
+                }
+                else
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "Producto no encontrado.";
+                }
+            }
+            catch (Exception ex)
+            {
+                Presult.IsSuccess = false;
+                Presult.Message = $"Error al obtener el producto: {ex.Message}";
+                _logger.LogError(ex, "Error en ObtenerPorIdAsync");
+            }
+
+            return Presult;
         }
 
-        public Task<OperationResult> ObtenerTodosAsync()
+        public async Task<OperationResult> ObtenerTodosAsync()
         {
-            throw new NotImplementedException();
+            OperationResult Presult = OperationResult.Success();
+            try
+            {
+                _logger.LogInformation("ObtenerTodosAsync");
+
+                using var connection = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerTodosProductos", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                await connection.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                var productos = new List<ProductoDTO>();
+                while (await reader.ReadAsync())
+                {
+                    var producto = new ProductoDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                        Descripcion = reader.IsDBNull(reader.GetOrdinal("Descripcion")) ? null : reader.GetString(reader.GetOrdinal("Descripcion")),
+                        Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                        Stock = reader.GetInt32(reader.GetOrdinal("Stock")),
+                        CategoriaId = reader.IsDBNull(reader.GetOrdinal("CategoriaId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CategoriaId")),
+                        ImagenUri = reader.IsDBNull(reader.GetOrdinal("ImagenUri")) ? null : reader.GetString(reader.GetOrdinal("ImagenUri")),
+                        Activo = reader.GetBoolean(reader.GetOrdinal("Activo"))
+                    };
+
+                    productos.Add(producto);
+                }
+
+                Presult.Data = productos;
+                Presult.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                Presult.IsSuccess = false;
+                Presult.Message = $"Error al obtener los productos: {ex.Message}";
+                _logger.LogError(ex, "Error en ObtenerTodosAsync");
+            }
+
+            return Presult;
         }
     }
 }

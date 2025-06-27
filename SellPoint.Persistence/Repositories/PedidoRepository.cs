@@ -185,14 +185,134 @@ namespace SellPoint.Persistence.Repositories
             return Presult;
         }
 
-        public  Task<OperationResult> ObtenerPorIdAsync(int id)
+        public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            OperationResult Presult = OperationResult.Success();
+            try
+            {
+                if (id <= 0)
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "El Id debe ser mayor que cero.";
+                    return Presult;
+                }
+
+                _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
+
+                using (var context = new SqlConnection(_connectionString))
+                {
+                    using (var command = new SqlCommand("sp_ObtenerPedidoPorId", context))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", id);
+
+                        await context.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var pedido = new PedidoDTO
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
+                                    Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal")),
+                                    Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
+                                    CostoEnvio = reader.GetDecimal(reader.GetOrdinal("CostoEnvio")),
+                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
+                                    MetodoPago = reader["MetodoPago"] as string,
+                                    ReferenciaPago = reader["ReferenciaPago"] as string,
+                                    CuponId = reader["CuponId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("CuponId")) : (int?)null,
+                                    DireccionEnvioId = reader["DireccionEnvioId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("DireccionEnvioId")) : (int?)null,
+                                    Notas = reader["Notas"] as string,
+                                    Estado = reader["Estado"] as string
+                                };
+
+                                Presult.IsSuccess = true;
+                                Presult.Data = pedido;
+                                Presult.Message = "Pedido obtenido correctamente.";
+                            }
+                            else
+                            {
+                                Presult.IsSuccess = false;
+                                Presult.Message = "No se encontró el pedido.";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el pedido por Id");
+                Presult.IsSuccess = false;
+                Presult.Message = "Error al obtener el pedido por Id.";
+            }
+
+            return Presult;
         }
 
-        public Task<OperationResult> ObtenerTodosAsync()
+        public async Task<OperationResult> ObtenerTodosAsync()
         {
-            throw new NotImplementedException();
+            OperationResult Presult = OperationResult.Success();
+
+            try
+            {
+                _logger.LogInformation("ObtenerTodosAsync llamado");
+
+                var pedidos = new List<PedidoDTO>();
+
+                using (var context = new SqlConnection(_connectionString))
+                {
+                    using (var command = new SqlCommand("sp_ObtenerTodosPedidos", context))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        await context.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                var pedido = new PedidoDTO
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
+                                    Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal")),
+                                    Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
+                                    CostoEnvio = reader.GetDecimal(reader.GetOrdinal("CostoEnvio")),
+                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
+                                    MetodoPago = reader["MetodoPago"] as string,
+                                    ReferenciaPago = reader["ReferenciaPago"] as string,
+                                    CuponId = reader["CuponId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("CuponId")) : (int?)null,
+                                    DireccionEnvioId = reader["DireccionEnvioId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("DireccionEnvioId")) : (int?)null,
+                                    Notas = reader["Notas"] as string,
+                                    Estado = reader["Estado"] as string
+                                };
+
+                                pedidos.Add(pedido);
+                            }
+                        }
+
+                        if (pedidos.Any())
+                        {
+                            Presult.IsSuccess = true;
+                            Presult.Data = pedidos;
+                            Presult.Message = "Lista de pedidos obtenida correctamente.";
+                        }
+                        else
+                        {
+                            Presult.IsSuccess = false;
+                            Presult.Message = "No se encontraron pedidos.";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener todos los pedidos");
+                Presult.IsSuccess = false;
+                Presult.Message = "Error al obtener todos los pedidos.";
+            }
+
+            return Presult;
         }
     }
 }

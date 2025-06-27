@@ -1,8 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Dtos.Cupon;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
+using System.Data;
 
 
 namespace SellPoint.Persistence.Repositories
@@ -201,14 +203,96 @@ namespace SellPoint.Persistence.Repositories
             return Presult;
         }
 
-        public Task<OperationResult> ObtenerPorIdAsync(int id)
+        public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            OperationResult Presult = new OperationResult();
+
+            if (id <= 0)
+            {
+                Presult.IsSuccess = false;
+                Presult.Message = "El Id debe ser mayor que cero.";
+                return Presult;
+            }
+
+            try
+            {
+                _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
+                using var context = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerCuponPorId", context);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Id", id);
+
+                await context.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    var cupon = new CuponDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        Codigo = reader.GetString(reader.GetOrdinal("Codigo")),
+                        ValorDescuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
+                        FechaVencimiento = reader.GetDateTime(reader.GetOrdinal("FechaExpiracion"))
+                    };
+
+                    Presult.IsSuccess = true;
+                    Presult.Message = "Cupón obtenido correctamente.";
+                    Presult.Data = cupon;
+                }
+                else
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "Cupón no encontrado.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el cupón por ID");
+                Presult.IsSuccess = false;
+                Presult.Message = "Error al obtener el cupón por ID: " + ex.Message;
+            }
+
+            return Presult;
         }
 
-        public Task<OperationResult> ObtenerTodosAsync()
+        public async Task<OperationResult> ObtenerTodosAsync()
         {
-            throw new NotImplementedException();
+            OperationResult Presult = new OperationResult();
+            var cupones = new List<CuponDTO>();
+
+            try
+            {
+                _logger.LogInformation("ObtenerTodosAsync ejecutado");
+                using var context = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerTodosCupones", context);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                await context.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    var cupon = new CuponDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        Codigo = reader.GetString(reader.GetOrdinal("Codigo")),
+                        ValorDescuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
+                        FechaVencimiento = reader.GetDateTime(reader.GetOrdinal("FechaExpiracion"))
+                    };
+                    cupones.Add(cupon);
+                }
+
+                Presult.IsSuccess = true;
+                Presult.Message = "Cupones obtenidos correctamente.";
+                Presult.Data = cupones;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener todos los cupones");
+                Presult.IsSuccess = false;
+                Presult.Message = "Error al obtener todos los cupones: " + ex.Message;
+            }
+
+            return Presult;
         }
     }
 }

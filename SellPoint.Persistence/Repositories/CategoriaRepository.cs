@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
+using System.Data;
 
 
 namespace SellPoint.Persistence.Repositories
@@ -178,16 +179,108 @@ namespace SellPoint.Persistence.Repositories
             return Presult;
         }
 
-        public Task<OperationResult> ObtenerPorIdAsync(int id)
+        public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            OperationResult Presult = OperationResult.Success();
+            try
+            {
+                if (int.IsNegative(id))
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "El Id no puede ser negativo.";
+                    return Presult;
+                }
+
+                _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
+                using (var context = new SqlConnection(_connectionString))
+                {
+                    using (var command = new SqlCommand("sp_ObtenerCategoriaPorId", context))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", id);
+                        await context.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var categoria = new 
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                                    Descripcion = reader.IsDBNull(reader.GetOrdinal("Descripcion"))
+                                        ? null
+                                        : reader.GetString(reader.GetOrdinal("Descripcion")),
+                                    Activo = reader.GetBoolean(reader.GetOrdinal("Activo"))
+                                };
+
+                                Presult.Data = categoria;
+                                Presult.IsSuccess = true;
+                                Presult.Message = "Categoría obtenida correctamente.";
+                            }
+                            else
+                            {
+                                Presult.IsSuccess = false;
+                                Presult.Message = "Categoría no encontrada.";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la categoría por Id", ex);
+            }
+
+            return Presult;
 
         }
 
 
-        public Task<OperationResult> ObtenerTodosAsync()
+        public async Task<OperationResult> ObtenerTodosAsync()
         {
-            throw new NotImplementedException();
+            OperationResult Presult = OperationResult.Success();
+            try
+            {
+                _logger.LogInformation("ObtenerTodosAsync ejecutado");
+
+                List<CategoriaDTO> categorias = new List<CategoriaDTO>();
+
+                using (var context = new SqlConnection(_connectionString))
+                {
+                    using (var command = new SqlCommand("sp_ObtenerTodasCategorias", context))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        await context.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                categorias.Add(new CategoriaDTO
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                                    Descripcion = reader.IsDBNull(reader.GetOrdinal("Descripcion"))
+                                        ? null
+                                        : reader.GetString(reader.GetOrdinal("Descripcion")),
+                                    Activo = reader.GetBoolean(reader.GetOrdinal("Activo"))
+                                });
+                            }
+                        }
+                    }
+                }
+
+                Presult.Data = categorias;
+                Presult.IsSuccess = true;
+                Presult.Message = "Categorías obtenidas correctamente.";
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener todas las categorías", ex);
+            }
+
+            return Presult;
         }
     }
 }

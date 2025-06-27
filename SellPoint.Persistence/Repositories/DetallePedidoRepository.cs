@@ -207,14 +207,98 @@ namespace SellPoint.Persistence.Repositories
             return result;
         }
 
-        public Task<OperationResult> ObtenerPorIdAsync(int id)
+        public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            OperationResult Presult = new OperationResult();
+
+            if (id <= 0)
+            {
+                Presult.IsSuccess = false;
+                Presult.Message = "El Id debe ser mayor que cero.";
+                return Presult;
+            }
+
+            try
+            {
+                _logger.LogInformation("ObtenerPorIdAsync Id: {Id}", id);
+                using var context = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerDetallePedidoPorId", context);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Id", id);
+
+                await context.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var detalle = new DetallePedidoDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        PedidoId = reader.GetInt32(reader.GetOrdinal("PedidoId")),
+                        ProductoId = reader.GetInt32(reader.GetOrdinal("ProductoId")),
+                        Cantidad = reader.GetInt32(reader.GetOrdinal("Cantidad"))
+                    };
+
+                    Presult.IsSuccess = true;
+                    Presult.Message = "Detalle del pedido obtenido correctamente.";
+                    Presult.Data = detalle;
+                }
+                else
+                {
+                    Presult.IsSuccess = false;
+                    Presult.Message = "Detalle del pedido no encontrado.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el detalle del pedido por ID");
+                Presult.IsSuccess = false;
+                Presult.Message = "Error al obtener el detalle del pedido por ID.";
+            }
+
+            return Presult;
         }
 
-        public Task<OperationResult> ObtenerTodosAsync()
+        public async Task<OperationResult> ObtenerTodosAsync()
         {
-            throw new NotImplementedException();
+            OperationResult Presult = new OperationResult();
+            var detalles = new List<DetallePedidoDTO>();
+
+            try
+            {
+                _logger.LogInformation("ObtenerTodosAsync ejecutado");
+
+                using var context = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerTodosDetallePedidos", context);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                await context.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    var detalle = new DetallePedidoDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        PedidoId = reader.GetInt32(reader.GetOrdinal("PedidoId")),
+                        ProductoId = reader.GetInt32(reader.GetOrdinal("ProductoId")),
+                        Cantidad = reader.GetInt32(reader.GetOrdinal("Cantidad"))
+                    };
+                    detalles.Add(detalle);
+                }
+
+                Presult.IsSuccess = true;
+                Presult.Message = "Detalles del pedido obtenidos correctamente.";
+                Presult.Data = detalles;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener todos los detalles del pedido");
+                Presult.IsSuccess = false;
+                Presult.Message = "Error al obtener todos los detalles del pedido.";
+            }
+
+            return Presult;
         }
     }
 }

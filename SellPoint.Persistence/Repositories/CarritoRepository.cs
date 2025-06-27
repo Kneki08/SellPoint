@@ -242,9 +242,48 @@ namespace SellPoint.Persistence.Repositories
             return result;
         }
 
-        public Task<OperationResult> ObtenerTodosAsync()
+        public async Task<OperationResult> ObtenerTodosAsync()
         {
-            throw new NotImplementedException();
+            OperationResult result = OperationResult.Success();
+
+            try
+            {
+                List<ObtenerCarritoDTO> items = new List<ObtenerCarritoDTO>();
+
+                using (var context = new SqlConnection(_connectionString))
+                {
+                    using (var command = new SqlCommand("sp_ObtenerTodosLosCarritos", context))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        await context.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                items.Add(new ObtenerCarritoDTO
+                                {
+                                    ProductoId = reader.GetInt32(reader.GetOrdinal("ProductoId")),
+                                    Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                                    Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                                    Cantidad = reader.GetInt32(reader.GetOrdinal("Cantidad")),
+                                    Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal"))
+                                });
+                            }
+                        }
+                    }
+                }
+
+                result.IsSuccess = true;
+                result.Data = items;
+                result.Message = "Carritos obtenidos correctamente.";
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener todos los carritos", ex);
+            }
+
+            return result;
         }
     }
 }
