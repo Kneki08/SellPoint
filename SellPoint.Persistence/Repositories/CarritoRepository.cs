@@ -77,7 +77,9 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al agregar el carrito", ex);
+               Presult.IsSuccess = false;
+                Presult.Message = "Error al agregar el carrito: " + ex.Message;
+                _logger.LogError(ex, "Error al agregar el carrito");
             }
             return Presult;
         }
@@ -137,7 +139,9 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar el carrito", ex);
+               Presult.IsSuccess = false;
+                Presult.Message = "Error al actualizar el carrito: " + ex.Message;
+                _logger.LogError(ex, "Error al actualizar el carrito"); 
             }
             return Presult;
         }
@@ -192,7 +196,9 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el carrito", ex);
+                Presult.IsSuccess = false;
+                Presult.Message = "Error al eliminar el carrito: " + ex.Message;
+                _logger.LogError(ex, "Error al eliminar el carrito");
             }
             return Presult;
         }
@@ -236,7 +242,9 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener el carrito por UsuarioId", ex);
+                result.IsSuccess = false;
+                result.Message = "Error al obtener el carrito: " + ex.Message;
+                _logger.LogError(ex, "Error al obtener el carrito por ID: {Id}", ObtenerCarritoDTO);
             }
 
             return result;
@@ -259,16 +267,18 @@ namespace SellPoint.Persistence.Repositories
 
                         using (var reader = await command.ExecuteReaderAsync())
                         {
+                            List<ObtenerCarritoDTO> obtenerCarritos = new List<ObtenerCarritoDTO>();
                             while (await reader.ReadAsync())
                             {
-                                items.Add(new ObtenerCarritoDTO
+                                ObtenerCarritoDTO obtenerCarrito = new ObtenerCarritoDTO
                                 {
+                                    UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
                                     ProductoId = reader.GetInt32(reader.GetOrdinal("ProductoId")),
                                     Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
                                     Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
                                     Cantidad = reader.GetInt32(reader.GetOrdinal("Cantidad")),
                                     Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal"))
-                                });
+                                };
                             }
                         }
                     }
@@ -280,7 +290,9 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener todos los carritos", ex);
+              result.IsSuccess = false;
+                result.Message = "Error al obtener los carritos: " + ex.Message;
+                _logger.LogError(ex, "Error al obtener todos los carritos");
             }
 
             return result;

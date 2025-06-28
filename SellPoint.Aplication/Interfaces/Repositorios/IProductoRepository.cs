@@ -8,12 +8,11 @@ namespace SellPoint.Aplication.Interfaces.Repositorios
 {
     public interface IProductoRepository 
     {
-
-        Task<OperationResult> ObtenerPorIdAsync(int id);
         Task<OperationResult> ObtenerTodosAsync();
-        Task<OperationResult> AgregarAsync(SaveProductoDTO entidad);
-        Task<OperationResult> ActualizarAsync(UpdateProductoDTO entidad);
-        Task<OperationResult> EliminarAsync(RemoveProductoDTO entidad);
+        Task<OperationResult> ObtenerPorIdAsync(int obtenerProducto);
+        Task<OperationResult> AgregarAsync(SaveProductoDTO saveProducto);
+        Task<OperationResult> ActualizarAsync(UpdateProductoDTO updateProducto);
+        Task<OperationResult> EliminarAsync(RemoveProductoDTO removeProducto);
     }
         
         
