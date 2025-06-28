@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SellPoint.Infraestructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SellPoint.Persistence", "SellPoint.Persistence\SellPoint.Persistence.csproj", "{F27E4128-1845-49F7-B69F-16DA26ADF7F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SellPoint.API", "SellPoint.API\SellPoint.API.csproj", "{8C9D37FC-DE11-41A2-85C0-0C7F7C16AEDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{F27E4128-1845-49F7-B69F-16DA26ADF7F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F27E4128-1845-49F7-B69F-16DA26ADF7F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F27E4128-1845-49F7-B69F-16DA26ADF7F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C9D37FC-DE11-41A2-85C0-0C7F7C16AEDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C9D37FC-DE11-41A2-85C0-0C7F7C16AEDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C9D37FC-DE11-41A2-85C0-0C7F7C16AEDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C9D37FC-DE11-41A2-85C0-0C7F7C16AEDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

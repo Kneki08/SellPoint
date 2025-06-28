@@ -197,7 +197,7 @@ namespace SellPoint.Persistence.Repositories
             return Presult;
         }
 
-        public async Task<OperationResult> ObtenerPorIdAsync(int id)
+        public async Task<OperationResult> ObtenerPorIdAsync(int ObtenerCarritoDTO)
         {
             OperationResult result = OperationResult.Success();
             try
@@ -210,7 +210,7 @@ namespace SellPoint.Persistence.Repositories
                     using (var command = new SqlCommand("sp_ObtenerCarritoPorUsuario", context))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@UsuarioId", id);
+                        command.Parameters.AddWithValue("@UsuarioId", ObtenerCarritoDTO);
                         await context.OpenAsync();
 
                         using (var reader = await command.ExecuteReaderAsync())
