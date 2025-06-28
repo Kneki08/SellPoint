@@ -7,6 +7,12 @@ namespace SellPoint.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddScoped<ICarritoRepository, CarritoRepository>();
+            builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+            builder.Services.AddScoped<ICuponRepository, CuponRepository>();
+            builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+            builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+            builder.Services.AddScoped<IDetallePedidoRepository, DetallePedidoRepository>();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
