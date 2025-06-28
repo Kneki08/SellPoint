@@ -204,7 +204,7 @@ namespace SellPoint.Persistence.Repositories
                         {
                             if (await reader.ReadAsync())
                             {
-                                var categoria = new 
+                                var categoria = new CategoriaDTO
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                     Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
