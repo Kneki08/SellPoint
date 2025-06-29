@@ -1,3 +1,6 @@
+using SellPoint.Aplication.Interfaces.Repositorios;
+using SellPoint.Persistence.Repositories;
+
 namespace SellPoint.API
 {
     public class Program
