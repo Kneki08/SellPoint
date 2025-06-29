@@ -14,6 +14,7 @@ namespace SellPoint.Persistence.Repositories
         private readonly string _connectionString;
         private readonly ILogger<CarritoRepository> _logger;
 
+
         public CarritoRepository(string connectionString, ILogger<CarritoRepository> Logger)
         {
             _connectionString = connectionString;
