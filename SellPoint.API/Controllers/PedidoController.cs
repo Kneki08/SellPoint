@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SellPoint.Aplication.Dtos.DetallePedido;
 using SellPoint.Aplication.Dtos.Pedido;
-using SellPoint.Aplication.Interfaces.Repositorios;
-using SellPoint.Persistence.Repositories;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using SellPoint.Aplication.Interfaces.IService;
 
 namespace Sellpoint.api.Controllers
 {
@@ -12,78 +8,46 @@ namespace Sellpoint.api.Controllers
     [ApiController]
     public class PedidoController : ControllerBase
     {
-        private readonly IPedidoRepository _PedidoRepository;
-        public PedidoController(IPedidoRepository PedidoRepository)
-        {
-            _PedidoRepository = PedidoRepository;
-        }
-        // GET: api/<PedidoController>
-        [HttpGet("ObtenerTodosAsync")]
-        public async Task<IActionResult> Get()
-        {
-            var result = await _PedidoRepository.ObtenerTodosAsync();
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
+        private readonly IPedidoService _pedidoService;
 
-            else { return BadRequest(result); }
+        public PedidoController(IPedidoService pedidoService)
+        {
+            _pedidoService = pedidoService;
+        }
+
+        [HttpGet("ObtenerTodos")]
+        public async Task<IActionResult> ObtenerTodos()
+        {
+            var result = await _pedidoService.ObtenerTodosAsync();
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> ObtenerPorId(int id)
         {
-            var result = await _PedidoRepository.ObtenerPorIdAsync(id);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
+            var result = await _pedidoService.ObtenerPorIdAsync(id);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // POST api/<PedidoController>
-        [HttpPost ("SavePedidoDTO")]
-        public async Task<IActionResult> Post([FromBody] SavePedidoDTO savePedidoDTO)
+        [HttpPost("AgregarPedido")]
+        public async Task<IActionResult> Agregar([FromBody] SavePedidoDTO dto)
         {
-            var result = await _PedidoRepository.AgregarAsync(savePedidoDTO);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
-
-
+            var result = await _pedidoService.AgregarAsync(dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // PUT api/<PedidoController>/5
-        [HttpPost("UpdatePedidoDTO")]
-        public async Task<IActionResult> Put([FromBody] UpdatePedidoDTO updatePedidoDTO)
+        [HttpPost("ActualizarPedido")]
+        public async Task<IActionResult> Actualizar([FromBody] UpdatePedidoDTO dto)
         {
-            var result = await _PedidoRepository.ActualizarAsync(updatePedidoDTO);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
-
-
+            var result = await _pedidoService.ActualizarAsync(dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // DELETE api/<PedidoController>/5
-        [HttpPost("RemovePedidoDTO")]
-        public async Task<IActionResult> Put([FromBody] RemovePedidoDTO removePedidoDTO)
+        [HttpPost("EliminarPedido")]
+        public async Task<IActionResult> Eliminar([FromBody] RemovePedidoDTO dto)
         {
-            var result = await _PedidoRepository.EliminarAsync(removePedidoDTO);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
-
+            var result = await _pedidoService.EliminarAsync(dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
 }
