@@ -1,0 +1,14 @@
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\bin\Debug\net8.0\PrimeraAplicacion.exe
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\bin\Debug\net8.0\PrimeraAplicacion.deps.json
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\bin\Debug\net8.0\PrimeraAplicacion.runtimeconfig.json
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\bin\Debug\net8.0\PrimeraAplicacion.dll
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\bin\Debug\net8.0\PrimeraAplicacion.pdb
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\PrimeraAplicacion.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\PrimeraAplicacion.AssemblyInfoInputs.cache
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\PrimeraAplicacion.AssemblyInfo.cs
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\PrimeraAplicacion.csproj.CoreCompileInputs.cache
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\PrimeraAplicacion.dll
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\refint\PrimeraAplicacion.dll
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\PrimeraAplicacion.pdb
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\PrimeraAplicacion.genruntimeconfig.cache
+C:\Users\ERICKSON\source\repos\PrimeraAplicacion\PrimeraAplicacion\obj\Debug\net8.0\ref\PrimeraAplicacion.dll
