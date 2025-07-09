@@ -1,4 +1,5 @@
 ﻿using SellPoint.Aplication.Dtos.Categoria;
+using SellPoint.Aplication.Dtos.Cliente;
 using SellPoint.Aplication.Interfaces.Base;
 using SellPoint.Domain.Base;
 
@@ -8,9 +9,9 @@ namespace SellPoint.Aplication.Interfaces.Repositorios
     {
         Task<OperationResult> ObtenerPorIdAsync(int id);
         Task<OperationResult> ObtenerTodosAsync();
-        Task<OperationResult> AgregarAsync(SaveCategoriaDTO saveCategoria);
-        Task<OperationResult> ActualizarAsync(UpdateCategoriaDTO updateCategoria);
-        Task<OperationResult> EliminarAsync(RemoveCategoriaDTO removeCategoria);
+        Task<OperationResult> AgregarAsync(SaveClienteDTO saveClienteDTO);
+        Task<OperationResult> ActualizarAsync(UpdateClienteDTO updateClienteDTO);
+        Task<OperationResult> EliminarAsync(RemoveClienteDTO removeClienteDTO);
     }
 
 }

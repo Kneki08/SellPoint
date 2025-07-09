@@ -2,9 +2,12 @@
 
 namespace SellPoint.Aplication.Dtos
 {
-    public class DtoBase
+    public interface DTOBase
     {
-        public DateTime ChangeDate { get; set; }
-        public int ChangeUser {get; set; }
+      public string Nombre { get; set; } 
+      public int ID { get; set; }
+     
+     public DateTime DateTime { get; set; }
+      
     }
 }
