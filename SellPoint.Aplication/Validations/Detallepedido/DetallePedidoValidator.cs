@@ -28,8 +28,11 @@ namespace SellPoint.Aplication.Validations.DetallePedidoValidator
                 errors.Add("El ID del pedido debe ser mayor que 0");
             }
 
-            return errors.Count == 0; 
+            return errors.Count == 0;
 
         }
 
     }
+}
+    
+    
