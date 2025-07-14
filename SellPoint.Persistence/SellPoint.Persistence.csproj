@@ -29,4 +29,8 @@
     <ProjectReference Include="..\SellPoint.Aplication\SellPoint.Aplication.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IContext\" />
+  </ItemGroup>
+
 </Project>

@@ -1,9 +1,7 @@
-﻿
-
-using SellPoint.Aplication.Dtos.Carrito;
+﻿using SellPoint.Aplication.Dtos.Carrito;
 using SellPoint.Domain.Base;
 
-namespace SellPoint.Aplication.Interfaces.Servicios
+namespace SellPoint.Aplication.Interfaces.IService.ICarrito
 {
     public interface ICarritoService
     {

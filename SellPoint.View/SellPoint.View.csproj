@@ -8,4 +8,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SellPoint.Aplication\SellPoint.Aplication.csproj" />
+    <ProjectReference Include="..\SellPoint.IOC\SellPoint.IOC.csproj" />
+    <ProjectReference Include="..\SellPoint.Persistence\SellPoint.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

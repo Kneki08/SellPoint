@@ -1,10 +1,8 @@
-﻿
-
-using SellPoint.Aplication.Dtos.Producto;
+﻿using SellPoint.Aplication.Dtos.Producto;
 using SellPoint.Aplication.Dtos.ProductoDTO;
 using SellPoint.Domain.Base;
 
-namespace SellPoint.Aplication.Interfaces.IService
+namespace SellPoint.Aplication.Interfaces.IService.IProducto
 {
     public interface IProductoService
     {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Carrito;
+using SellPoint.Aplication.Interfaces.IService.ICarrito;
 using SellPoint.Aplication.Interfaces.Repositorios;
-using SellPoint.Aplication.Interfaces.Servicios;
-using SellPoint.Domain.Base;    
+using SellPoint.Domain.Base;
 
 namespace SellPoint.Aplication.Services.CarritoService
 {

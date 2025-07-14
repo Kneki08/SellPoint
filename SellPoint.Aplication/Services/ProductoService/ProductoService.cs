@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Producto;
 using SellPoint.Aplication.Dtos.ProductoDTO;
-using SellPoint.Aplication.Interfaces.IService;
+using SellPoint.Aplication.Interfaces.IService.IProducto;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
 
