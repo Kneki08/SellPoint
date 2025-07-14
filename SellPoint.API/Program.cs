@@ -43,7 +43,9 @@ var builder = WebApplication.CreateBuilder(args);
              builder.Services.AddDetalleDependency();
              builder.Services.AddCategoriaDependency();
              builder.Services.AddCuponDependency();
-
+             builder.Services.AddProductoDependency();
+             builder.Services.AddCarritoDependency();
+             builder.Services.AddPedidoDependency();
 
             // Servicios
             //builder.Services.AddScoped<IPedidoService,PedidoService>();
