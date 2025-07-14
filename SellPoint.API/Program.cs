@@ -1,17 +1,19 @@
-using Microsoft.OpenApi.Models;
+uusing Microsoft.OpenApi.Models;
 using SellPoint.Aplication.Interfaces.IService;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Aplication.Services.PedidoService;
 using SellPoint.Persistence.Repositories;
+using SellPoint.IOC1.Dependencies;
+using System.Reflection;
 
 
 namespace SellPoint.API
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+ public class Program
+{
+  public static void Main(string[] args)
+{
+var builder = WebApplication.CreateBuilder(args);
             //  Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -20,20 +22,31 @@ namespace SellPoint.API
                 {
                     Title = "SellPoint API",
                     Version = "v1",
-                    Description = "Documentaci�n de la API de SellPoint"
+                    Description = "Documentación de la API de SellPoint",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Soporte",
+                        Email = "soporte@sellpoint.com"
+                    }
                 });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             // Add services to the container.
-            builder.Services.AddScoped<ICarritoRepository, CarritoRepository>();
-            builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
-            builder.Services.AddScoped<ICuponRepository, CuponRepository>();
-            builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
-            builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
-            builder.Services.AddScoped<IDetallePedidoRepository, DetallePedidoRepository>();
-            
+            //builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+
+            //builder.Services.AddScoped<ICuponRepository, CuponRepository>();
+            // builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+            //builder.Services.AddScoped<IProductoRepository, ProductoRepository>(); 
+             builder.Services.AddDetalleDependency();
+             builder.Services.AddCategoriaDependency();
+             builder.Services.AddCuponDependency();
+
+
             // Servicios
-            builder.Services.AddScoped<IPedidoService, PedidoService>();
+            //builder.Services.AddScoped<IPedidoService,PedidoService>();
 
             builder.Services.AddControllersWithViews();
 
@@ -42,10 +55,15 @@ namespace SellPoint.API
             // Middleware de Swagger
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
+
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "SellPoint API v1");
+                    c.DisplayRequestDuration(); // Muestra duración de las peticiones
+                    c.EnableDeepLinking(); // Permite enlaces directos a secciones
+                    c.DefaultModelsExpandDepth(-1);
                 });
             }
             else
