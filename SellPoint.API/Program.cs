@@ -35,6 +35,8 @@ namespace SellPoint.API
             // Servicios
             builder.Services.AddScoped<IPedidoService, PedidoService>();
 
+
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
