@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using SellPoint.IOC1.Dependencies;
 using SellPoint.Aplication.Interfaces.IService;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Aplication.Services.PedidoService;
@@ -39,12 +40,12 @@ namespace SellPoint.API
             //builder.Services.AddScoped<ICuponRepository, CuponRepository>();
             // builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
             //builder.Services.AddScoped<IProductoRepository, ProductoRepository>(); 
-            builder.Services.AddDetalleDependency();
+           // builder.Services.AddDetalleDependency();
             builder.Services.AddCategoriaDependency();
             builder.Services.AddCuponDependency();
-            builder.Services.AddProductoDependency();
-            builder.Services.AddCarritoDependency();
-            builder.Services.AddPedidoDependency();
+           // builder.Services.AddProductoDependency();
+           // builder.Services.AddCarritoDependency();
+           // builder.Services.AddPedidoDependency();
 
             // Servicios
             //builder.Services.AddScoped<IPedidoService,PedidoService>();
