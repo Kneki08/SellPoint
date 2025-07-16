@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SellPoint.Aplication\SellPoint.Aplication.csproj" />
     <ProjectReference Include="..\SellPoint.Domainn\SellPoint.Domain.csproj" />
+    <ProjectReference Include="..\SellPoint.IOC1\SellPoint.IOC1.csproj" />
     <ProjectReference Include="..\SellPoint.Persistence\SellPoint.Persistence.csproj" />
   </ItemGroup>
 
