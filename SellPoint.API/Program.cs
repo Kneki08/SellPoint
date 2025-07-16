@@ -1,8 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using SellPoint.IOC1.Dependencies;
 using SellPoint.Aplication.Interfaces.IService;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Aplication.Services.PedidoService;
+using SellPoint.IOC1.Dependencies;
+using SellPoint.Persistence.Context;
 using SellPoint.Persistence.Repositories;
 using System.Reflection;
 
@@ -14,7 +16,20 @@ namespace SellPoint.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            //  Swagger
+
+            // ?? DbContext con MySQL usando Pomelo
+            builder.Services.AddDbContext<sellpointContext>(options =>
+                options.UseMySql(
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    new MySqlServerVersion(new Version(8, 0, 36)) // Cambia si tu versión es distinta
+                ));
+
+            // ?? Dependencias personalizadas
+            builder.Services.AddCategoriaDependency();
+            builder.Services.AddCuponDependency();
+            // Puedes agregar más: ProductoDependency, PedidoDependency, etc.
+
+            // ?? Swagger + documentación XML
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -29,61 +44,44 @@ namespace SellPoint.API
                         Email = "soporte@sellpoint.com"
                     }
                 });
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
 
-            // Add services to the container.
-            //builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
-
-            //builder.Services.AddScoped<ICuponRepository, CuponRepository>();
-            // builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
-            //builder.Services.AddScoped<IProductoRepository, ProductoRepository>(); 
-           // builder.Services.AddDetalleDependency();
-            builder.Services.AddCategoriaDependency();
-            builder.Services.AddCuponDependency();
-           // builder.Services.AddProductoDependency();
-           // builder.Services.AddCarritoDependency();
-           // builder.Services.AddPedidoDependency();
-
-            // Servicios
-            //builder.Services.AddScoped<IPedidoService,PedidoService>();
-
+            // ?? API + MVC (Controladores + Vistas)
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // Middleware de Swagger
+            // ?? Entorno de desarrollo con Swagger
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "SellPoint API v1");
-                    c.DisplayRequestDuration(); // Muestra duración de las peticiones
-                    c.EnableDeepLinking(); // Permite enlaces directos a secciones
+                    c.DisplayRequestDuration();
+                    c.EnableDeepLinking();
                     c.DefaultModelsExpandDepth(-1);
                 });
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            // ?? Middleware básico
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
 
+            // ?? Rutas para controladores API y MVC
+            app.MapControllers();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

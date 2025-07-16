@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
 using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
@@ -46,9 +47,9 @@ namespace SellPoint.Persistence.Repositories
                 }
 
                 _logger.LogInformation("ActualizarAsync {Id}", updateCategoria.Id);
-                using (var context = new SqlConnection(_connectionString)) 
+                using (var context = new MySqlConnection(_connectionString)) 
                 {
-                    using (var command = new SqlCommand("sp_ActualizarCategoria", context))
+                    using (var command = new MySqlCommand("sp_ActualizarCategoria", context))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", updateCategoria.Id);
@@ -98,9 +99,9 @@ namespace SellPoint.Persistence.Repositories
                 }
 
                 _logger.LogInformation("AgregarAsync {Nombre}", saveCategoria.Nombre);
-                using (var context = new SqlConnection(_connectionString)) 
+                using (var context = new MySqlConnection(_connectionString)) 
                 {
-                    using (var command = new SqlCommand("sp_AgregarCategoria", context))
+                    using (var command = new MySqlCommand("sp_AgregarCategoria", context))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Nombre", saveCategoria.Nombre);
@@ -150,9 +151,9 @@ namespace SellPoint.Persistence.Repositories
                 }
 
                 _logger.LogInformation("EliminarAsync {Id}", removeCategoria.Id);
-                using (var context = new SqlConnection(_connectionString))
+                using (var context = new MySqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("sp_EliminarCategoria", context))
+                    using (var command = new MySqlCommand("sp_EliminarCategoria", context))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", removeCategoria.Id);
@@ -192,9 +193,9 @@ namespace SellPoint.Persistence.Repositories
                 }
 
                 _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
-                using (var context = new SqlConnection(_connectionString))
+                using (var context = new MySqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("sp_ObtenerCategoriaPorId", context))
+                    using (var command = new MySqlCommand("sp_ObtenerCategoriaPorId", context))
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", id);
@@ -246,9 +247,9 @@ namespace SellPoint.Persistence.Repositories
 
                 List<CategoriaDTO> categorias = new List<CategoriaDTO>();
 
-                using (var context = new SqlConnection(_connectionString))
+                using (var context = new MySqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("sp_ObtenerTodasCategorias", context))
+                    using (var command = new MySqlCommand("sp_ObtenerTodasCategorias", context))
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         await context.OpenAsync();

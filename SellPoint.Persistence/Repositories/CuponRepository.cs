@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
 using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Dtos.Cupon;
 using SellPoint.Aplication.Interfaces.Repositorios;
@@ -55,9 +56,9 @@ namespace SellPoint.Persistence.Repositories
                 }
 
                 _logger.LogInformation("ActualizarAsync {Id}", updateCupon.Id);
-                using (var context = new SqlConnection(_connectionString))
+                using (var context = new MySqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("sp_ActualizarCupon", context))
+                    using (var command = new MySqlCommand("sp_ActualizarCupon", context))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", updateCupon.Id);
@@ -120,9 +121,9 @@ namespace SellPoint.Persistence.Repositories
             try
             {
                 _logger.LogInformation("AgregarAsync {Codigo}", saveCupon.Codigo);
-                using(var context = new SqlConnection(_connectionString))
+                using(var context = new MySqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("sp_AgregarCupon", context))
+                    using (var command = new MySqlCommand("sp_AgregarCupon", context))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Codigo", saveCupon.Codigo);
@@ -173,9 +174,9 @@ namespace SellPoint.Persistence.Repositories
             try
             {
                 _logger.LogInformation("EliminarAsync {Id}", removeCupon.Id);
-                using (var context = new SqlConnection(_connectionString))
+                using (var context = new MySqlConnection(_connectionString))
                 {
-                    using (var command = new SqlCommand("sp_EliminarCupon", context))
+                    using (var command = new MySqlCommand("sp_EliminarCupon", context))
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Id", removeCupon.Id);
@@ -217,8 +218,8 @@ namespace SellPoint.Persistence.Repositories
             try
             {
                 _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
-                using var context = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_ObtenerCuponPorId", context);
+                using var context = new MySqlConnection(_connectionString);
+                using var command = new MySqlCommand("sp_ObtenerCuponPorId", context);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@Id", id);
 
@@ -262,8 +263,8 @@ namespace SellPoint.Persistence.Repositories
             try
             {
                 _logger.LogInformation("ObtenerTodosAsync ejecutado");
-                using var context = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_ObtenerTodosCupones", context);
+                using var context = new MySqlConnection(_connectionString);
+                using var command = new MySqlCommand("sp_ObtenerTodosCupones", context);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
 
                 await context.OpenAsync();
