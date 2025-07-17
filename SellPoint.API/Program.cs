@@ -1,11 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using SellPoint.Aplication.Interfaces.IService;
-using SellPoint.Aplication.Interfaces.Repositorios;
-using SellPoint.Aplication.Services.PedidoService;
 using SellPoint.IOC1.Dependencies;
 using SellPoint.Persistence.Context;
-using SellPoint.Persistence.Repositories;
 using System.Reflection;
 
 

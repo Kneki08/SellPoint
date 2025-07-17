@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Dtos.Producto;
 using SellPoint.Aplication.Dtos.ProductoDTO;
 using SellPoint.Aplication.Interfaces.Repositorios;

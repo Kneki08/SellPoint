@@ -11,13 +11,13 @@ namespace Sellpoint.api.Controllers
     public class DetallePedidoController : ControllerBase
     {
         private readonly IDetallePedidoRepository _detallePedidoRepository;
-        public DetallePedidoController(IDetallePedidoRepository detallePedidoRepository) 
+        public DetallePedidoController(IDetallePedidoRepository detallePedidoRepository)
         {
             _detallePedidoRepository = detallePedidoRepository;
         }
 
-       
-        [HttpGet ("ObtenerTodosAsync")]
+
+        [HttpGet("ObtenerTodosAsync")]
         public async Task<IActionResult> Get()
         {
             var result = await _detallePedidoRepository.ObtenerTodosAsync();

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SellPoint.Aplication.Dtos.Carrito;
-using SellPoint.Aplication.Dtos.Pedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,7 +10,7 @@ namespace Sellpoint.api.Controllers
     [ApiController]
     public class CarritoController : ControllerBase
     {
-        private readonly ICarritoRepository  _CarritoRepository;
+        private readonly ICarritoRepository _CarritoRepository;
         public CarritoController(ICarritoRepository CarritoRepository)
         {
             _CarritoRepository = CarritoRepository;

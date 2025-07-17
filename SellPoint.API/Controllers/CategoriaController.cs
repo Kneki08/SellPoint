@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SellPoint.Aplication.Dtos.Categoria;
-using SellPoint.Aplication.Dtos.Cupon;
 using SellPoint.Aplication.Interfaces.Repositorios;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
