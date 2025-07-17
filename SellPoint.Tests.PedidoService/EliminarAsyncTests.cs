@@ -38,7 +38,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.False(resultado.IsSuccess);
-            Assert.Equal("El ID del pedido es inválido.", resultado.Message); 
+            Assert.Equal("La entidad no puede ser nula.", resultado.Message);
             _pedidoRepositoryMock.Verify(r => r.EliminarAsync(It.IsAny<RemovePedidoDTO>()), Times.Never);
         }
 
@@ -53,7 +53,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.False(resultado.IsSuccess);
-            Assert.Equal("El ID del pedido es inválido.", resultado.Message); 
+            Assert.Equal("El ID del pedido debe ser mayor que cero.", resultado.Message);
             _pedidoRepositoryMock.Verify(r => r.EliminarAsync(It.IsAny<RemovePedidoDTO>()), Times.Never);
         }
 
@@ -73,7 +73,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.True(resultado.IsSuccess);
-            Assert.Equal("Operación exitosa.", resultado.Message); 
+            Assert.Equal("Operación exitosa.", resultado.Message);
             _pedidoRepositoryMock.Verify(r => r.EliminarAsync(dto), Times.Once);
         }
     }

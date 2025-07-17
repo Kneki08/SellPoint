@@ -25,12 +25,10 @@ namespace SellPoint.Aplication.Services.PedidoService
 
         public async Task<OperationResult> ObtenerTodosAsync()
         {
-            OperationResult result = OperationResult.Success();
-
             try
             {
                 _logger.LogInformation("Obteniendo todos los pedidos...");
-                result = await _pedidoRepository.ObtenerTodosAsync();
+                var result = await _pedidoRepository.ObtenerTodosAsync();
 
                 if (!result.IsSuccess)
                     _logger.LogWarning("No se pudieron obtener los pedidos: {Message}", result.Message);
@@ -76,8 +74,32 @@ namespace SellPoint.Aplication.Services.PedidoService
             if (savePedido.UsuarioId <= 0)
                 return OperationResult.Failure("El ID del usuario debe ser mayor que cero.");
 
+            if (savePedido.Subtotal < 0)
+                return OperationResult.Failure("El subtotal no puede ser negativo.");
+
+            if (savePedido.Descuento < 0)
+                return OperationResult.Failure("El descuento no puede ser negativo.");
+
+            if (savePedido.CostoEnvio < 0)
+                return OperationResult.Failure("El costo de envío no puede ser negativo.");
+
             if (savePedido.Total <= 0)
                 return OperationResult.Failure("El total del pedido debe ser mayor que cero.");
+
+            if (savePedido.Total != (savePedido.Subtotal - savePedido.Descuento + savePedido.CostoEnvio))
+                return OperationResult.Failure("El total del pedido no coincide con la suma de subtotal, descuento y costo de envío.");
+
+            if (string.IsNullOrWhiteSpace(savePedido.MetodoPago))
+                return OperationResult.Failure("El método de pago es obligatorio.");
+
+            if (savePedido.MetodoPago!.Length > 50)
+                return OperationResult.Failure("El método de pago no debe superar los 50 caracteres.");
+
+            if (!string.IsNullOrWhiteSpace(savePedido.ReferenciaPago) && savePedido.ReferenciaPago.Length > 100)
+                return OperationResult.Failure("La referencia de pago no debe superar los 100 caracteres.");
+
+            if (!string.IsNullOrWhiteSpace(savePedido.Notas) && savePedido.Notas.Length > 500)
+                return OperationResult.Failure("Las notas no deben superar los 500 caracteres.");
 
             try
             {
@@ -100,8 +122,36 @@ namespace SellPoint.Aplication.Services.PedidoService
 
         public async Task<OperationResult> ActualizarAsync(UpdatePedidoDTO updatePedido)
         {
-            if (updatePedido is null || updatePedido.Id <= 0)
-                return OperationResult.Failure("Datos inválidos para actualizar el pedido.");
+            if (updatePedido is null)
+                return OperationResult.Failure("La entidad no puede ser nula.");
+
+            if (updatePedido.Id <= 0)
+                return OperationResult.Failure("El ID del pedido debe ser mayor que cero.");
+
+            if (string.IsNullOrWhiteSpace(updatePedido.Estado))
+                return OperationResult.Failure("El estado del pedido es obligatorio.");
+
+            var estadosValidos = new[] { "Pendiente", "Pagado", "Cancelado", "Enviado" };
+            if (!estadosValidos.Contains(updatePedido.Estado))
+                return OperationResult.Failure("El estado del pedido no es válido.");
+
+            if (string.IsNullOrWhiteSpace(updatePedido.MetodoPago))
+                return OperationResult.Failure("El método de pago es obligatorio.");
+
+            if (updatePedido.MetodoPago!.Length > 50)
+                return OperationResult.Failure("El método de pago no debe superar los 50 caracteres.");
+
+            if (string.IsNullOrWhiteSpace(updatePedido.ReferenciaPago))
+                return OperationResult.Failure("La referencia de pago es obligatoria.");
+
+            if (updatePedido.ReferenciaPago!.Length > 100)
+                return OperationResult.Failure("La referencia de pago no debe superar los 100 caracteres.");
+
+            if (!string.IsNullOrWhiteSpace(updatePedido.Notas) && updatePedido.Notas.Length > 500)
+                return OperationResult.Failure("Las notas no deben superar los 500 caracteres.");
+
+            if (updatePedido.FechaActualizacion == DateTime.MinValue)
+                return OperationResult.Failure("La fecha de actualización no es válida.");
 
             try
             {
@@ -124,8 +174,11 @@ namespace SellPoint.Aplication.Services.PedidoService
 
         public async Task<OperationResult> EliminarAsync(RemovePedidoDTO removePedido)
         {
-            if (removePedido is null || removePedido.Id <= 0)
-                return OperationResult.Failure("El ID del pedido es inválido.");
+            if (removePedido is null)
+                return OperationResult.Failure("La entidad no puede ser nula.");
+
+            if (removePedido.Id <= 0)
+                return OperationResult.Failure("El ID del pedido debe ser mayor que cero.");
 
             try
             {
