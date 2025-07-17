@@ -16,7 +16,7 @@ namespace SellPoint.IOC1.Dependencies
 {
     public static class PedidoDependency
     {
-        public static void AddPedidoDependency(this IServiceCollection service)
+        public static IServiceCollection AddPedidoDependency(this IServiceCollection service)
         {
             //service.AddScoped<IDetallePedidoRepository, DetallePedidoRepository>();
             service.AddScoped<IPedidoRepository>(sp =>
@@ -25,6 +25,8 @@ namespace SellPoint.IOC1.Dependencies
         sp.GetRequiredService<ILogger<PedidoRepository>>()));
 
             service.AddScoped<IPedidoService, PedidoService>();
+
+            return service;
         }
 
     }

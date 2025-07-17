@@ -1,6 +1,10 @@
 ﻿
 
+using SellPoint.Domain.Entities.Orders;
+using SellPoint.Domain.Entities.Users;
 using SellPoint.Domainn.Base;
+using SellPoint.Domainn.Entities.Products;
+using SellPoint.Domainn.Entities.Users;
 
 namespace SellPoint.Domainn.Entities.Orders
 {
@@ -26,6 +30,12 @@ namespace SellPoint.Domainn.Entities.Orders
 
         public DateTime FechaPedido { get; set; } = DateTime.UtcNow;
         public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
+
+        // Relaciones de navegación
+        public virtual Cliente Cliente { get; set; }
+        public virtual Cupon? Cupon { get; set; }
+        public virtual DireccionEnvio? DireccionEnvio { get; set; }
+        public virtual ICollection<DetallePedido> Detalles { get; set; } = new List<DetallePedido>();
 
     }
 

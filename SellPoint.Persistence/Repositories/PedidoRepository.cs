@@ -68,7 +68,8 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar el pedido", ex);
+                _logger.LogError(ex, "Error al actualizar el pedido");
+                return OperationResult.Failure("Error al actualizar el pedido");
             }
 
             return Presult;
@@ -128,7 +129,8 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al agregar el pedido", ex);
+                _logger.LogError(ex, "Error al agregar el pedido");
+                return OperationResult.Failure("Error al agregar el pedido");
             }
 
             return Presult;
@@ -179,7 +181,8 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el pedido", ex);
+                _logger.LogError(ex, "Error al eliminar el pedido");
+                return OperationResult.Failure("Error al eliminar el pedido");
             }
 
             return Presult;
@@ -243,8 +246,7 @@ namespace SellPoint.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el pedido por Id");
-                Presult.IsSuccess = false;
-                Presult.Message = "Error al obtener el pedido por Id.";
+                return OperationResult.Failure("Error al obtener el pedido por Id");
             }
 
             return Presult;
@@ -308,8 +310,7 @@ namespace SellPoint.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener todos los pedidos");
-                Presult.IsSuccess = false;
-                Presult.Message = "Error al obtener todos los pedidos.";
+                return OperationResult.Failure("Error al obtener todos los pedidos");
             }
 
             return Presult;

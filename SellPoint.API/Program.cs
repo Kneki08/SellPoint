@@ -14,6 +14,11 @@ namespace SellPoint.API
   public static void Main(string[] args)
 {
 var builder = WebApplication.CreateBuilder(args);
+
+            // VALIDACIÓN DE LA CADENA DE CONEXIÓN
+            var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine($"Cadena de conexión: {connStr}");
+
             //  Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
