@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SellPoint.Aplication.Services.CategoriaService.cs
+namespace SellPoint.Application.Services.Categoria
 {
     public class CategoriaService : ICategoriaService
     {

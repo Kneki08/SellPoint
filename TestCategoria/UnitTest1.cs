@@ -7,7 +7,7 @@ using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
 using System.Threading.Tasks;
 using Xunit;
-using CategoriaServiceClass = SellPoint.Aplication.Services.CategoriaService.CategoriaService;
+using CategoriaServiceClass = SellPoint.Application.Services.Categoria.CategoriaService;
 
 namespace SellPoint.Tests.CategoriaService
 {
@@ -53,7 +53,7 @@ namespace SellPoint.Tests.CategoriaService
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal("Categoría actualizada correctamente.", result.Message);
+            Assert.Equal("Operación exitosa.", result.Message);
             _categoriaRepositoryMock.Verify(repo => repo.ActualizarAsync(dto), Times.Once);
         }
 
@@ -87,5 +87,8 @@ namespace SellPoint.Tests.CategoriaService
             Assert.Equal("El Id de la categoría debe ser mayor que cero.", result.Message);
             _categoriaRepositoryMock.Verify(repo => repo.ActualizarAsync(It.IsAny<UpdateCategoriaDTO>()), Times.Never);
         }
+
     }
 }
+
+
