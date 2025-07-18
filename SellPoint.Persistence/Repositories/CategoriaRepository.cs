@@ -20,34 +20,41 @@ namespace SellPoint.Persistence.Repositories
             _logger = logger;
         }
 
+
+        private OperationResult ValidateCategoriaBase(object entidad, bool validarId = false, int? id = null)
+        {
+            if (entidad is null)
+                return OperationResult.Failure("La entidad no puede ser nula.");
+
+            if (validarId && id.HasValue && int.IsNegative(id.Value))
+                return OperationResult.Failure("El Id de la categoría no puede ser negativo.");
+
+            return OperationResult.Success();
+        }
+
+
+        private OperationResult ValidateNombre(string nombre)
+        {
+            if (string.IsNullOrWhiteSpace(nombre))
+                return OperationResult.Failure("El nombre de la categoría no puede estar vacío.");
+
+            return OperationResult.Success();
+        }
+
         public async Task<OperationResult> ActualizarAsync(UpdateCategoriaDTO updateCategoria)
         {
+
+            var validacionBase = ValidateCategoriaBase(updateCategoria, true, updateCategoria?.Id);
+            if (!validacionBase.IsSuccess) return validacionBase;
+
+            var validacionNombre = ValidateNombre(updateCategoria.Nombre);
+            if (!validacionNombre.IsSuccess) return validacionNombre;
+
             OperationResult Presult = OperationResult.Success();
-            try 
+            try
             {
-                if (updateCategoria is null)
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "La entidad no puede ser nula.";
-                    return Presult;
-                }
-
-                if (int.IsNegative(updateCategoria.Id))
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "El Id de la categoría no puede ser negativo.";
-                    return Presult;
-                }
-
-                if (string.IsNullOrWhiteSpace(updateCategoria.Nombre))
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "El nombre de la categoría no puede estar vacío.";
-                    return Presult;
-                }
-
                 _logger.LogInformation("ActualizarAsync {Id}", updateCategoria.Id);
-                using (var context = new MySqlConnection(_connectionString)) 
+                using (var context = new MySqlConnection(_connectionString))
                 {
                     using (var command = new MySqlCommand("sp_ActualizarCategoria", context))
                     {
@@ -69,7 +76,6 @@ namespace SellPoint.Persistence.Repositories
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -81,25 +87,18 @@ namespace SellPoint.Persistence.Repositories
 
         public async Task<OperationResult> AgregarAsync(SaveCategoriaDTO saveCategoria)
         {
+
+            var validacionBase = ValidateCategoriaBase(saveCategoria);
+            if (!validacionBase.IsSuccess) return validacionBase;
+
+            var validacionNombre = ValidateNombre(saveCategoria.Nombre);
+            if (!validacionNombre.IsSuccess) return validacionNombre;
+
             OperationResult Presult = OperationResult.Success();
-            try 
+            try
             {
-                if (saveCategoria is null)
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "La entidad no puede ser nula.";
-                    return Presult;
-                }
-
-                if (string.IsNullOrWhiteSpace(saveCategoria.Nombre))
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "El nombre de la categoría no puede estar vacío.";
-                    return Presult;
-                }
-
                 _logger.LogInformation("AgregarAsync {Nombre}", saveCategoria.Nombre);
-                using (var context = new MySqlConnection(_connectionString)) 
+                using (var context = new MySqlConnection(_connectionString))
                 {
                     using (var command = new MySqlCommand("sp_AgregarCategoria", context))
                     {
@@ -127,29 +126,17 @@ namespace SellPoint.Persistence.Repositories
             }
 
             return Presult;
-
         }
 
         public async Task<OperationResult> EliminarAsync(RemoveCategoriaDTO removeCategoria)
         {
-            OperationResult Presult = OperationResult.Success();
 
+            var validacion = ValidateCategoriaBase(removeCategoria, true, removeCategoria?.Id);
+            if (!validacion.IsSuccess) return validacion;
+
+            OperationResult Presult = OperationResult.Success();
             try
             {
-                if (removeCategoria is null)
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "La entidad no puede ser nula.";
-                    return Presult;
-                }
-
-                if (int.IsNegative(removeCategoria.Id))
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "El Id de la categoría no puede ser negativo.";
-                    return Presult;
-                }
-
                 _logger.LogInformation("EliminarAsync {Id}", removeCategoria.Id);
                 using (var context = new MySqlConnection(_connectionString))
                 {
@@ -182,16 +169,13 @@ namespace SellPoint.Persistence.Repositories
 
         public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
+
+            if (int.IsNegative(id))
+                return OperationResult.Failure("El Id no puede ser negativo.");
+
             OperationResult Presult = OperationResult.Success();
             try
             {
-                if (int.IsNegative(id))
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "El Id no puede ser negativo.";
-                    return Presult;
-                }
-
                 _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
                 using (var context = new MySqlConnection(_connectionString))
                 {
@@ -234,9 +218,7 @@ namespace SellPoint.Persistence.Repositories
             }
 
             return Presult;
-
         }
-
 
         public async Task<OperationResult> ObtenerTodosAsync()
         {
