@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.DetallePedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace SellPoint.Persistence.Repositories
 {
