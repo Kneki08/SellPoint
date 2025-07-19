@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Interfaces.IService;
 using SellPoint.Aplication.Interfaces.Repositorios;
-using SellPoint.Aplication.Services.CategoriaService.cs;
+using SellPoint.Application.Services.Categoria;
 using SellPoint.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
