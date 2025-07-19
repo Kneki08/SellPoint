@@ -17,7 +17,7 @@ namespace SellPoint.IOC1.Dependencies
     {
         public static void AddCategoriaDependency(this IServiceCollection service)
         {
-            //service.AddScoped<IDetallePedidoRepository, DetallePedidoRepository>();
+            
             service.AddScoped<ICategoriaRepository>(sp =>
     new CategoriaRepository(
         sp.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection"),
