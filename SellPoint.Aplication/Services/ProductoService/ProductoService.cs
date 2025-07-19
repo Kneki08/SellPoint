@@ -58,18 +58,17 @@ namespace SellPoint.Aplication.Services.ProductoService
 
         public async Task<OperationResult> AgregarAsync(SaveProductoDTO saveProducto)
         {
-            OperationResult operationResult = new OperationResult();
             try
             {
                 _logger.LogInformation("Iniciando adición del producto: {Producto}", saveProducto);
 
-                if (saveProducto is null) 
+                if (saveProducto is null)
                 {
                     _logger.LogError("Se requiere crear un DTO");
-                    return operationResult;
+                    return OperationResult.Failure("La entidad no puede ser nula.");
                 }
 
-                operationResult = await _productoRepository.AgregarAsync(saveProducto);
+                var operationResult = await _productoRepository.AgregarAsync(saveProducto);
 
                 if (!operationResult.IsSuccess)
                 {
@@ -79,15 +78,13 @@ namespace SellPoint.Aplication.Services.ProductoService
 
                 _logger.LogInformation("Producto agregado correctamente: {Producto}", saveProducto);
                 return operationResult;
-
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al agregar el producto");
-                operationResult.IsSuccess = false;
-                operationResult.Message = "Error al agregar el producto";
+                return OperationResult.Failure("Error al agregar el producto");
+
             }
-            return operationResult;
         }
 
         public async Task<OperationResult> EliminarAsync(RemoveProductoDTO removeProducto)
@@ -125,7 +122,6 @@ namespace SellPoint.Aplication.Services.ProductoService
            OperationResult operationResult = new OperationResult();
             try
             {
-                _logger.LogInformation("Iniciando obtención del producto con ID: {Id}", obtenerProducto);
                 if (obtenerProducto <= 0)
                 {
                     _logger.LogError("ID de producto inválido: {Id}", obtenerProducto);

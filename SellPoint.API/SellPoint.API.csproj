@@ -4,17 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <OutputType>Library</OutputType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SellPoint.Aplication\SellPoint.Aplication.csproj" />
     <ProjectReference Include="..\SellPoint.Domainn\SellPoint.Domain.csproj" />
-    <ProjectReference Include="..\SellPoint.Infraestructure\SellPoint.Infraestructure.csproj" />
+    <ProjectReference Include="..\SellPoint.IOC\SellPoint.IOC.csproj" />
     <ProjectReference Include="..\SellPoint.Persistence\SellPoint.Persistence.csproj" />
   </ItemGroup>
 
