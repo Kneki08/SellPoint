@@ -36,7 +36,7 @@ namespace SellPoint.Tests.PedidoRepository
         public async Task ObtenerPorIdAsync_DeberiaRetornarError_CuandoNoSeEncuentra()
         {
             // Arrange
-            int id = 999999; // Asegúrate de que este ID no exista
+            int id = 999999; 
 
             // Act
             var result = await _repository.ObtenerPorIdAsync(id);
@@ -53,7 +53,7 @@ namespace SellPoint.Tests.PedidoRepository
         public async Task ObtenerPorIdAsync_DeberiaRetornarExito_CuandoExistePedido()
         {
             // Arrange
-            int id = 1; // Asegúrate de tener un pedido con este ID en la base de datos de prueba
+            int id = 1; 
 
             // Act
             var result = await _repository.ObtenerPorIdAsync(id);
@@ -66,7 +66,7 @@ namespace SellPoint.Tests.PedidoRepository
             }
             else
             {
-                // Esto solo en caso de que no se haya encontrado el pedido en la base real
+                
                 Assert.False(result.IsSuccess);
                 Assert.Contains(result.Message, new[] {
                 "No se encontró el pedido.",

@@ -32,8 +32,7 @@ namespace SellPoint.Tests.PedidoRepository
         [Fact]
         public async Task ObtenerTodosAsync_DeberiaRetornarLista_CuandoHayPedidos()
         {
-            // Esta prueba solo será válida si previamente insertas datos en la BD de prueba
-            // o ya existen registros.
+            
             var result = await _repository.ObtenerTodosAsync();
 
             Assert.NotNull(result);

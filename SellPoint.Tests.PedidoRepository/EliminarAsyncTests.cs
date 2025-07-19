@@ -39,13 +39,13 @@ namespace SellPoint.Tests.PedidoRepository
         }
 
         
-        // Este test asumirá que el Id existe y el SP lo elimina correctamente
+        
         [Fact]
         public async Task EliminarAsync_DeberiaRetornarExito_CuandoDTOEsValido()
         {
             var dto = new RemovePedidoDTO
             {
-                Id = 1 // asegúrate de que este ID existe en tu BD de pruebas
+                Id = 1 
             };
 
             var result = await _repository.EliminarAsync(dto);

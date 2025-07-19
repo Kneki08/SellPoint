@@ -115,6 +115,6 @@ namespace SellPoint.Tests.PedidoRepository
             Assert.Equal("Las notas no deben superar los 500 caracteres.", result.Message);
         }
 
-        // Puedes agregar una prueba exitosa si decides mockear SqlConnection/SqlCommand.
+        
     }
 }
