@@ -7,6 +7,7 @@ using SellPoint.Domain.Base;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using SellPoint.Aplication.Validations.Mensajes; // ← Importante
 
 namespace SellPoint.Tests.PedidoService
 {
@@ -38,7 +39,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("El ID del pedido debe ser mayor que cero.", result.Message);
+            Assert.Equal(MensajesValidacion.PedidoIdInvalido, result.Message);
             _pedidoRepositoryMock.Verify(r => r.ObtenerPorIdAsync(It.IsAny<int>()), Times.Never);
         }
 
@@ -47,10 +48,11 @@ namespace SellPoint.Tests.PedidoService
         {
             // Arrange
             int id = 99;
-            var expected = OperationResult.Failure("No se encontró el pedido con ID " + id);
+            var mensajeEsperado = string.Format(MensajesValidacion.PedidoNoEncontrado, id);
+            var expected = OperationResult.Failure(mensajeEsperado);
 
             _pedidoRepositoryMock
-                .Setup(r => r.ObtenerPorIdAsync(id))
+                .Setup(r => r.ObtenerPorIdAsync(It.Is<int>(x => x == id)))
                 .ReturnsAsync(expected);
 
             // Act
@@ -58,7 +60,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("No se encontró el pedido con ID " + id, result.Message);
+            Assert.Equal(mensajeEsperado, result.Message);
             _pedidoRepositoryMock.Verify(r => r.ObtenerPorIdAsync(id), Times.Once);
         }
 
@@ -67,10 +69,21 @@ namespace SellPoint.Tests.PedidoService
         {
             // Arrange
             int id = 1;
-            var expected = OperationResult.Success(new PedidoDTO { Id = id }, "Pedido encontrado.");
+            var expectedDto = new PedidoDTO
+            {
+                Id = id,
+                IdUsuario = 1,
+                FechaPedido = DateTime.UtcNow,
+                Estado = "Pagado",
+                IdDireccionEnvio = 10,
+                CuponId = null,
+                MetodoPago = "Tarjeta",
+                ReferenciaPago = "XYZ789"
+            };
+            var expected = OperationResult.Success(expectedDto, MensajesValidacion.PedidoEncontrado);
 
             _pedidoRepositoryMock
-                .Setup(r => r.ObtenerPorIdAsync(id))
+                .Setup(r => r.ObtenerPorIdAsync(It.Is<int>(x => x == id)))
                 .ReturnsAsync(expected);
 
             // Act
@@ -78,8 +91,10 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal("Pedido encontrado.", result.Message);
+            Assert.Equal(MensajesValidacion.PedidoEncontrado, result.Message);
             Assert.NotNull(result.Data);
+            Assert.IsType<PedidoDTO>(result.Data);
+            Assert.Equal(id, ((PedidoDTO)result.Data!).Id);
             _pedidoRepositoryMock.Verify(r => r.ObtenerPorIdAsync(id), Times.Once);
         }
     }

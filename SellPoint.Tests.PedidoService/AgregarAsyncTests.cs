@@ -7,6 +7,8 @@ using SellPoint.Domain.Base;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using System;
+using SellPoint.Aplication.Validations.Mensajes; 
 
 namespace SellPoint.Tests.PedidoService
 {
@@ -30,12 +32,15 @@ namespace SellPoint.Tests.PedidoService
             );
         }
 
-        [Fact]
-        public async Task AgregarAsync_DeberiaRetornarExito_CuandoDTOEsValido()
+        private SavePedidoDTO CrearDtoValido()
         {
-            var dto = new SavePedidoDTO
+            return new SavePedidoDTO
             {
-                UsuarioId = 1,
+                IdUsuario = 1,
+                FechaPedido = DateTime.UtcNow,
+                Estado = "Pendiente",
+                IdDireccionEnvio = 5,
+                CuponId = null,
                 Subtotal = 100,
                 Descuento = 10,
                 CostoEnvio = 5,
@@ -44,17 +49,23 @@ namespace SellPoint.Tests.PedidoService
                 ReferenciaPago = "ABC123",
                 Notas = "Pedido urgente"
             };
+        }
 
-            var expectedResult = OperationResult.Success("Operación exitosa.");
+        [Fact]
+        public async Task AgregarAsync_DeberiaRetornarExito_CuandoDTOEsValido()
+        {
+            var dto = CrearDtoValido();
+            var expectedResult = OperationResult.Success(MensajesValidacion.OperacionExitosa);
 
             _pedidoRepositoryMock
-                .Setup(repo => repo.AgregarAsync(dto))
+                .Setup(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()))
                 .ReturnsAsync(expectedResult);
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("Operación exitosa.", result.Message);
+            Assert.Equal(MensajesValidacion.OperacionExitosa, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Once);
         }
 
         [Fact]
@@ -63,172 +74,125 @@ namespace SellPoint.Tests.PedidoService
             var result = await _pedidoService.AgregarAsync(null!);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("La entidad no puede ser nula.", result.Message);
+            Assert.Equal(MensajesValidacion.EntidadNula, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoUsuarioIdEsMenorOIgualACero()
         {
-            var dto = new SavePedidoDTO { UsuarioId = 0 };
+            var dto = CrearDtoValido();
+            dto.IdUsuario = 0;
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El ID del usuario debe ser mayor que cero.", result.Message);
+            Assert.Equal(MensajesValidacion.UsuarioIdInvalido, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoSubtotalEsNegativo()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = -1,
-                Descuento = 0,
-                CostoEnvio = 0,
-                Total = -1,
-                MetodoPago = "Tarjeta"
-            };
+            var dto = CrearDtoValido();
+            dto.Subtotal = -1;
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El subtotal no puede ser negativo.", result.Message);
+            Assert.Equal(MensajesValidacion.SubtotalNegativo, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoDescuentoEsNegativo()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = 100,
-                Descuento = -5,
-                CostoEnvio = 0,
-                Total = 95,
-                MetodoPago = "Tarjeta"
-            };
+            var dto = CrearDtoValido();
+            dto.Descuento = -5;
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El descuento no puede ser negativo.", result.Message);
+            Assert.Equal(MensajesValidacion.DescuentoNegativo, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoCostoEnvioEsNegativo()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = 100,
-                Descuento = 10,
-                CostoEnvio = -5,
-                Total = 95,
-                MetodoPago = "Tarjeta"
-            };
+            var dto = CrearDtoValido();
+            dto.CostoEnvio = -10;
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El costo de envío no puede ser negativo.", result.Message);
+            Assert.Equal(MensajesValidacion.CostoEnvioNegativo, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoTotalNoCoincide()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = 100,
-                Descuento = 10,
-                CostoEnvio = 5,
-                Total = 80,
-                MetodoPago = "Tarjeta"
-            };
+            var dto = CrearDtoValido();
+            dto.Total = 999;
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El total del pedido no coincide con la suma de subtotal, descuento y costo de envío.", result.Message);
+            Assert.Equal(MensajesValidacion.TotalInconsistente, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoMetodoPagoEsNulo()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = 100,
-                Descuento = 0,
-                CostoEnvio = 0,
-                Total = 100,
-                MetodoPago = null
-            };
+            var dto = CrearDtoValido();
+            dto.MetodoPago = null!;
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El método de pago es obligatorio.", result.Message);
+            Assert.Equal(MensajesValidacion.MetodoPagoRequerido, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoMetodoPagoEsMuyLargo()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = 100,
-                Descuento = 0,
-                CostoEnvio = 0,
-                Total = 100,
-                MetodoPago = new string('A', 51)
-            };
+            var dto = CrearDtoValido();
+            dto.MetodoPago = new string('A', 51);
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El método de pago no debe superar los 50 caracteres.", result.Message);
+            Assert.Equal(MensajesValidacion.MetodoPagoMuyLargo, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoReferenciaPagoEsMuyLarga()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = 100,
-                Descuento = 0,
-                CostoEnvio = 0,
-                Total = 100,
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = new string('B', 101)
-            };
+            var dto = CrearDtoValido();
+            dto.ReferenciaPago = new string('B', 101);
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("La referencia de pago no debe superar los 100 caracteres.", result.Message);
+            Assert.Equal(MensajesValidacion.ReferenciaPagoMuyLarga, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoNotasSonMuyLargas()
         {
-            var dto = new SavePedidoDTO
-            {
-                UsuarioId = 1,
-                Subtotal = 100,
-                Descuento = 0,
-                CostoEnvio = 0,
-                Total = 100,
-                MetodoPago = "Tarjeta",
-                Notas = new string('C', 501)
-            };
+            var dto = CrearDtoValido();
+            dto.Notas = new string('C', 501);
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Las notas no deben superar los 500 caracteres.", result.Message);
+            Assert.Equal(MensajesValidacion.NotasMuyLargas, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
     }
 }

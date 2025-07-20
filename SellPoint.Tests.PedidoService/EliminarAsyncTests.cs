@@ -7,6 +7,7 @@ using SellPoint.Domain.Base;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using SellPoint.Aplication.Validations.Mensajes; // ← Importante
 
 namespace SellPoint.Tests.PedidoService
 {
@@ -38,7 +39,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.False(resultado.IsSuccess);
-            Assert.Equal("La entidad no puede ser nula.", resultado.Message);
+            Assert.Equal(MensajesValidacion.EntidadNula, resultado.Message);
             _pedidoRepositoryMock.Verify(r => r.EliminarAsync(It.IsAny<RemovePedidoDTO>()), Times.Never);
         }
 
@@ -53,7 +54,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.False(resultado.IsSuccess);
-            Assert.Equal("El ID del pedido debe ser mayor que cero.", resultado.Message);
+            Assert.Equal(MensajesValidacion.PedidoIdInvalido, resultado.Message);
             _pedidoRepositoryMock.Verify(r => r.EliminarAsync(It.IsAny<RemovePedidoDTO>()), Times.Never);
         }
 
@@ -62,10 +63,10 @@ namespace SellPoint.Tests.PedidoService
         {
             // Arrange
             var dto = new RemovePedidoDTO { Id = 5 };
-            var expected = OperationResult.Success("Operación exitosa.");
+            var expected = OperationResult.Success(MensajesValidacion.OperacionExitosa);
 
             _pedidoRepositoryMock
-                .Setup(r => r.EliminarAsync(dto))
+                .Setup(r => r.EliminarAsync(It.Is<RemovePedidoDTO>(d => d.Id == dto.Id)))
                 .ReturnsAsync(expected);
 
             // Act
@@ -73,8 +74,8 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.True(resultado.IsSuccess);
-            Assert.Equal("Operación exitosa.", resultado.Message);
-            _pedidoRepositoryMock.Verify(r => r.EliminarAsync(dto), Times.Once);
+            Assert.Equal(MensajesValidacion.OperacionExitosa, resultado.Message);
+            _pedidoRepositoryMock.Verify(r => r.EliminarAsync(It.Is<RemovePedidoDTO>(d => d.Id == dto.Id)), Times.Once);
         }
     }
 }

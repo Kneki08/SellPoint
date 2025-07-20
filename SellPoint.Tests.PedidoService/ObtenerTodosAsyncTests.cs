@@ -8,6 +8,7 @@ using PedidoServiceClass = SellPoint.Aplication.Services.PedidoService.PedidoSer
 using SellPoint.Domain.Base;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using SellPoint.Aplication.Validations.Mensajes; // <-- Asegúrate de tener esto
 
 namespace SellPoint.Tests.PedidoService
 {
@@ -37,11 +38,31 @@ namespace SellPoint.Tests.PedidoService
             // Arrange
             var listaPedidos = new List<PedidoDTO>
             {
-                new PedidoDTO { Id = 1, Estado = "Pendiente" },
-                new PedidoDTO { Id = 2, Estado = "Pagado" }
+                new PedidoDTO
+                {
+                    Id = 1,
+                    IdUsuario = 10,
+                    FechaPedido = DateTime.UtcNow,
+                    Estado = "Pendiente",
+                    IdDireccionEnvio = 100,
+                    CuponId = null,
+                    MetodoPago = "Tarjeta",
+                    ReferenciaPago = "REF123"
+                },
+                new PedidoDTO
+                {
+                    Id = 2,
+                    IdUsuario = 11,
+                    FechaPedido = DateTime.UtcNow,
+                    Estado = "Pagado",
+                    IdDireccionEnvio = 101,
+                    CuponId = 5,
+                    MetodoPago = "Transferencia",
+                    ReferenciaPago = "REF456"
+                }
             };
 
-            var expected = OperationResult.Success(listaPedidos, "Pedidos obtenidos correctamente.");
+            var expected = OperationResult.Success(listaPedidos, MensajesValidacion.PedidosObtenidosCorrectamente);
 
             _pedidoRepositoryMock
                 .Setup(r => r.ObtenerTodosAsync())
@@ -52,7 +73,7 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal("Pedidos obtenidos correctamente.", result.Message);
+            Assert.Equal(MensajesValidacion.PedidosObtenidosCorrectamente, result.Message);
             Assert.NotNull(result.Data);
             Assert.IsAssignableFrom<IEnumerable<PedidoDTO>>(result.Data);
             _pedidoRepositoryMock.Verify(r => r.ObtenerTodosAsync(), Times.Once);
@@ -62,7 +83,7 @@ namespace SellPoint.Tests.PedidoService
         public async Task ObtenerTodosAsync_DeberiaRetornarError_CuandoRepositorioFalla()
         {
             // Arrange
-            var expected = OperationResult.Failure("No se pudieron obtener los pedidos.");
+            var expected = OperationResult.Failure(MensajesValidacion.ErrorObtenerPedidos);
 
             _pedidoRepositoryMock
                 .Setup(r => r.ObtenerTodosAsync())
@@ -73,24 +94,23 @@ namespace SellPoint.Tests.PedidoService
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("No se pudieron obtener los pedidos.", result.Message);
+            Assert.Equal(MensajesValidacion.ErrorObtenerPedidos, result.Message);
             _pedidoRepositoryMock.Verify(r => r.ObtenerTodosAsync(), Times.Once);
         }
-
         [Fact]
         public async Task ObtenerTodosAsync_DeberiaManejarExcepcion_Interna()
         {
             // Arrange
             _pedidoRepositoryMock
                 .Setup(r => r.ObtenerTodosAsync())
-                .ThrowsAsync(new System.Exception("Fallo interno"));
+                .ThrowsAsync(new Exception("Fallo interno"));
 
             // Act
             var result = await _pedidoService.ObtenerTodosAsync();
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.StartsWith("Error al obtener los pedidos", result.Message);
+            Assert.Equal(MensajesValidacion.ErrorObtenerPedidos, result.Message);
             _pedidoRepositoryMock.Verify(r => r.ObtenerTodosAsync(), Times.Once);
         }
     }

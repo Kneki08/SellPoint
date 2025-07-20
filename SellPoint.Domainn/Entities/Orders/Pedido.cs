@@ -1,6 +1,4 @@
-﻿
-
-using SellPoint.Domain.Entities.Orders;
+﻿using SellPoint.Domain.Entities.Orders;
 using SellPoint.Domain.Entities.Users;
 using SellPoint.Domainn.Base;
 using SellPoint.Domainn.Entities.Products;
@@ -10,7 +8,7 @@ namespace SellPoint.Domainn.Entities.Orders
 {
     public class Pedido : AuditEntity
     {
-        public int UsuarioId { get; set; }
+        public int IdUsuario { get; set; }
         public string NumeroPedido { get; set; } = string.Empty;
 
         public decimal Subtotal { get; set; }
@@ -28,15 +26,11 @@ namespace SellPoint.Domainn.Entities.Orders
 
         public string? Notas { get; set; }
 
-        public DateTime FechaPedido { get; set; } = DateTime.UtcNow;
-        public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
-
         // Relaciones de navegación
-        public virtual Cliente Cliente { get; set; }
+        public virtual Cliente? Cliente { get; set; }
         public virtual Cupon? Cupon { get; set; }
         public virtual DireccionEnvio? DireccionEnvio { get; set; }
         public virtual ICollection<DetallePedido> Detalles { get; set; } = new List<DetallePedido>();
-
     }
 
     public enum EstadoPedido

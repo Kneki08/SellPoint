@@ -1,13 +1,15 @@
-﻿using Moq;
-using Xunit;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Moq;
 using SellPoint.Aplication.Dtos.Pedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
-using PedidoServiceClass = SellPoint.Aplication.Services.PedidoService.PedidoService;
 using SellPoint.Domain.Base;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
-using System;
+using SellPoint.Domainn.Entities.Orders;
+using Xunit;
+using PedidoServiceClass = SellPoint.Aplication.Services.PedidoService.PedidoService;
+using SellPoint.Aplication.Validations.Mensajes;
 
 namespace SellPoint.Tests.PedidoService
 {
@@ -31,30 +33,38 @@ namespace SellPoint.Tests.PedidoService
             );
         }
 
+        private UpdatePedidoDTO CrearDtoValido()
+        {
+            return new UpdatePedidoDTO
+            {
+                Id = 1,
+                IdUsuario = 1,
+                IdDireccionEnvio = 10,
+                CuponId = null,
+                Estado = EstadoPedido.EnPreparacion.ToString(),
+                MetodoPago = MetodoPago.Tarjeta.ToString(),
+                ReferenciaPago = "ABC123456",
+                Notas = "Actualizar pedido",
+                FechaPedido = DateTime.UtcNow,
+                FechaActualizacion = DateTime.Now
+            };
+        }
+
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarExito_CuandoDTOEsValido()
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 1,
-                Estado = "Pendiente",
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = "ABC123456",
-                Notas = "Actualizar pedido",
-                FechaActualizacion = DateTime.Now
-            };
-
-            var expectedResult = OperationResult.Success("Operación exitosa.");
+            var dto = CrearDtoValido();
+            var expectedResult = OperationResult.Success(MensajesValidacion.OperacionExitosa);
 
             _pedidoRepositoryMock
-                .Setup(repo => repo.ActualizarAsync(dto))
+                .Setup(repo => repo.ActualizarAsync(It.IsAny<Pedido>()))
                 .ReturnsAsync(expectedResult);
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("Operación exitosa.", result.Message);
-            _pedidoRepositoryMock.Verify(repo => repo.ActualizarAsync(dto), Times.Once);
+            Assert.Equal(MensajesValidacion.OperacionExitosa, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.ActualizarAsync(It.IsAny<Pedido>()), Times.Once);
         }
 
         [Fact]
@@ -63,138 +73,101 @@ namespace SellPoint.Tests.PedidoService
             var result = await _pedidoService.ActualizarAsync(null!);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("La entidad no puede ser nula.", result.Message);
-            _pedidoRepositoryMock.Verify(repo => repo.ActualizarAsync(It.IsAny<UpdatePedidoDTO>()), Times.Never);
+            Assert.Equal(MensajesValidacion.EntidadNula, result.Message);
+            _pedidoRepositoryMock.Verify(repo => repo.ActualizarAsync(It.IsAny<Pedido>()), Times.Never);
         }
 
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarError_CuandoIdEsInvalido()
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 0,
-                Estado = "Pendiente",
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = "ABC",
-                FechaActualizacion = DateTime.Now
-            };
+            var dto = CrearDtoValido();
+            dto.Id = 0;
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El ID del pedido debe ser mayor que cero.", result.Message);
+            Assert.Equal(MensajesValidacion.IdPedidoInvalido, result.Message);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ActualizarAsync_DeberiaRetornarError_CuandoEstadoEsInvalido(string estado)
+        public async Task ActualizarAsync_DeberiaRetornarError_CuandoEstadoEsInvalido(string? estado)
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 1,
-                Estado = estado,
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = "ABC123",
-                FechaActualizacion = DateTime.Now
-            };
+            var dto = CrearDtoValido();
+            dto.Estado = estado!;
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El estado del pedido es obligatorio.", result.Message);
+            Assert.Equal(MensajesValidacion.EstadoPedidoRequerido, result.Message);
         }
 
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarError_CuandoEstadoNoEsValido()
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 1,
-                Estado = "Inexistente",
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = "ABC123",
-                FechaActualizacion = DateTime.Now
-            };
+            var dto = CrearDtoValido();
+            dto.Estado = "Inexistente";
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El estado del pedido no es válido.", result.Message);
+            Assert.Equal(MensajesValidacion.EstadoPedidoInvalido, result.Message);
         }
 
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarError_CuandoMetodoPagoSuperaLongitud()
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 1,
-                Estado = "Pagado",
-                MetodoPago = new string('A', 51),
-                ReferenciaPago = "ABC123",
-                FechaActualizacion = DateTime.Now
-            };
+            var dto = CrearDtoValido();
+            dto.Estado = EstadoPedido.EnPreparacion.ToString();
+            dto.MetodoPago = new string('A', 51);
+            dto.FechaActualizacion = DateTime.UtcNow;
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("El método de pago no debe superar los 50 caracteres.", result.Message);
+            Assert.Equal(MensajesValidacion.MetodoPagoMuyLargo, result.Message);
         }
 
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarError_CuandoReferenciaPagoEsMuyLarga()
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 1,
-                Estado = "Enviado",
-                MetodoPago = "Transferencia",
-                ReferenciaPago = new string('B', 101),
-                FechaActualizacion = DateTime.Now
-            };
+            var dto = CrearDtoValido();
+            dto.Estado = EstadoPedido.EnPreparacion.ToString();
+            dto.ReferenciaPago = new string('B', 101);
+            dto.FechaActualizacion = DateTime.UtcNow;
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("La referencia de pago no debe superar los 100 caracteres.", result.Message);
+            Assert.Equal(MensajesValidacion.ReferenciaPagoMuyLarga, result.Message);
         }
 
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarError_CuandoNotasExceden500Caracteres()
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 1,
-                Estado = "Pagado",
-                MetodoPago = "Transferencia",
-                ReferenciaPago = "Ref123",
-                Notas = new string('C', 501),
-                FechaActualizacion = DateTime.Now
-            };
+            var dto = CrearDtoValido();
+            dto.Estado = EstadoPedido.EnPreparacion.ToString();
+            dto.Notas = new string('C', 501);
+            dto.FechaActualizacion = DateTime.UtcNow;
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Las notas no deben superar los 500 caracteres.", result.Message);
-        }
+            Assert.Equal(MensajesValidacion.NotasMuyLargas, result.Message);
+        }   
 
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarError_CuandoFechaActualizacionEsInvalida()
         {
-            var dto = new UpdatePedidoDTO
-            {
-                Id = 1,
-                Estado = "Cancelado",
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = "Ref001",
-                FechaActualizacion = DateTime.MinValue
-            };
+            var dto = CrearDtoValido();
+            dto.FechaActualizacion = DateTime.MinValue;
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
-            Assert.Equal("La fecha de actualización no es válida.", result.Message);
+            Assert.Equal(MensajesValidacion.FechaActualizacionInvalida, result.Message);
         }
     }
 }

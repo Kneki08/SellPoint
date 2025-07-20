@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SellPoint.Aplication.Dtos.Pedido
+﻿namespace SellPoint.Aplication.Dtos.Pedido
 {
-    public record RemovePedidoDTO
+    public class RemovePedidoDTO
     {
-        public int Id { get; init; }
+        public required int Id { get; set; }
     }
 }

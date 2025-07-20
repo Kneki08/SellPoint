@@ -15,37 +15,41 @@ namespace Sellpoint.api.Controllers
             _pedidoService = pedidoService;
         }
 
-        [HttpGet("ObtenerTodos")]
+        [HttpGet]
         public async Task<IActionResult> ObtenerTodos()
         {
             var result = await _pedidoService.ObtenerTodosAsync();
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             var result = await _pedidoService.ObtenerPorIdAsync(id);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPost("AgregarPedido")]
-        public async Task<IActionResult> Agregar([FromBody] SavePedidoDTO dto)
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] SavePedidoDTO dto)
         {
             var result = await _pedidoService.AgregarAsync(dto);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPost("ActualizarPedido")]
-        public async Task<IActionResult> Actualizar([FromBody] UpdatePedidoDTO dto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdatePedidoDTO dto)
         {
+            if (id != dto.Id)
+                return BadRequest("El ID de la URL no coincide con el del cuerpo.");
+
             var result = await _pedidoService.ActualizarAsync(dto);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPost("EliminarPedido")]
-        public async Task<IActionResult> Eliminar([FromBody] RemovePedidoDTO dto)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
+            var dto = new RemovePedidoDTO { Id = id };
             var result = await _pedidoService.EliminarAsync(dto);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }

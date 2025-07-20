@@ -1,7 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System.Data;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Pedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
+using SellPoint.Aplication.Validations.Pedidos;
+using SellPoint.Aplication.Validations.Mensajes;
 using SellPoint.Domain.Base;
 using SellPoint.Domainn.Entities.Orders;
 
@@ -18,146 +21,107 @@ namespace SellPoint.Persistence.Repositories
             _logger = logger;
         }
 
-        public async Task<OperationResult> AgregarAsync(SavePedidoDTO savePedido)
+        public async Task<OperationResult> AgregarAsync(Pedido pedido)
         {
-            OperationResult Presult = OperationResult.Success();
+            var validacion = PedidoValidator.ValidarEntidad(pedido);
+            if (!validacion.IsSuccess)
+                return validacion;
 
             try
             {
-                if (savePedido is null)
-                    return OperationResult.Failure("La entidad no puede ser nula.");
-
-                if (savePedido.UsuarioId <= 0)
-                    return OperationResult.Failure("El UsuarioId debe ser mayor que cero.");
-
-                if (savePedido.Total != (savePedido.Subtotal - savePedido.Descuento + savePedido.CostoEnvio))
-                    return OperationResult.Failure("El total no coincide con la suma de subtotal, descuento y costo de envío.");
-
-                if (!string.IsNullOrWhiteSpace(savePedido.MetodoPago) && savePedido.MetodoPago.Length > 50)
-                    return OperationResult.Failure("El método de pago no debe superar los 50 caracteres.");
-
-                if (!string.IsNullOrWhiteSpace(savePedido.ReferenciaPago) && savePedido.ReferenciaPago.Length > 100)
-                    return OperationResult.Failure("La referencia de pago no debe superar los 100 caracteres.");
-
-                if (!string.IsNullOrWhiteSpace(savePedido.Notas) && savePedido.Notas.Length > 500)
-                    return OperationResult.Failure("Las notas no deben superar los 500 caracteres.");
-
-                _logger.LogInformation("AgregarAsync {UsuarioId}", savePedido.UsuarioId);
+                _logger.LogInformation("AgregarAsync {UsuarioId}", pedido.IdUsuario);
 
                 using var context = new SqlConnection(_connectionString);
                 using var command = new SqlCommand("sp_AgregarPedido", context)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@UsuarioId", savePedido.UsuarioId);
-                command.Parameters.AddWithValue("@Subtotal", savePedido.Subtotal);
-                command.Parameters.AddWithValue("@Descuento", savePedido.Descuento);
-                command.Parameters.AddWithValue("@CostoEnvio", savePedido.CostoEnvio);
-                command.Parameters.AddWithValue("@Total", savePedido.Total);
-                command.Parameters.AddWithValue("@MetodoPago", savePedido.MetodoPago ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@ReferenciaPago", savePedido.ReferenciaPago ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@CuponId", savePedido.CuponId ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@DireccionEnvioId", savePedido.DireccionEnvioId ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@Notas", savePedido.Notas ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@UsuarioId", pedido.IdUsuario);
+                command.Parameters.AddWithValue("@Subtotal", pedido.Subtotal);
+                command.Parameters.AddWithValue("@Descuento", pedido.Descuento);
+                command.Parameters.AddWithValue("@CostoEnvio", pedido.CostoEnvio);
+                command.Parameters.AddWithValue("@Total", pedido.Total);
+                command.Parameters.AddWithValue("@MetodoPago", pedido.MetodoPago.ToString());
+                command.Parameters.AddWithValue("@ReferenciaPago", pedido.ReferenciaPago ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@CuponId", pedido.CuponId ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@DireccionEnvioId", pedido.DireccionEnvioId ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Notas", pedido.Notas ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@FechaCreacion", pedido.Fecha_creacion);
 
                 await context.OpenAsync();
-                var result = await command.ExecuteNonQueryAsync();
+                var rowsAffected = await command.ExecuteNonQueryAsync();
 
-                if (result > 1)
+                if (rowsAffected > 1)
                     _logger.LogWarning("Se afectaron múltiples filas al agregar un pedido. Verifica el SP.");
 
-                Presult.IsSuccess = result > 0;
-                Presult.Message = result > 0
-                    ? "Pedido agregado correctamente."
-                    : "No se pudo agregar el pedido.";
+                return OperationResult.Success(
+                    rowsAffected > 0,
+                    rowsAffected > 0 ? MensajesValidacion.PedidoAgregado : MensajesValidacion.PedidoNoAgregado
+                );
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al agregar el pedido");
-                return OperationResult.Failure("Error al agregar el pedido");
+                return OperationResult.Failure(MensajesValidacion.ErrorAgregarPedido);
             }
-
-            return Presult;
         }
 
-        public async Task<OperationResult> ActualizarAsync(UpdatePedidoDTO updatePedido)
+        public async Task<OperationResult> ActualizarAsync(Pedido pedido)
         {
-            OperationResult Presult = OperationResult.Success();
+            var validacion = PedidoValidator.ValidarEntidad(pedido, true);
+            if (!validacion.IsSuccess)
+                return validacion;
 
             try
             {
-                if (updatePedido is null)
-                    return OperationResult.Failure("La entidad no puede ser nula.");
-
-                if (updatePedido.Id <= 0)
-                    return OperationResult.Failure("El Id del pedido debe ser mayor que cero.");
-
-                if (updatePedido.FechaActualizacion == DateTime.MinValue || updatePedido.FechaActualizacion > DateTime.Now.AddMinutes(5))
-                    return OperationResult.Failure("La fecha de actualización no es válida.");
-
-                if (!string.IsNullOrWhiteSpace(updatePedido.MetodoPago) && updatePedido.MetodoPago.Length > 50)
-                    return OperationResult.Failure("El método de pago no debe superar los 50 caracteres.");
-
-                if (!string.IsNullOrWhiteSpace(updatePedido.ReferenciaPago) && updatePedido.ReferenciaPago.Length > 100)
-                    return OperationResult.Failure("La referencia de pago no debe superar los 100 caracteres.");
-
-                if (!string.IsNullOrWhiteSpace(updatePedido.Notas) && updatePedido.Notas.Length > 500)
-                    return OperationResult.Failure("Las notas no deben superar los 500 caracteres.");
-
-                _logger.LogInformation("ActualizarAsync {Id}", updatePedido.Id);
+                _logger.LogInformation("ActualizarAsync UsuarioId: {IdUsuario}", pedido.IdUsuario);
 
                 using var context = new SqlConnection(_connectionString);
                 using var command = new SqlCommand("sp_ActualizarPedido", context)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@Id", updatePedido.Id);
-                command.Parameters.AddWithValue("@Estado", updatePedido.Estado ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@MetodoPago", updatePedido.MetodoPago ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@ReferenciaPago", updatePedido.ReferenciaPago ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@Notas", updatePedido.Notas ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@FechaActualizacion", updatePedido.FechaActualizacion);
+                command.Parameters.AddWithValue("@UsuarioId", pedido.IdUsuario);
+                command.Parameters.AddWithValue("@Estado", pedido.Estado.ToString());
+                command.Parameters.AddWithValue("@MetodoPago", pedido.MetodoPago.ToString());
+                command.Parameters.AddWithValue("@ReferenciaPago", pedido.ReferenciaPago ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Notas", pedido.Notas ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@FechaActualizacion", pedido.Fecha_actualizacion ?? (object)DBNull.Value);
 
                 await context.OpenAsync();
-                var result = await command.ExecuteNonQueryAsync();
+                var rowsAffected = await command.ExecuteNonQueryAsync();
 
-                if (result > 1)
+                if (rowsAffected > 1)
                     _logger.LogWarning("Se afectaron múltiples filas al actualizar un pedido. Verifica el SP.");
 
-                Presult.IsSuccess = result > 0;
-                Presult.Message = result > 0
-                    ? "Pedido actualizado correctamente."
-                    : "No se pudo actualizar el pedido.";
+                return OperationResult.Success(
+                    rowsAffected > 0,
+                    rowsAffected > 0 ? MensajesValidacion.PedidoActualizado : MensajesValidacion.PedidoNoActualizado
+                );
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al actualizar el pedido");
-                return OperationResult.Failure("Error al actualizar el pedido");
+                return OperationResult.Failure(MensajesValidacion.ErrorActualizarPedido);
             }
-
-            return Presult;
         }
 
         public async Task<OperationResult> EliminarAsync(RemovePedidoDTO removePedido)
         {
-            OperationResult Presult = OperationResult.Success();
+            var validacion = PedidoValidator.ValidarRemove(removePedido);
+            if (!validacion.IsSuccess)
+                return validacion;
 
             try
             {
-                if (removePedido is null)
-                    return OperationResult.Failure("La entidad no puede ser nula.");
-
-                if (removePedido.Id <= 0)
-                    return OperationResult.Failure("El Id del pedido debe ser mayor que cero.");
-
                 _logger.LogInformation("EliminarAsync {Id}", removePedido.Id);
 
                 using var context = new SqlConnection(_connectionString);
                 using var command = new SqlCommand("sp_EliminarPedido", context)
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
+                    CommandType = CommandType.StoredProcedure
                 };
 
                 command.Parameters.AddWithValue("@Id", removePedido.Id);
@@ -168,146 +132,134 @@ namespace SellPoint.Persistence.Repositories
                 if (result > 1)
                     _logger.LogWarning("Se afectaron múltiples filas al eliminar un pedido. Verifica el SP.");
 
-                Presult.IsSuccess = result > 0;
-                Presult.Message = result > 0
-                    ? "Pedido eliminado correctamente."
-                    : "No se pudo eliminar el pedido.";
+                return OperationResult.Success(
+                    result > 0,
+                    result > 0 ? MensajesValidacion.PedidoEliminado : MensajesValidacion.PedidoNoEliminado
+                );
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al eliminar el pedido");
-                return OperationResult.Failure("Error al eliminar el pedido");
+                return OperationResult.Failure(MensajesValidacion.ErrorEliminarPedido);
             }
-
-            return Presult;
         }
 
         public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {
-            OperationResult Presult = OperationResult.Success();
+            var validacion = PedidoValidator.ValidarId(id);
+            if (!validacion.IsSuccess)
+                return validacion;
+
             try
             {
-                if (id <= 0)
-                {
-                    Presult.IsSuccess = false;
-                    Presult.Message = "El Id debe ser mayor que cero.";
-                    return Presult;
-                }
-
                 _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
 
-                using (var context = new SqlConnection(_connectionString))
+                using var context = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerPedidoPorId", context)
                 {
-                    using (var command = new SqlCommand("sp_ObtenerPedidoPorId", context))
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@Id", id);
+
+                await context.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    var pedido = new PedidoDTO
                     {
-                        command.CommandType = System.Data.CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@Id", id);
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        IdUsuario = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
+                        FechaPedido = reader.GetDateTime(reader.GetOrdinal("FechaPedido")),
+                        Estado = reader["Estado"] as string ?? string.Empty,
+                        IdDireccionEnvio = reader["DireccionEnvioId"] != DBNull.Value
+                            ? reader.GetInt32(reader.GetOrdinal("DireccionEnvioId"))
+                            : 0,
+                        CuponId = reader["CuponId"] != DBNull.Value
+                            ? reader.GetInt32(reader.GetOrdinal("CuponId"))
+                            : null,
+                        MetodoPago = reader["MetodoPago"] as string ?? string.Empty,
+                        ReferenciaPago = reader["ReferenciaPago"] as string ?? string.Empty,
+                        NumeroPedido = reader["NumeroPedido"] as string ?? string.Empty,
+                        Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal")),
+                        Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
+                        CostoEnvio = reader.GetDecimal(reader.GetOrdinal("CostoEnvio")),
+                        Total = reader.GetDecimal(reader.GetOrdinal("Total")),
+                        Notas = reader["Notas"] as string ?? string.Empty
+                    };
 
-                        await context.OpenAsync();
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                var pedido = new PedidoDTO
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
-                                    Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal")),
-                                    Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
-                                    CostoEnvio = reader.GetDecimal(reader.GetOrdinal("CostoEnvio")),
-                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
-                                    MetodoPago = reader["MetodoPago"] as string,
-                                    ReferenciaPago = reader["ReferenciaPago"] as string,
-                                    CuponId = reader["CuponId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("CuponId")) : (int?)null,
-                                    DireccionEnvioId = reader["DireccionEnvioId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("DireccionEnvioId")) : (int?)null,
-                                    Notas = reader["Notas"] as string,
-                                    Estado = reader["Estado"] as string
-                                };
-
-                                Presult.IsSuccess = true;
-                                Presult.Data = pedido;
-                                Presult.Message = "Pedido obtenido correctamente.";
-                            }
-                            else
-                            {
-                                Presult.IsSuccess = false;
-                                Presult.Message = "No se encontró el pedido.";
-                            }
-                        }
-                    }
+                    return OperationResult.Success(pedido, MensajesValidacion.PedidoObtenido);
+                }
+                else
+                {
+                    return OperationResult.Failure(MensajesValidacion.PedidoNoEncontradoSimple);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el pedido por Id");
-                return OperationResult.Failure("Error al obtener el pedido por Id");
+                return OperationResult.Failure(MensajesValidacion.ErrorObtenerPedidoPorId);
             }
-
-            return Presult;
         }
 
         public async Task<OperationResult> ObtenerTodosAsync()
         {
-            OperationResult Presult = OperationResult.Success();
-
             try
             {
                 _logger.LogInformation("ObtenerTodosAsync llamado");
 
                 var pedidos = new List<PedidoDTO>();
 
-                using (var context = new SqlConnection(_connectionString))
+                using var context = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_ObtenerTodosPedidos", context)
                 {
-                    using (var command = new SqlCommand("sp_ObtenerTodosPedidos", context))
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                await context.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    var pedido = new PedidoDTO
                     {
-                        command.CommandType = System.Data.CommandType.StoredProcedure;
-                        await context.OpenAsync();
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        IdUsuario = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
+                        FechaPedido = reader.GetDateTime(reader.GetOrdinal("FechaPedido")),
+                        Estado = reader["Estado"] as string ?? string.Empty,
+                        IdDireccionEnvio = reader["DireccionEnvioId"] != DBNull.Value
+                            ? reader.GetInt32(reader.GetOrdinal("DireccionEnvioId"))
+                            : 0,
+                        CuponId = reader["CuponId"] != DBNull.Value
+                            ? reader.GetInt32(reader.GetOrdinal("CuponId"))
+                            : null,
+                        MetodoPago = reader["MetodoPago"] as string ?? string.Empty,
+                        ReferenciaPago = reader["ReferenciaPago"] as string ?? string.Empty,
+                        NumeroPedido = reader["NumeroPedido"] as string ?? string.Empty,
+                        Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal")),
+                        Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
+                        CostoEnvio = reader.GetDecimal(reader.GetOrdinal("CostoEnvio")),
+                        Total = reader.GetDecimal(reader.GetOrdinal("Total")),
+                        Notas = reader["Notas"] as string ?? string.Empty
+                    };
 
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            while (await reader.ReadAsync())
-                            {
-                                var pedido = new PedidoDTO
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                    UsuarioId = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
-                                    Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal")),
-                                    Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
-                                    CostoEnvio = reader.GetDecimal(reader.GetOrdinal("CostoEnvio")),
-                                    Total = reader.GetDecimal(reader.GetOrdinal("Total")),
-                                    MetodoPago = reader["MetodoPago"] as string,
-                                    ReferenciaPago = reader["ReferenciaPago"] as string,
-                                    CuponId = reader["CuponId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("CuponId")) : (int?)null,
-                                    DireccionEnvioId = reader["DireccionEnvioId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("DireccionEnvioId")) : (int?)null,
-                                    Notas = reader["Notas"] as string,
-                                    Estado = reader["Estado"] as string
-                                };
+                    pedidos.Add(pedido);
+                }
 
-                                pedidos.Add(pedido);
-                            }
-                        }
-
-                        if (pedidos.Any())
-                        {
-                            Presult.IsSuccess = true;
-                            Presult.Data = pedidos;
-                            Presult.Message = "Lista de pedidos obtenida correctamente.";
-                        }
-                        else
-                        {
-                            Presult.IsSuccess = false;
-                            Presult.Message = "No se encontraron pedidos.";
-                        }
-                    }
+                if (pedidos.Any())
+                {
+                    return OperationResult.Success(pedidos, MensajesValidacion.PedidosObtenidosCorrectamente);
+                }
+                else
+                {
+                    return OperationResult.Failure(MensajesValidacion.ErrorObtenerPedidos);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener todos los pedidos");
-                return OperationResult.Failure("Error al obtener todos los pedidos");
+                return OperationResult.Failure(MensajesValidacion.ErrorObtenerTodos);
             }
-
-            return Presult;
         }
     }
 }
