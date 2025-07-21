@@ -46,7 +46,10 @@ var builder = WebApplication.CreateBuilder(args);
              builder.Services.AddProductoDependency();
              builder.Services.AddCarritoDependency();
              builder.Services.AddPedidoDependency();
-
+   
+             
+            builder.Services.AddDbContext<SellPointDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             // Servicios
             //builder.Services.AddScoped<IPedidoService,PedidoService>();
 
