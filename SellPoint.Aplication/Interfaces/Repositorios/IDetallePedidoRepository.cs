@@ -1,19 +1,18 @@
 
-using SellPoint.Aplication.Dtos.Carrito;
-using SellPoint.Aplication.Dtos.DetallePedido;
-using SellPoint.Aplication.Interfaces.Base;
 using SellPoint.Domain.Base;
 using SellPoint.Domain.Entities.Orders;
+using System.Linq.Expressions;
 
 namespace SellPoint.Aplication.Interfaces.Repositorios
 {
-    public interface IDetallePedidoRepository
+    public interface IDetallepedidoRepository
     {
-        Task<OperationResult> ObtenerPorIdAsync(int id);
-        Task<OperationResult> ObtenerTodosAsync();
-        Task<OperationResult> AgregarAsync(SaveDetallePedidoDTO saveDetallePedido);
-        Task<OperationResult> ActualizarAsync(UpdateDetallePedidoDTO updateDetallePedido);
-        Task<OperationResult> EliminarAsync(RemoveDetallePedidoDTO removeDetallePedido);
+        Task<OperationResult> GetByIdAsync(int id);
+        Task<OperationResult> GetAllAsync(Expression<Func<DetallePedido, bool>>? filter = null);
+        Task<OperationResult> AddAsync(DetallePedido entity);
+        Task<OperationResult> UpdateAsync(DetallePedido entity);
+        Task<OperationResult> DeleteAsync(int id);
+        Task<OperationResult> SaveChangesAsync();
     }
 
 }
