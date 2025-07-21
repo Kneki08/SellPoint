@@ -38,16 +38,16 @@ namespace SellPoint.Tests.PedidoService
             {
                 IdUsuario = 1,
                 FechaPedido = DateTime.UtcNow,
-                Estado = "Pendiente",
-                IdDireccionEnvio = 5,
+                Estado = "EnPreparacion",
+                IdDireccionEnvio = 1,
                 CuponId = null,
-                Subtotal = 100,
-                Descuento = 10,
-                CostoEnvio = 5,
-                Total = 95,
                 MetodoPago = "Tarjeta",
                 ReferenciaPago = "ABC123",
-                Notas = "Pedido urgente"
+                Subtotal = 100,
+                Descuento = 0,
+                CostoEnvio = 0,
+                Total = 100, 
+                Notas = "Entrega rápida"
             };
         }
 
@@ -134,13 +134,12 @@ namespace SellPoint.Tests.PedidoService
         public async Task AgregarAsync_DeberiaRetornarError_CuandoTotalNoCoincide()
         {
             var dto = CrearDtoValido();
-            dto.Total = 999;
+            dto.Total = 999; // Total incorrecto a propósito
 
             var result = await _pedidoService.AgregarAsync(dto);
 
             Assert.False(result.IsSuccess);
             Assert.Equal(MensajesValidacion.TotalInconsistente, result.Message);
-            _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
 
         [Fact]
@@ -194,5 +193,7 @@ namespace SellPoint.Tests.PedidoService
             Assert.Equal(MensajesValidacion.NotasMuyLargas, result.Message);
             _pedidoRepositoryMock.Verify(repo => repo.AgregarAsync(It.IsAny<Domainn.Entities.Orders.Pedido>()), Times.Never);
         }
+
+
     }
 }

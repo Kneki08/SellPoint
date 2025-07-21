@@ -15,17 +15,9 @@ namespace SellPoint.Aplication.Validations.Pedidos
             if (dto.IdUsuario <= 0)
                 return OperationResult.Failure(MensajesValidacion.UsuarioIdInvalido);
 
-            if (dto.Subtotal < 0)
-                return OperationResult.Failure(MensajesValidacion.SubtotalNegativo);
-
-            if (dto.Descuento < 0)
-                return OperationResult.Failure(MensajesValidacion.DescuentoNegativo);
-
-            if (dto.CostoEnvio < 0)
-                return OperationResult.Failure(MensajesValidacion.CostoEnvioNegativo);
-
-            if (dto.Total != dto.Subtotal - dto.Descuento + dto.CostoEnvio)
-                return OperationResult.Failure(MensajesValidacion.TotalInconsistente);
+            var montosValidos = ValidarMontos(dto.Subtotal, dto.Descuento, dto.CostoEnvio, dto.Total);
+            if (!montosValidos.IsSuccess)
+                return montosValidos;
 
             if (string.IsNullOrWhiteSpace(dto.MetodoPago))
                 return OperationResult.Failure(MensajesValidacion.MetodoPagoRequerido);
@@ -57,8 +49,9 @@ namespace SellPoint.Aplication.Validations.Pedidos
             if (!estadosValidos.Contains(dto.Estado))
                 return OperationResult.Failure(MensajesValidacion.EstadoNoValido);
 
-            if (dto.FechaPedido == DateTime.MinValue || dto.FechaPedido > DateTime.Now.AddMinutes(5))
-                return OperationResult.Failure(MensajesValidacion.FechaActualizacionInvalida);
+            var montosValidos = ValidarMontos(dto.Subtotal, dto.Descuento, dto.CostoEnvio, dto.Total);
+            if (!montosValidos.IsSuccess)
+                return montosValidos;
 
             if (!string.IsNullOrWhiteSpace(dto.MetodoPago) && dto.MetodoPago.Length > 50)
                 return OperationResult.Failure(MensajesValidacion.MetodoPagoMuyLargo);
@@ -68,6 +61,9 @@ namespace SellPoint.Aplication.Validations.Pedidos
 
             if (!string.IsNullOrWhiteSpace(dto.Notas) && dto.Notas.Length > 500)
                 return OperationResult.Failure(MensajesValidacion.NotasMuyLargas);
+
+            if (dto.FechaActualizacion > DateTime.UtcNow)
+                return OperationResult.Failure(MensajesValidacion.FechaActualizacionInvalida);
 
             return OperationResult.Success();
         }
@@ -99,18 +95,9 @@ namespace SellPoint.Aplication.Validations.Pedidos
             if (pedido.IdUsuario <= 0)
                 return OperationResult.Failure(MensajesValidacion.UsuarioIdInvalido);
 
-            if (pedido.Subtotal < 0)
-                return OperationResult.Failure(MensajesValidacion.SubtotalNegativo);
-
-            if (pedido.Descuento < 0)
-                return OperationResult.Failure(MensajesValidacion.DescuentoNegativo);
-
-            if (pedido.CostoEnvio < 0)
-                return OperationResult.Failure(MensajesValidacion.CostoEnvioNegativo);
-
-            var totalCalculado = pedido.Subtotal - pedido.Descuento + pedido.CostoEnvio;
-            if (pedido.Total != totalCalculado)
-                return OperationResult.Failure(MensajesValidacion.TotalInconsistente);
+            var montosValidos = ValidarMontos(pedido.Subtotal, pedido.Descuento, pedido.CostoEnvio, pedido.Total);
+            if (!montosValidos.IsSuccess)
+                return montosValidos;
 
             if (string.IsNullOrWhiteSpace(pedido.MetodoPago.ToString()))
                 return OperationResult.Failure(MensajesValidacion.MetodoPagoRequerido);
@@ -128,9 +115,29 @@ namespace SellPoint.Aplication.Validations.Pedidos
             {
                 if (pedido.Fecha_actualizacion == null ||
                     pedido.Fecha_actualizacion == DateTime.MinValue ||
-                    pedido.Fecha_actualizacion > DateTime.Now.AddMinutes(5))
+                    pedido.Fecha_actualizacion > DateTime.UtcNow.AddMinutes(5))
                     return OperationResult.Failure(MensajesValidacion.FechaActualizacionInvalida);
             }
+
+            return OperationResult.Success();
+        }
+
+        // 
+        private static OperationResult ValidarMontos(decimal subtotal, decimal descuento, decimal costoEnvio, decimal total)
+        {
+            if (subtotal < 0)
+                return OperationResult.Failure(MensajesValidacion.SubtotalNegativo);
+
+            if (descuento < 0)
+                return OperationResult.Failure(MensajesValidacion.DescuentoNegativo);
+
+            if (costoEnvio < 0)
+                return OperationResult.Failure(MensajesValidacion.CostoEnvioNegativo);
+
+            var totalCalculado = subtotal - descuento + costoEnvio;
+
+            if (Math.Abs(total - totalCalculado) > 0.01m) 
+                return OperationResult.Failure(MensajesValidacion.TotalInconsistente);
 
             return OperationResult.Success();
         }

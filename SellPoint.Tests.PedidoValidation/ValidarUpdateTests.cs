@@ -2,7 +2,7 @@
 using Xunit;
 using SellPoint.Aplication.Dtos.Pedido;
 using SellPoint.Aplication.Validations.Pedidos;
-using SellPoint.Aplication.Validations.Mensajes; // <-- Importante
+using SellPoint.Aplication.Validations.Mensajes; 
 
 namespace SellPoint.Tests.PedidoValidation
 {
@@ -15,13 +15,17 @@ namespace SellPoint.Tests.PedidoValidation
                 Id = 1,
                 IdUsuario = 1,
                 Estado = "Enviado",
-                FechaPedido = DateTime.Now.AddMinutes(-1),
+                FechaPedido = DateTime.UtcNow,
                 FechaActualizacion = DateTime.UtcNow,
-                IdDireccionEnvio = 123,
-                CuponId = 1,
+                IdDireccionEnvio = 1,
+                CuponId = null,
                 MetodoPago = "Tarjeta",
                 ReferenciaPago = "XYZ123",
-                Notas = "Actualizar estado"
+                Subtotal = 100,
+                Descuento = 10,
+                CostoEnvio = 5,
+                Total = 95, 
+                Notas = "Todo correcto"
             };
         }
 
@@ -65,7 +69,7 @@ namespace SellPoint.Tests.PedidoValidation
         public void ValidarUpdate_DeberiaFallar_CuandoFechaEsMuyFutura()
         {
             var dto = CrearDtoValido();
-            dto.FechaPedido = DateTime.Now.AddMinutes(10);
+            dto.FechaActualizacion = DateTime.UtcNow.AddHours(1); 
 
             var resultado = PedidoValidator.ValidarUpdate(dto);
 

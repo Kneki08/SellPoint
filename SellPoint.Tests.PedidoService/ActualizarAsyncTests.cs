@@ -39,14 +39,18 @@ namespace SellPoint.Tests.PedidoService
             {
                 Id = 1,
                 IdUsuario = 1,
-                IdDireccionEnvio = 10,
-                CuponId = null,
-                Estado = EstadoPedido.EnPreparacion.ToString(),
-                MetodoPago = MetodoPago.Tarjeta.ToString(),
-                ReferenciaPago = "ABC123456",
-                Notas = "Actualizar pedido",
-                FechaPedido = DateTime.UtcNow,
-                FechaActualizacion = DateTime.Now
+                Estado = "Enviado",
+                FechaPedido = DateTime.UtcNow.AddMinutes(-1),
+                FechaActualizacion = DateTime.UtcNow,
+                IdDireccionEnvio = 123,
+                CuponId = 1,
+                MetodoPago = "Tarjeta",
+                ReferenciaPago = "XYZ123",
+                Subtotal = 100.00m,
+                Descuento = 10.00m,
+                CostoEnvio = 5.00m,
+                Total = 95.00m,
+                Notas = "Actualizar estado"
             };
         }
 
@@ -156,18 +160,65 @@ namespace SellPoint.Tests.PedidoService
 
             Assert.False(result.IsSuccess);
             Assert.Equal(MensajesValidacion.NotasMuyLargas, result.Message);
-        }   
-
+        }
         [Fact]
         public async Task ActualizarAsync_DeberiaRetornarError_CuandoFechaActualizacionEsInvalida()
         {
             var dto = CrearDtoValido();
-            dto.FechaActualizacion = DateTime.MinValue;
+            dto.FechaActualizacion = DateTime.UtcNow.AddHours(1);
 
             var result = await _pedidoService.ActualizarAsync(dto);
 
             Assert.False(result.IsSuccess);
             Assert.Equal(MensajesValidacion.FechaActualizacionInvalida, result.Message);
+        }
+
+        [Fact]
+        public async Task ActualizarAsync_DeberiaRetornarError_CuandoSubtotalEsNegativo()
+        {
+            var dto = CrearDtoValido();
+            dto.Subtotal = -10;
+
+            var result = await _pedidoService.ActualizarAsync(dto);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(MensajesValidacion.SubtotalNegativo, result.Message);
+        }
+
+        [Fact]
+        public async Task ActualizarAsync_DeberiaRetornarError_CuandoDescuentoEsNegativo()
+        {
+            var dto = CrearDtoValido();
+            dto.Descuento = -5;
+
+            var result = await _pedidoService.ActualizarAsync(dto);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(MensajesValidacion.DescuentoNegativo, result.Message);
+        }
+
+        [Fact]
+        public async Task ActualizarAsync_DeberiaRetornarError_CuandoCostoEnvioEsNegativo()
+        {
+            var dto = CrearDtoValido();
+            dto.CostoEnvio = -1;
+
+            var result = await _pedidoService.ActualizarAsync(dto);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(MensajesValidacion.CostoEnvioNegativo, result.Message);
+        }
+
+        [Fact]
+        public async Task ActualizarAsync_DeberiaRetornarError_CuandoTotalEsInconsistente()
+        {
+            var dto = CrearDtoValido();
+            dto.Total = 999; // Total incorrecto (debería ser 100 - 10 + 5 = 95)
+
+            var result = await _pedidoService.ActualizarAsync(dto);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(MensajesValidacion.TotalInconsistente, result.Message);
         }
     }
 }

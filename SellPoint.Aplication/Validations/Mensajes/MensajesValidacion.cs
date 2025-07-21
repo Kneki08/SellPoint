@@ -37,5 +37,7 @@
         public const string PedidoNoEncontradoSimple = "No se encontró el pedido.";
         public const string ErrorObtenerPedidoPorId = "Error al obtener el pedido por Id";
         public const string ErrorObtenerTodos = "Error al obtener todos los pedidos";
+        public const string FechaPedidoInvalida = "La fecha del pedido no es válida.";
+        public const string MetodoPagoNoValido = "El método de pago no es válido.";
     }
 }

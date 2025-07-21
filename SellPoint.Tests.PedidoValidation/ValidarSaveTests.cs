@@ -22,7 +22,7 @@ namespace SellPoint.Tests.PedidoValidation
                 Subtotal = 100,
                 Descuento = 0,
                 CostoEnvio = 0,
-                Total = 100,
+                Total = 100, 
                 Notas = "Entrega rápida"
             };
         }
@@ -101,7 +101,8 @@ namespace SellPoint.Tests.PedidoValidation
         public void ValidarSave_DeberiaFallar_CuandoTotalEsInconsistente()
         {
             var dto = CrearDtoValido();
-            dto.Total = 999;
+
+            dto.Total = 50;
 
             var resultado = PedidoValidator.ValidarSave(dto);
 

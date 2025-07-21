@@ -110,6 +110,7 @@ namespace SellPoint.Aplication.Services.PedidoService
                     Subtotal = dto.Subtotal,
                     Descuento = dto.Descuento,
                     CostoEnvio = dto.CostoEnvio,
+                    Total = dto.Total,
                     CuponId = dto.CuponId,
                     DireccionEnvioId = dto.IdDireccionEnvio,
                     MetodoPago = Enum.TryParse<MetodoPago>(dto.MetodoPago, out var metodoPago)
@@ -151,19 +152,28 @@ namespace SellPoint.Aplication.Services.PedidoService
 
             try
             {
+
+                if (!Enum.TryParse<EstadoPedido>(dto.Estado, ignoreCase: true, out var estado))
+                    return OperationResult.Failure(MensajesValidacion.EstadoNoValido);
+
+                if (!Enum.TryParse<MetodoPago>(dto.MetodoPago, ignoreCase: true, out var metodoPago))
+                    return OperationResult.Failure(MensajesValidacion.MetodoPagoRequerido);
+
                 var pedido = new Pedido
                 {
                     Id = dto.Id,
                     IdUsuario = dto.IdUsuario,
-                    Estado = Enum.TryParse<EstadoPedido>(dto.Estado, out var estado)
-                             ? estado
-                             : throw new InvalidOperationException(MensajesValidacion.EstadoNoValido),
-                    MetodoPago = Enum.TryParse<MetodoPago>(dto.MetodoPago, out var metodoPago)
-                                 ? metodoPago
-                                 : throw new InvalidOperationException(MensajesValidacion.MetodoPagoRequerido),
+                    Estado = estado,
+                    MetodoPago = metodoPago,
                     ReferenciaPago = dto.ReferenciaPago,
                     Notas = dto.Notas,
-                    Fecha_actualizacion = dto.FechaPedido.ToUniversalTime()
+                    Fecha_actualizacion = dto.FechaActualizacion.ToUniversalTime(),
+                    Subtotal = dto.Subtotal,
+                    Descuento = dto.Descuento,
+                    CostoEnvio = dto.CostoEnvio,
+                    Total = dto.Total,
+                    CuponId = dto.CuponId,
+                    DireccionEnvioId = dto.IdDireccionEnvio
                 };
 
                 var resultEntidad = PedidoValidator.ValidarEntidad(pedido, true);
