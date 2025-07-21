@@ -82,6 +82,60 @@ namespace SellPoint.Pesistence.Test.DetallePedidoTest.AgregarDetallePedidoTest
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()),
                 Times.Once);
         }
+        [Fact]
+        public async Task AgregarAsync_DeberiaRetornarExito_CuandoDTOEsValido()
+        {
+            // Arrange
+            var dto = new SaveDetallePedidoDTO
+            {
+                PedidoId = 1,
+                ProductoId = 2,
+                Cantidad = 3,
+                PrecioUnitario = 4,
+            };
+
+            var entity = new DetallePedido
+            {
+                Pedidoid = dto.PedidoId,
+                ProductoId = dto.ProductoId,
+                Cantidad = dto.Cantidad,
+                PrecioUnitario = dto.PrecioUnitario
+            };
+
+            _DetalleRepositoryMock.Setup(x => x.AgregarAsync(It.Is<DetallePedido>(
+                d => d.Pedidoid == entity.Pedidoid &&
+                     d.ProductoId == entity.ProductoId &&
+                     d.Cantidad == entity.Cantidad &&
+                     d.PrecioUnitario == entity.PrecioUnitario)))
+                .ReturnsAsync(OperationResult.Success());
+
+            // Act
+            var result = await _DetalleService.AgregarAsync(dto);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task AgregarAsync_DeberiaRetornarError_CuandoDTOEsNulo()
+        {
+            // Act
+            var result = await _DetalleService.AgregarAsync(null);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal("El DTO no puede ser nulo.", result.Message);
+        }
+
+        [Fact]
+        public async Task ObtenerPorIdAsync_DeberiaRetornarError_CuandoIdInvalido()
+        {
+            // Act
+            var result = await _DetalleService.ObtenerPorIdAsync(0);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+        }
     }
 }
 
