@@ -1,177 +1,157 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.DetallePedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Aplication.Interfaces.Servicios;
 using SellPoint.Domain.Base;
+using SellPoint.Domain.Entities.Orders;
 
 namespace SellPoint.Aplication.Services.DetallepedidoService
 {
     public sealed class DetallepedidoService : IDetallepedidoService
     {
-        private readonly IDetallePedidoRepository _DetallePedidoRepository;
+        private readonly IDetallepedidoRepository _detallePedidoRepository;
         private readonly ILogger<DetallepedidoService> _logger;
         private readonly IConfiguration _configuration;
-      
 
-        public DetallepedidoService(IDetallePedidoRepository DetallepedidoRepository, ILogger<DetallepedidoService> logger, IConfiguration Configuration)
+        public DetallepedidoService(
+            IDetallepedidoRepository detallepedidoRepository,
+            ILogger<DetallepedidoService> logger,
+            IConfiguration configuration)
         {
-            _DetallePedidoRepository = DetallepedidoRepository;
+            _detallePedidoRepository = detallepedidoRepository;
             _logger = logger;
-            _configuration = Configuration;
-        }
-       
-        public async Task<OperationResult> AgregarAsync(SaveDetallePedidoDTO saveDetallepedido)
-        {
-            OperationResult operation = new OperationResult();
-            try
-            {
-                _logger.LogInformation("Agregando el detalle del pedido", saveDetallepedido);
-                if (saveDetallepedido is null)
-                {
-                    _logger.LogError("Se requiere crear un DTO");
-                    return operation;
-                }
-                operation = await _DetallePedidoRepository.AgregarAsync(saveDetallepedido);
-                if (!operation.IsSuccess)
-                {
-                    _logger.LogError("No se pudo agregar el detalle pedido: {Message}", operation.Message);
-                    return operation;
-                }
-                _logger.LogInformation("Detalle del pedido agregado correctamente para PedidoId: {PedidoId}, ProductoId: {ProductoId}, Cantidad: {Cantidad}",
-                    saveDetallepedido.PedidoId, saveDetallepedido.ProductoId, saveDetallepedido.Cantidad);
-                return operation;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al agregar el detalle del pedido");
-                operation.IsSuccess = false;
-                operation.Message = "Error al agregar el detalle del pedido";
-
-            }
-            return operation;
+            _configuration = configuration;
         }
 
-        public async Task<OperationResult> EliminarAsync(RemoveDetallePedidoDTO removeDetallePedido)
+        public async Task<OperationResult> AddAsync(SaveDetallePedidoDTO dto)
         {
-            OperationResult operation = new OperationResult();
-            try
-            {
-                _logger.LogInformation("Eliminando el detalle del pedido", removeDetallePedido);
-                if (removeDetallePedido is null)
-                {
-                    _logger.LogError("Se requiere crear un DTO");
-                    return operation;
-                }
-                operation = await _DetallePedidoRepository.EliminarAsync(removeDetallePedido);
-                if (!operation.IsSuccess)
-                {
-                    _logger.LogError("No se pudo eliminar el detalle del pedido: {Message}", operation.Message);
-                    return operation;
-                }
-                _logger.LogInformation("Detalle del pedido eliminado correctamente para Id: {Id}",
-                    removeDetallePedido.Id);
-                return operation;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al eliminar el detalle del pedido");
-                operation.IsSuccess = false;
-                operation.Message = "Error al eliminar el detalle del pedido";
-
-            }
-            return operation;
-        }
-        public async Task<OperationResult> ObtenerTodosAsync()
-        {
-            OperationResult operation = new OperationResult();
-            try
-            {
-                operation = await _DetallePedidoRepository.ObtenerTodosAsync();
-                if (!operation.IsSuccess)
-                {
-                    _logger.LogError("No se pudo obtener todos los detalles del pedido: {Message}", operation.Message);
-                    return operation;
-                }
-                _logger.LogInformation("Detalles obtenidos correctamente");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al obtener todos los detalles {ex.Message}");
-                operation = OperationResult.Failure($"Error al obtener todos los detalles {ex.Message}");
-            }
-            return operation;
-        }
-        public async Task<OperationResult> ObtenerPorIdAsync(int ObtenerDetallepedidoDTO)
-        {
-            OperationResult operation = new OperationResult();
+            if (dto == null)
+                return OperationResult.Failure("El DTO no puede ser nulo.");
 
             try
             {
-                _logger.LogInformation("Obteniendo el detalle del pedido por ID: {Id}", ObtenerDetallepedidoDTO);
-                if (ObtenerDetallepedidoDTO <= 0)
+                var entidad = new DetallePedido
                 {
-                    _logger.LogError("El ID del pedido debe ser mayor que cero");
-                    return operation;
-                }
-                operation = await _DetallePedidoRepository.ObtenerPorIdAsync(ObtenerDetallepedidoDTO);
-                if (!operation.IsSuccess)
-                {
-                    _logger.LogError("No se pudo obtener el detalle del pedido por ID: {Id}, Error: {Message}", ObtenerDetallepedidoDTO, operation.Message);
-                    return operation;
-                }
+                    Pedidoid = dto.PedidoId,
+                    ProductoId = dto.ProductoId,
+                    Cantidad = dto.Cantidad,
+                    PrecioUnitario = dto.PrecioUnitario
+                };
 
+                return await _detallePedidoRepository.AddAsync(entidad);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener el detalle del pedido por ID");
-                operation.IsSuccess = false;
-                operation.Message = "Error al obtener el detalle del pedido por ID";
+                _logger.LogError(ex, "Error al agregar el detalle del pedido.");
+                return OperationResult.Failure("Error interno.");
             }
-            return operation;
         }
 
-        public async Task<OperationResult> ActualizarAsync(UpdateDetallePedidoDTO updateDetallePedido)
+        public async Task<OperationResult> UpdateAsync(UpdateDetallePedidoDTO dto)
         {
-            OperationResult operation = new OperationResult();
+            if (dto == null)
+                return OperationResult.Failure("La entidad no puede ser nula.");
 
             try
             {
-                _logger.LogInformation("Actualizando el detalle del pedido", updateDetallePedido);
-
-                if (updateDetallePedido is null)
+                var entidad = new DetallePedido
                 {
-                    _logger.LogError("Se requiere crear un DTO");
-                    return operation;
-                }
-                operation = await _DetallePedidoRepository.ActualizarAsync(updateDetallePedido);
+                    Pedidoid = dto.PedidoId,
+                    ProductoId = dto.ProductoId,
+                    Cantidad = dto.Cantidad,
+                    PrecioUnitario = dto.PrecioUnitario
+                };
 
-                if (!operation.IsSuccess)
-                {
-                    _logger.LogError("No se pudo actualizar el detalle del pedido: {Message}", operation.Message);
-                    return operation;
-                }
-
-                _logger.LogInformation("Detalle del pedido actualizado correctamente para PedidoId: {PedidoId}, ProductoId: {ProductoId}, NuevaCantidad: {NuevaCantidad}, MontoPagar: {PrecioUnitario}",
-                    updateDetallePedido.PedidoId, updateDetallePedido.ProductoId, updateDetallePedido.Cantidad, updateDetallePedido.PrecioUnitario);
-                return operation;
+                return await _detallePedidoRepository.UpdateAsync(entidad);
             }
             catch (Exception ex)
             {
-
-                _logger.LogError(ex, "Error al actualizar el detalle del pedido");
-                operation.IsSuccess = false;
-                operation.Message = "Error al actualizar el detalle del pedido";
-
+                _logger.LogError(ex, "Error al actualizar el detalle del pedido.");
+                return OperationResult.Failure("Error interno.");
             }
-            return operation;
         }
 
+        public async Task<OperationResult> DeleteAsync(RemoveDetallePedidoDTO dto)
+        {
+            if (dto == null || dto.Id <= 0)
+                return OperationResult.Failure("El Id debe ser mayor que cero.");
 
+            try
+            {
+                return await _detallePedidoRepository.DeleteAsync(dto.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar el detalle del pedido.");
+                return OperationResult.Failure("Error interno.");
+            }
+        }
+
+        public async Task<OperationResult> GetByIdAsync(int id)
+        {
+            if (id <= 0)
+                return OperationResult.Failure("El Id debe ser mayor que cero.");
+
+            try
+            {
+                var result = await _detallePedidoRepository.GetByIdAsync(id);
+                if (!result.IsSuccess || result.Data is not DetallePedido entidad)
+                    return OperationResult.Failure("Detalle no encontrado.");
+
+                var dto = new DetallePedidoDTO
+                {
+                    PedidoId = entidad.Pedidoid,
+                    ProductoId = entidad.ProductoId,
+                    Cantidad = entidad.Cantidad,
+                };
+
+                return OperationResult.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el detalle del pedido por ID.");
+                return OperationResult.Failure("Error interno.");
+            }
+        }
+
+        public async Task<OperationResult> GetAllAsync()
+        {
+            try
+            {
+                var result = await _detallePedidoRepository.GetAllAsync();
+                if (!result.IsSuccess || result.Data is not IEnumerable<DetallePedido> lista)
+                    return OperationResult.Failure("No se encontraron datos.");
+
+                var dtoList = lista.Select(dp => new DetallePedidoDTO
+                {
+                    PedidoId = dp.Pedidoid,
+                    ProductoId = dp.ProductoId,
+                    Cantidad = dp.Cantidad,
+                }).ToList();
+
+                return OperationResult.Success(dtoList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener todos los detalles del pedido.");
+                return OperationResult.Failure("Error interno.");
+            }
+        }
+
+        public async Task<OperationResult> SaveChangesAsync()
+        {
+            try
+            {
+                await _detallePedidoRepository.SaveChangesAsync();
+                return OperationResult.Success("Cambios guardados correctamente.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al guardar los cambios");
+                return OperationResult.Failure("Error al guardar los cambios.");
+            }
+        }
     }
 }
