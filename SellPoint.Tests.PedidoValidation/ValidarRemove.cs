@@ -1,8 +1,8 @@
 ﻿using System;
 using Xunit;
 using SellPoint.Aplication.Dtos.Pedido;
-using SellPoint.Aplication.Validations.Pedidos;
-using SellPoint.Aplication.Validations.Mensajes; // ← necesario para acceder a los mensajes
+using SellPoint.Aplication.Validations.PedidoValidator;
+using SellPoint.Aplication.Validations.Mensajes; 
 
 namespace SellPoint.Tests.PedidoValidation
 {
