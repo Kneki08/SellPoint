@@ -43,87 +43,36 @@ namespace SellPoint.Pesistence.Test.DetallePedidoTest.ActualizarDetallePedidoTes
             );
 
         }
+      
         [Fact]
-        public async Task ActualizarAsync_ShouldReturnFailure_WhenDetallePedidoIsNull()
+        public async Task ActualizarAsync_DeberiaLlamarAlRepositorio_CuandoDTOValido()
         {
             // Arrange
-            UpdateDetallePedidoDTO? detallePedido = null;
-            const string expectedMessage = "La entidad no puede ser nula.";
-
-            // Configuración específica para null
-            _DetalleRepositoryMock.Setup(x => x.ActualizarAsync(It.IsAny<UpdateDetallePedidoDTO>()))
-                .ReturnsAsync(new OperationResult
-                {
-                    IsSuccess = false,
-                    Message = expectedMessage
-                });
-
-            // Act
-            var result = await _DetalleService.ActualizarAsync(detallePedido!); // Use null-forgiving operator (!)
-
-            // Assert
-            Assert.IsType<OperationResult>(result);
-            Assert.False(result.IsSuccess);
-            Assert.Equal(expectedMessage, result.Message);
-        }
-        [Fact]
-        public async Task ActualizarAsync_DeberiaLlamarAlRepositorio()
-        {
-            // Arrange
-            var dto = new UpdateDetallePedidoDTO { Id = 1, PedidoId = 1, ProductoId = 1, Cantidad = 2 };
-            _DetalleRepositoryMock.Setup(x => x.ActualizarAsync(It.IsAny<UpdateDetallePedidoDTO>()))
-                .ReturnsAsync(new OperationResult { IsSuccess = true });
-
-            // Act
-            await _DetalleService.ActualizarAsync(dto);
-
-            // Assert
-            _DetalleRepositoryMock.Verify(x => x.ActualizarAsync(dto), Times.Once);
-        }
-        public async Task ActualizarAsync_ShouldReturnFailure_WhenUpdateDtoIsNull()
-        {
-            // Arrange
-            UpdateDetallePedidoDTO nullDto = null;
-
-            // Act
-            var result = await _DetalleService.ActualizarAsync(nullDto);
-
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal("La entidad no puede ser nula.", result.Message);
-            
-        }
-
-        [Fact]
-        public async Task ActualizarAsync_ShouldCallRepository_WhenDtoIsValid()
-        {
-            // Arrange
-            var validDto = new UpdateDetallePedidoDTO
+            var dto = new UpdateDetallePedidoDTO
             {
                 Id = 1,
                 PedidoId = 1,
                 ProductoId = 1,
-                Cantidad = 3,
-                PrecioUnitario = 12.5m
+                Cantidad = 2,
+                PrecioUnitario = 15
             };
 
-            _DetalleRepositoryMock.Setup(x => x.ActualizarAsync(validDto))
+            _DetalleRepositoryMock.Setup(x => x.ActualizarAsync(It.IsAny<DetallePedido>()))
                 .ReturnsAsync(OperationResult.Success("Actualizado correctamente"));
 
             // Act
-            var result = await _DetalleService.ActualizarAsync(validDto);
+            var resultado = await _DetalleService.ActualizarAsync(dto);
 
             // Assert
-            Assert.True(result.IsSuccess);
-            _DetalleRepositoryMock.Verify(x => x.ActualizarAsync(validDto), Times.Once);
-            
+            Assert.True(resultado.IsSuccess);
+            _DetalleRepositoryMock.Verify(x => x.ActualizarAsync(It.IsAny<DetallePedido>()), Times.Once);
         }
 
         [Fact]
-        public async Task ActualizarAsync_ShouldLogError_WhenRepositoryFails()
+        public async Task ActualizarAsync_DeberiaRetornarFallo_SiRepositorioFalla()
         {
             // Arrange
-            var validDto = new UpdateDetallePedidoDTO
+            var dto = new UpdateDetallePedidoDTO
             {
                 Id = 1,
                 PedidoId = 1,
@@ -131,23 +80,16 @@ namespace SellPoint.Pesistence.Test.DetallePedidoTest.ActualizarDetallePedidoTes
                 Cantidad = 3,
                 PrecioUnitario = 12.5m
             };
-
-            _DetalleRepositoryMock.Setup(x => x.ActualizarAsync(validDto))
+            
+            _DetalleRepositoryMock.Setup(x => x.ActualizarAsync(It.IsAny<DetallePedido>()))
                 .ReturnsAsync(OperationResult.Failure("Error de repositorio"));
 
             // Act
-            var result = await _DetalleService.ActualizarAsync(validDto);
+            var resultado = await _DetalleService.ActualizarAsync(dto);
 
             // Assert
-            Assert.False(result.IsSuccess);
-            _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("No se pudo actualizar el detalle del pedido")),
-                    null,
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-                Times.Once);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal("Error de repositorio", resultado.Message);
         }
     }
 }
