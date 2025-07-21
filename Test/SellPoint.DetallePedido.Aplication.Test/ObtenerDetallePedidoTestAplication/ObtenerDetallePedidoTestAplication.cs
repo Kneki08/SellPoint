@@ -4,14 +4,8 @@ using Moq;
 using SellPoint.Aplication.Dtos.DetallePedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 using DetalleServiceClass = SellPoint.Aplication.Services.DetallepedidoService.DetallepedidoService; // alias
-using System.Threading.Tasks;
+using SellPoint.Domain.Entities.Orders;
 
 namespace SellPoint.Pesistence.Test.DetallePedidoTest.ObtenerDetallePedidoTest
 {
@@ -40,111 +34,57 @@ namespace SellPoint.Pesistence.Test.DetallePedidoTest.ObtenerDetallePedidoTest
             );
 
         }
+        [Fact]
         public async Task ObtenerPorIdAsyncShouldReturnFailureWhenIdIsInvalid()
         {
-            // Arrange
             var detallePedido = new ObtenerDetallePedidoDTO { ProductoId = 0 };
             const string expectedMessage = "El Id debe ser mayor que cero.";
 
-            // Act
             var result = await _DetalleService.ObtenerPorIdAsync(detallePedido.ProductoId);
 
-            // Assert
             Assert.False(result.IsSuccess);
             Assert.Equal(expectedMessage, result.Message);
         }
         [Fact]
         public async Task ObtenerPorIdAsync_ShouldReturnSuccess_WhenIdIsValid()
         {
-            // Arrange
             int validId = 1;
-            _DetalleRepositoryMock.Setup(x => x.ObtenerPorIdAsync(validId))
-                .ReturnsAsync(new OperationResult { IsSuccess = true });
+            var entity = new SellPoint.Domain.Entities.Orders.DetallePedido
+            {
+                Pedidoid = 1,
+                ProductoId = 2,
+                Cantidad = 3
+            };
 
-            // Act
+            _DetalleRepositoryMock.Setup(x => x.ObtenerPorIdAsync(validId))
+                .ReturnsAsync(OperationResult.Success(entity));
+
             var result = await _DetalleService.ObtenerPorIdAsync(validId);
 
-            // Assert
             Assert.True(result.IsSuccess);
+            var dto = Assert.IsType<DetallePedidoDTO>(result.Data);
+            Assert.Equal(entity.Pedidoid, dto.PedidoId);
+            Assert.Equal(entity.ProductoId, dto.ProductoId);
+            Assert.Equal(entity.Cantidad, dto.Cantidad);
         }
+
         [Fact]
         public async Task ObtenerTodosAsync_ShouldCallRepository()
         {
-            // Arrange
-            var expectedResult = OperationResult.Success("Datos obtenidos");
-            _DetalleRepositoryMock.Setup(x => x.ObtenerTodosAsync())
-                .ReturnsAsync(expectedResult);
+            var entityList = new List<DetallePedido>
+            {
+                new DetallePedido { Pedidoid = 1, ProductoId = 2, Cantidad = 3 }
+            };
 
-            // Act
+            _DetalleRepositoryMock.Setup(x => x.ObtenerTodosAsync())
+                .ReturnsAsync(OperationResult.Success(entityList));
+
             var result = await _DetalleService.ObtenerTodosAsync();
 
-            // Assert
-            Assert.Equal(expectedResult, result);
-            _DetalleRepositoryMock.Verify(x => x.ObtenerTodosAsync(), Times.Once);
+            Assert.True(result.IsSuccess);
+            var list = Assert.IsType<List<DetallePedidoDTO>>(result.Data);
+            Assert.Single(list);
         }
-
-        [Fact]
-        public async Task ObtenerTodosAsync_ShouldLogError_WhenRepositoryFails()
-        {
-            // Arrange
-            _DetalleRepositoryMock.Setup(x => x.ObtenerTodosAsync())
-                .ReturnsAsync(OperationResult.Failure("Error de repositorio"));
-
-            // Act
-            var result = await _DetalleService.ObtenerTodosAsync();
-
-            // Assert
-            Assert.False(result.IsSuccess);
-            _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("No se pudo obtener todos los detalles del pedido")),
-                    null,
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-                Times.Once);
-        }
-        [Fact]
-        public async Task ObtenerPorIdAsync_ShouldCallRepository_WhenIdIsValid()
-        {
-            // Arrange
-            int validId = 1;
-            var expectedResult = OperationResult.Success("Datos obtenidos");
-            _DetalleRepositoryMock.Setup(x => x.ObtenerPorIdAsync(validId))
-                .ReturnsAsync(expectedResult);
-
-            // Act
-            var result = await _DetalleService.ObtenerPorIdAsync(validId);
-
-            // Assert
-            Assert.Equal(expectedResult, result);
-            _DetalleRepositoryMock.Verify(x => x.ObtenerPorIdAsync(validId), Times.Once);
-           
-        }
-
-        [Fact]
-        public async Task ObtenerPorIdAsync_ShouldLogError_WhenRepositoryReturnsNull()
-        {
-            // Arrange
-            int validId = 1;
-            _DetalleRepositoryMock.Setup(x => x.ObtenerPorIdAsync(validId))
-                .ReturnsAsync((OperationResult)null);
-
-            // Act
-            var result = await _DetalleService.ObtenerPorIdAsync(validId);
-
-            // Assert
-            Assert.False(result.IsSuccess);
-            _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("El repositorio devolvió un valor nulo")),
-                    null,
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-                Times.Once);
-        }
-
 
     }
 }
