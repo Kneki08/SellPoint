@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Pedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
-using SellPoint.Aplication.Validations.Pedidos;
+using SellPoint.Aplication.Validations.PedidoValidator;
 using SellPoint.Aplication.Validations.Mensajes;
 using SellPoint.Domain.Base;
 using SellPoint.Domainn.Entities.Orders;

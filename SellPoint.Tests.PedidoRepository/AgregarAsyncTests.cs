@@ -1,9 +1,10 @@
 using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
-using SellPoint.Aplication.Dtos.Pedido;
-using SellPoint.Domain.Base;
+using SellPoint.Domainn.Entities.Orders;
 using PedidoRepositoryClass = SellPoint.Persistence.Repositories.PedidoRepository;
+using SellPoint.Domain.Base;
+using SellPoint.Aplication.Validations.Mensajes;
 
 namespace SellPoint.Tests.PedidoRepository
 {
@@ -13,108 +14,125 @@ namespace SellPoint.Tests.PedidoRepository
 
         public AgregarAsyncTests()
         {
+            var connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SellPointTestDb;";
             var loggerMock = new Mock<ILogger<PedidoRepositoryClass>>();
-            string fakeConnectionString = "Server=(local);Database=FakeDB;Trusted_Connection=True;";
-            _repository = new PedidoRepositoryClass(fakeConnectionString, loggerMock.Object);
+            _repository = new PedidoRepositoryClass(connectionString, loggerMock.Object);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoEntidadEsNula()
         {
-            var result = await _repository.AgregarAsync(null!);
+            var resultado = await _repository.AgregarAsync(null!);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal("La entidad no puede ser nula.", result.Message);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.EntidadNula, resultado.Message);
         }
 
         [Fact]
-        public async Task AgregarAsync_DeberiaRetornarError_CuandoUsuarioIdEsCero()
+        public async Task AgregarAsync_DeberiaRetornarError_CuandoUsuarioIdEsInvalido()
         {
-            var dto = new SavePedidoDTO { UsuarioId = 0 };
-            var result = await _repository.AgregarAsync(dto);
-
-            Assert.False(result.IsSuccess);
-            Assert.Equal("El UsuarioId debe ser mayor que cero.", result.Message);
-        }
-
-        [Fact]
-        public async Task AgregarAsync_DeberiaRetornarError_CuandoTotalNoCoincide()
-        {
-            var dto = new SavePedidoDTO
+            var pedido = new Pedido
             {
-                UsuarioId = 1,
+                IdUsuario = 0,
+                MetodoPago = MetodoPago.PayPal,
+                Estado = EstadoPedido.EnPreparacion,
                 Subtotal = 100,
-                Descuento = 10,
-                CostoEnvio = 5,
-                Total = 80 // incorrecto
+                Descuento = 0,
+                CostoEnvio = 50,
+                Total = 150,
+                Fecha_creacion = DateTime.Now
             };
 
-            var result = await _repository.AgregarAsync(dto);
+            var resultado = await _repository.AgregarAsync(pedido);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal("El total no coincide con la suma de subtotal, descuento y costo de envío.", result.Message);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.UsuarioIdInvalido, resultado.Message);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoMetodoPagoEsMuyLargo()
         {
-            var dto = new SavePedidoDTO
+            var pedido = new Pedido
             {
-                UsuarioId = 1,
+                IdUsuario = 1,
+                MetodoPago = (MetodoPago)999, // Simula un valor fuera del enum definido
+                Estado = EstadoPedido.EnPreparacion,
                 Subtotal = 100,
-                Descuento = 10,
-                CostoEnvio = 5,
-                Total = 95,
-                MetodoPago = new string('X', 51)
+                Descuento = 0,
+                CostoEnvio = 50,
+                Total = 150,
+                Fecha_creacion = DateTime.Now
             };
 
-            var result = await _repository.AgregarAsync(dto);
+            var resultado = await _repository.AgregarAsync(pedido);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal("El método de pago no debe superar los 50 caracteres.", result.Message);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.MetodoPagoNoValido, resultado.Message);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoReferenciaPagoEsMuyLarga()
         {
-            var dto = new SavePedidoDTO
+            var pedido = new Pedido
             {
-                UsuarioId = 1,
+                IdUsuario = 1,
+                MetodoPago = MetodoPago.PayPal,
+                Estado = EstadoPedido.EnPreparacion,
+                ReferenciaPago = new string('R', 101),
                 Subtotal = 100,
-                Descuento = 10,
-                CostoEnvio = 5,
-                Total = 95,
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = new string('R', 101)
+                Descuento = 0,
+                CostoEnvio = 50,
+                Total = 150,
+                Fecha_creacion = DateTime.Now
             };
 
-            var result = await _repository.AgregarAsync(dto);
+            var resultado = await _repository.AgregarAsync(pedido);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal("La referencia de pago no debe superar los 100 caracteres.", result.Message);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.ReferenciaPagoMuyLarga, resultado.Message);
         }
 
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoNotasSonMuyLargas()
         {
-            var dto = new SavePedidoDTO
+            var pedido = new Pedido
             {
-                UsuarioId = 1,
+                IdUsuario = 1,
+                MetodoPago = MetodoPago.PayPal,
+                Estado = EstadoPedido.EnPreparacion,
+                Notas = new string('N', 501),
                 Subtotal = 100,
-                Descuento = 10,
-                CostoEnvio = 5,
-                Total = 95,
-                MetodoPago = "Tarjeta",
-                ReferenciaPago = "ABC123",
-                Notas = new string('N', 501)
+                Descuento = 0,
+                CostoEnvio = 50,
+                Total = 150,
+                Fecha_creacion = DateTime.Now
             };
 
-            var result = await _repository.AgregarAsync(dto);
+            var resultado = await _repository.AgregarAsync(pedido);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal("Las notas no deben superar los 500 caracteres.", result.Message);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.NotasMuyLargas, resultado.Message);
         }
 
-        
+        [Fact]
+        public async Task AgregarAsync_DeberiaRetornarError_CuandoTotalEsInconsistente()
+        {
+            var pedido = new Pedido
+            {
+                IdUsuario = 1,
+                MetodoPago = MetodoPago.PayPal,
+                Estado = EstadoPedido.EnPreparacion,
+                Subtotal = 100,
+                Descuento = 10,
+                CostoEnvio = 20,
+                Total = 200, // incorrecto, debería ser 110
+                Fecha_creacion = DateTime.Now
+            };
+
+            var resultado = await _repository.AgregarAsync(pedido);
+
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.TotalInconsistente, resultado.Message);
+        }
     }
 }

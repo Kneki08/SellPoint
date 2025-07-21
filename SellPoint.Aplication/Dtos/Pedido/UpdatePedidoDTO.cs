@@ -1,6 +1,6 @@
 ﻿namespace SellPoint.Aplication.Dtos.Pedido
 {
-    public class UpdatePedidoDTO : BaseMontosPedidoDTO
+    public class UpdatePedidoDTO : BasePedidoDTO
     {
         public required int Id { get; set; }
         public string Notas { get; set; } = string.Empty;

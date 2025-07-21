@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SellPoint.Aplication.Dtos.Pedido;
 using PedidoRepositoryClass = SellPoint.Persistence.Repositories.PedidoRepository;
 using SellPoint.Domain.Base;
+using SellPoint.Aplication.Validations.Mensajes;
 
 namespace SellPoint.Tests.PedidoRepository
 {
@@ -19,42 +20,56 @@ namespace SellPoint.Tests.PedidoRepository
         }
 
         [Fact]
-        public async Task EliminarAsync_DeberiaRetornarError_CuandoEntidadEsNula()
+        public async Task EliminarAsync_DeberiaRetornarError_CuandoDTOEsNulo()
         {
-            var result = await _repository.EliminarAsync(null!);
+            RemovePedidoDTO? dto = null;
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal("La entidad no puede ser nula.", result.Message);
+            var resultado = await _repository.EliminarAsync(dto!);
+
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.EntidadNula, resultado.Message);
         }
 
         [Fact]
-        public async Task EliminarAsync_DeberiaRetornarError_CuandoIdEsMenorOIgualACero()
+        public async Task EliminarAsync_DeberiaRetornarError_CuandoIdEsInvalido()
         {
             var dto = new RemovePedidoDTO { Id = 0 };
 
-            var result = await _repository.EliminarAsync(dto);
+            var resultado = await _repository.EliminarAsync(dto);
 
-            Assert.False(result.IsSuccess); 
-            Assert.Equal("El Id del pedido debe ser mayor que cero.", result.Message);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.PedidoIdInvalido, resultado.Message);
         }
 
-        
-        
         [Fact]
-        public async Task EliminarAsync_DeberiaRetornarExito_CuandoDTOEsValido()
+        public async Task EliminarAsync_DeberiaRetornarError_CuandoSPNoEliminaNada()
         {
-            var dto = new RemovePedidoDTO
+            var dto = new RemovePedidoDTO { Id = 99999 }; // ID que no exista en la DB
+
+            var resultado = await _repository.EliminarAsync(dto);
+
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.PedidoNoEliminado, resultado.Message);
+        }
+
+        [Fact]
+        public async Task EliminarAsync_DeberiaRetornarSuccess_CuandoPedidoEsValidoYExiste()
+        {
+            var dto = new RemovePedidoDTO { Id = 1 }; // ⚠️ Asegúrate de que exista en la DB de prueba
+
+            var resultado = await _repository.EliminarAsync(dto);
+
+            if (resultado.IsSuccess)
             {
-                Id = 1 
-            };
-
-            var result = await _repository.EliminarAsync(dto);
-
-            
-            if (result.IsSuccess)
-                Assert.Equal("Pedido eliminado correctamente.", result.Message);
+                Assert.True(resultado.IsSuccess);
+                Assert.Equal(MensajesValidacion.PedidoEliminado, resultado.Message);
+            }
             else
-                Assert.Equal("Error al eliminar el pedido", result.Message);
+            {
+                // Asegúrate de que esté claro si no se eliminó por no existir
+                Assert.False(resultado.IsSuccess);
+                Assert.Equal(MensajesValidacion.PedidoNoEliminado, resultado.Message);
+            }
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using SellPoint.Aplication.Dtos.Pedido;
-
-public class PedidoDTO : BaseMontosPedidoDTO
+﻿namespace SellPoint.Aplication.Dtos.Pedido
 {
-    public required int Id { get; set; }
-    public string NumeroPedido { get; set; } = string.Empty;
-    public string Notas { get; set; } = string.Empty;
+    public class PedidoDTO : BasePedidoDTO
+    {
+        public required int Id { get; set; }
+        public string NumeroPedido { get; set; } = string.Empty;
+        public string Notas { get; set; } = string.Empty;
+    }
 }

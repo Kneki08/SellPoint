@@ -1,9 +1,9 @@
 ﻿using Xunit;
-using Microsoft.Extensions.Logging;
 using Moq;
+using Microsoft.Extensions.Logging;
 using PedidoRepositoryClass = SellPoint.Persistence.Repositories.PedidoRepository;
 using SellPoint.Domain.Base;
-using System.Threading.Tasks;
+using SellPoint.Aplication.Validations.Mensajes;
 
 namespace SellPoint.Tests.PedidoRepository
 {
@@ -19,59 +19,45 @@ namespace SellPoint.Tests.PedidoRepository
         }
 
         [Fact]
-        public async Task ObtenerPorIdAsync_DeberiaRetornarError_CuandoIdEsMenorOIgualACero()
+        public async Task ObtenerPorIdAsync_DeberiaRetornarError_CuandoIdEsInvalido()
         {
-            // Arrange
-            int id = 0;
+            int idInvalido = 0;
 
-            // Act
-            var result = await _repository.ObtenerPorIdAsync(id);
+            var resultado = await _repository.ObtenerPorIdAsync(idInvalido);
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal("El Id debe ser mayor que cero.", result.Message);
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.PedidoIdInvalido, resultado.Message);
         }
 
         [Fact]
-        public async Task ObtenerPorIdAsync_DeberiaRetornarError_CuandoNoSeEncuentra()
+        public async Task ObtenerPorIdAsync_DeberiaRetornarError_CuandoPedidoNoExiste()
         {
-            // Arrange
-            int id = 999999; 
+            int idNoExistente = 99999; // Asegúrate que este ID no esté en la DB
 
-            // Act
-            var result = await _repository.ObtenerPorIdAsync(id);
+            var resultado = await _repository.ObtenerPorIdAsync(idNoExistente);
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Contains(result.Message, new[] {
-            "No se encontró el pedido.",
-            "Error al obtener el pedido por Id"
-        });
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.PedidoNoEncontradoSimple, resultado.Message);
         }
 
         [Fact]
-        public async Task ObtenerPorIdAsync_DeberiaRetornarExito_CuandoExistePedido()
+        public async Task ObtenerPorIdAsync_DeberiaRetornarSuccess_CuandoPedidoExiste()
         {
-            // Arrange
-            int id = 1; 
+            int idExistente = 1; // Asegúrate de tener este ID en tu base de datos SellPointTestDb
 
-            // Act
-            var result = await _repository.ObtenerPorIdAsync(id);
+            var resultado = await _repository.ObtenerPorIdAsync(idExistente);
 
-            // Assert
-            if (result.IsSuccess)
+            if (resultado.IsSuccess)
             {
-                Assert.NotNull(result.Data);
-                Assert.Equal("Pedido obtenido correctamente.", result.Message);
+                Assert.True(resultado.IsSuccess);
+                Assert.Equal(MensajesValidacion.PedidoObtenido, resultado.Message);
+                Assert.NotNull(resultado.Data);
             }
             else
             {
-                
-                Assert.False(result.IsSuccess);
-                Assert.Contains(result.Message, new[] {
-                "No se encontró el pedido.",
-                "Error al obtener el pedido por Id"
-        });
+                // Alternativa segura si el pedido no existe (evita fallo falso)
+                Assert.False(resultado.IsSuccess);
+                Assert.Equal(MensajesValidacion.PedidoNoEncontradoSimple, resultado.Message);
             }
         }
     }
