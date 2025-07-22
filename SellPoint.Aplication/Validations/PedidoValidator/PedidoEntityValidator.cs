@@ -18,6 +18,9 @@ namespace SellPoint.Aplication.Validations.PedidoValidator
             if (!montosValidos.IsSuccess)
                 return montosValidos;
 
+            if (!Enum.IsDefined(typeof(MetodoPago), pedido.MetodoPago))
+                return OperationResult.Failure(MensajesValidacion.MetodoPagoNoValido);
+
             if (string.IsNullOrWhiteSpace(pedido.MetodoPago.ToString()))
                 return OperationResult.Failure(MensajesValidacion.MetodoPagoRequerido);
 
@@ -32,6 +35,9 @@ namespace SellPoint.Aplication.Validations.PedidoValidator
 
             if (validarFechaActualizacion)
             {
+                if (pedido.Id <= 0)
+                    return OperationResult.Failure(MensajesValidacion.PedidoIdInvalido);
+
                 if (pedido.Fecha_actualizacion == null ||
                     pedido.Fecha_actualizacion == DateTime.MinValue ||
                     pedido.Fecha_actualizacion > DateTime.UtcNow.AddMinutes(5))

@@ -1,14 +1,15 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 using SellPoint.Aplication.Dtos.Pedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
-using PedidoServiceClass = SellPoint.Aplication.Services.PedidoService.PedidoService;
-using SellPoint.Domain.Base;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
-using System;
 using SellPoint.Aplication.Validations.Mensajes; 
+using SellPoint.Domain.Base;
+using Xunit;
+using PedidoServiceClass = SellPoint.Aplication.Services.PedidoService.PedidoService;
+using SellPoint.Domainn.Entities.Orders;
 
 namespace SellPoint.Tests.PedidoService
 {
@@ -41,7 +42,7 @@ namespace SellPoint.Tests.PedidoService
                 Estado = "EnPreparacion",
                 IdDireccionEnvio = 1,
                 CuponId = null,
-                MetodoPago = "Tarjeta",
+                MetodoPago = MetodoPago.Tarjeta.ToString(),
                 ReferenciaPago = "ABC123",
                 Subtotal = 100,
                 Descuento = 0,

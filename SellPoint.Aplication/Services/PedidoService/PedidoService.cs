@@ -104,6 +104,15 @@ namespace SellPoint.Aplication.Services.PedidoService
 
             try
             {
+                // ✅ Parsear el estado correctamente
+                if (!Enum.TryParse(dto.Estado, ignoreCase: true, out EstadoPedido estado))
+                    return OperationResult.Failure(MensajesValidacion.EstadoNoValido);
+
+                // ✅ Parsear el método de pago correctamente
+                if (!Enum.TryParse(dto.MetodoPago, ignoreCase: true, out MetodoPago metodoPago))
+                    return OperationResult.Failure(MensajesValidacion.MetodoPagoNoValido);
+
+                
                 var pedido = new Pedido
                 {
                     IdUsuario = dto.IdUsuario,
@@ -113,9 +122,8 @@ namespace SellPoint.Aplication.Services.PedidoService
                     Total = dto.Total,
                     CuponId = dto.CuponId,
                     DireccionEnvioId = dto.IdDireccionEnvio,
-                    MetodoPago = Enum.TryParse<MetodoPago>(dto.MetodoPago, out var metodoPago)
-                                 ? metodoPago
-                                 : throw new InvalidOperationException(MensajesValidacion.MetodoPagoRequerido),
+                    MetodoPago = metodoPago,
+                    Estado = estado, 
                     ReferenciaPago = dto.ReferenciaPago,
                     Notas = dto.Notas
                 };

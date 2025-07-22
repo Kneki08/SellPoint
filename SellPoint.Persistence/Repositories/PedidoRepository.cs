@@ -83,6 +83,7 @@ namespace SellPoint.Persistence.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
 
+                command.Parameters.AddWithValue("@Id", pedido.Id); // 👈 ESTE FALTABA
                 command.Parameters.AddWithValue("@UsuarioId", pedido.IdUsuario);
                 command.Parameters.AddWithValue("@Estado", pedido.Estado.ToString());
                 command.Parameters.AddWithValue("@MetodoPago", pedido.MetodoPago.ToString());
@@ -126,21 +127,29 @@ namespace SellPoint.Persistence.Repositories
 
                 command.Parameters.AddWithValue("@Id", removePedido.Id);
 
-                await context.OpenAsync();
-                var result = await command.ExecuteNonQueryAsync();
+                var outputParam = new SqlParameter("@Resultado", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(outputParam);
 
-                if (result > 1)
+                await context.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                int filasAfectadas = outputParam.Value != DBNull.Value ? (int)outputParam.Value : 0;
+
+                if (filasAfectadas > 1)
                     _logger.LogWarning("Se afectaron múltiples filas al eliminar un pedido. Verifica el SP.");
 
                 return OperationResult.Success(
-                    result > 0,
-                    result > 0 ? MensajesValidacion.PedidoEliminado : MensajesValidacion.PedidoNoEliminado
+                    filasAfectadas > 0,
+                    filasAfectadas > 0 ? MensajesValidacion.PedidoEliminado : MensajesValidacion.PedidoNoEliminado
                 );
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al eliminar el pedido");
-                return OperationResult.Failure(MensajesValidacion.ErrorEliminarPedido);
+                _logger.LogError(ex, $"Error en catch: {ex.Message}");
+                return OperationResult.Failure("Error en catch: " + ex.Message);
             }
         }
 

@@ -71,5 +71,21 @@ namespace SellPoint.Tests.PedidoRepository
                 Assert.Equal(MensajesValidacion.PedidoNoEliminado, resultado.Message);
             }
         }
+
+        [Fact]
+        public async Task EliminarAsync_DeberiaRetornarError_CuandoOcurreExcepcionInesperada()
+        {
+            // Usamos una cadena de conexión inválida para provocar una excepción
+            var connectionStringInvalida = "Data Source=servidor_invalido;Initial Catalog=BD;Integrated Security=True;";
+            var loggerMock = new Mock<ILogger<PedidoRepositoryClass>>();
+            var repositorioConFalla = new PedidoRepositoryClass(connectionStringInvalida, loggerMock.Object);
+
+            var dto = new RemovePedidoDTO { Id = 1 }; // ID válido para pasar validación
+
+            var resultado = await repositorioConFalla.EliminarAsync(dto);
+
+            Assert.False(resultado.IsSuccess);
+            Assert.Equal(MensajesValidacion.ErrorEliminarPedido, resultado.Message);
+        }
     }
 }
