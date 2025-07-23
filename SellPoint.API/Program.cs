@@ -13,19 +13,17 @@ namespace SellPoint.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // ?? DbContext con MySQL usando Pomelo
             builder.Services.AddDbContext<sellpointContext>(options =>
-                options.UseMySql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
-                    new MySqlServerVersion(new Version(8, 0, 36)) // Cambia si tu versión es distinta
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection")
                 ));
 
-            // ?? Dependencias personalizadas
+            
             builder.Services.AddCategoriaDependency();
             builder.Services.AddCuponDependency();
-            // Puedes agregar más: ProductoDependency, PedidoDependency, etc.
+            
 
-            // ?? Swagger + documentación XML
+            
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -46,12 +44,12 @@ namespace SellPoint.API
                 c.IncludeXmlComments(xmlPath);
             });
 
-            // ?? API + MVC (Controladores + Vistas)
+            
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // ?? Entorno de desarrollo con Swagger
+           
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -70,13 +68,13 @@ namespace SellPoint.API
                 app.UseHsts();
             }
 
-            // ?? Middleware básico
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
 
-            // ?? Rutas para controladores API y MVC
+            
             app.MapControllers();
             app.MapControllerRoute(
                 name: "default",
