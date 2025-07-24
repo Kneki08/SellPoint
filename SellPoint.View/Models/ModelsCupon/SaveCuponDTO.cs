@@ -6,5 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCupon
 {
-    public record SaveCuponDTO : BaseCuponDTO;
+    public record SaveCuponDTO : BaseCuponDTO 
+    {
+    }
 }

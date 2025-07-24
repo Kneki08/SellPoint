@@ -7,13 +7,13 @@
         private System.Windows.Forms.TextBox txtId;
         private System.Windows.Forms.TextBox txtNombre;
         private System.Windows.Forms.TextBox txtDescripcion;
-        private System.Windows.Forms.Label lblId;
-        private System.Windows.Forms.Label lblNombre;
-        private System.Windows.Forms.Label lblDescripcion;
         private System.Windows.Forms.Button btnCargar;
         private System.Windows.Forms.Button btnCrear;
         private System.Windows.Forms.Button btnActualizar;
         private System.Windows.Forms.Button btnEliminar;
+        private System.Windows.Forms.Label lblId;
+        private System.Windows.Forms.Label lblNombre;
+        private System.Windows.Forms.Label lblDescripcion;
 
         protected override void Dispose(bool disposing)
         {
@@ -24,137 +24,139 @@
 
         private void InitializeComponent()
         {
-            dgvCategorias = new DataGridView();
-            txtId = new TextBox();
-            txtNombre = new TextBox();
-            txtDescripcion = new TextBox();
-            lblId = new Label();
-            lblNombre = new Label();
-            lblDescripcion = new Label();
-            btnCargar = new Button();
-            btnCrear = new Button();
-            btnActualizar = new Button();
-            btnEliminar = new Button();
-            ((System.ComponentModel.ISupportInitialize)dgvCategorias).BeginInit();
-            SuspendLayout();
+            this.dgvCategorias = new System.Windows.Forms.DataGridView();
+            this.txtId = new System.Windows.Forms.TextBox();
+            this.txtNombre = new System.Windows.Forms.TextBox();
+            this.txtDescripcion = new System.Windows.Forms.TextBox();
+            this.btnCargar = new System.Windows.Forms.Button();
+            this.btnCrear = new System.Windows.Forms.Button();
+            this.btnActualizar = new System.Windows.Forms.Button();
+            this.btnEliminar = new System.Windows.Forms.Button();
+            this.lblId = new System.Windows.Forms.Label();
+            this.lblNombre = new System.Windows.Forms.Label();
+            this.lblDescripcion = new System.Windows.Forms.Label();
+
+            ((System.ComponentModel.ISupportInitialize)(this.dgvCategorias)).BeginInit();
+            this.SuspendLayout();
+
             // 
             // dgvCategorias
             // 
-            dgvCategorias.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvCategorias.Location = new Point(20, 200);
-            dgvCategorias.Name = "dgvCategorias";
-            dgvCategorias.RowHeadersWidth = 51;
-            dgvCategorias.Size = new Size(600, 200);
-            dgvCategorias.TabIndex = 0;
+            this.dgvCategorias.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvCategorias.Location = new System.Drawing.Point(20, 160);
+            this.dgvCategorias.Name = "dgvCategorias";
+            this.dgvCategorias.Size = new System.Drawing.Size(600, 200);
+            this.dgvCategorias.TabIndex = 0;
+
             // 
             // txtId
             // 
-            txtId.Location = new Point(140, 20);
-            txtId.Name = "txtId";
-            txtId.Size = new Size(150, 27);
-            txtId.TabIndex = 1;
+            this.txtId.Location = new System.Drawing.Point(120, 20);
+            this.txtId.Name = "txtId";
+            this.txtId.Size = new System.Drawing.Size(180, 23);
+
             // 
             // txtNombre
             // 
-            txtNombre.Location = new Point(140, 60);
-            txtNombre.Name = "txtNombre";
-            txtNombre.Size = new Size(150, 27);
-            txtNombre.TabIndex = 2;
+            this.txtNombre.Location = new System.Drawing.Point(120, 50);
+            this.txtNombre.Name = "txtNombre";
+            this.txtNombre.Size = new System.Drawing.Size(180, 23);
+
             // 
             // txtDescripcion
             // 
-            txtDescripcion.Location = new Point(140, 100);
-            txtDescripcion.Name = "txtDescripcion";
-            txtDescripcion.Size = new Size(150, 27);
-            txtDescripcion.TabIndex = 3;
-            // 
-            // lblId
-            // 
-            lblId.AutoSize = true;
-            lblId.Location = new Point(20, 23);
-            lblId.Name = "lblId";
-            lblId.Size = new Size(27, 20);
-            lblId.TabIndex = 4;
-            lblId.Text = "ID:";
-            // 
-            // lblNombre
-            // 
-            lblNombre.AutoSize = true;
-            lblNombre.Location = new Point(20, 63);
-            lblNombre.Name = "lblNombre";
-            lblNombre.Size = new Size(67, 20);
-            lblNombre.TabIndex = 5;
-            lblNombre.Text = "Nombre:";
-            // 
-            // lblDescripcion
-            // 
-            lblDescripcion.AutoSize = true;
-            lblDescripcion.Location = new Point(20, 103);
-            lblDescripcion.Name = "lblDescripcion";
-            lblDescripcion.Size = new Size(90, 20);
-            lblDescripcion.TabIndex = 6;
-            lblDescripcion.Text = "Descripción:";
+            this.txtDescripcion.Location = new System.Drawing.Point(120, 80);
+            this.txtDescripcion.Name = "txtDescripcion";
+            this.txtDescripcion.Size = new System.Drawing.Size(180, 23);
+
             // 
             // btnCargar
             // 
-            btnCargar.Location = new Point(320, 20);
-            btnCargar.Name = "btnCargar";
-            btnCargar.Size = new Size(100, 25);
-            btnCargar.TabIndex = 7;
-            btnCargar.Text = "Cargar";
-            btnCargar.UseVisualStyleBackColor = true;
-            btnCargar.Click += btnCargar_Click;
+            this.btnCargar.Location = new System.Drawing.Point(320, 20);
+            this.btnCargar.Name = "btnCargar";
+            this.btnCargar.Size = new System.Drawing.Size(90, 23);
+            this.btnCargar.Text = "Cargar";
+            this.btnCargar.UseVisualStyleBackColor = true;
+            this.btnCargar.Click += new System.EventHandler(this.btnCargar_Click);
+
             // 
             // btnCrear
             // 
-            btnCrear.Location = new Point(320, 60);
-            btnCrear.Name = "btnCrear";
-            btnCrear.Size = new Size(100, 25);
-            btnCrear.TabIndex = 8;
-            btnCrear.Text = "Crear";
-            btnCrear.UseVisualStyleBackColor = true;
-            btnCrear.Click += btnCrear_Click;
+            this.btnCrear.Location = new System.Drawing.Point(320, 50);
+            this.btnCrear.Name = "btnCrear";
+            this.btnCrear.Size = new System.Drawing.Size(90, 23);
+            this.btnCrear.Text = "Crear";
+            this.btnCrear.UseVisualStyleBackColor = true;
+            this.btnCrear.Click += new System.EventHandler(this.btnCrear_Click);
+
             // 
             // btnActualizar
             // 
-            btnActualizar.Location = new Point(320, 100);
-            btnActualizar.Name = "btnActualizar";
-            btnActualizar.Size = new Size(100, 25);
-            btnActualizar.TabIndex = 9;
-            btnActualizar.Text = "Actualizar";
-            btnActualizar.UseVisualStyleBackColor = true;
-            btnActualizar.Click += btnActualizar_Click;
+            this.btnActualizar.Location = new System.Drawing.Point(320, 80);
+            this.btnActualizar.Name = "btnActualizar";
+            this.btnActualizar.Size = new System.Drawing.Size(90, 23);
+            this.btnActualizar.Text = "Actualizar";
+            this.btnActualizar.UseVisualStyleBackColor = true;
+            this.btnActualizar.Click += new System.EventHandler(this.btnActualizar_Click);
+
             // 
             // btnEliminar
             // 
-            btnEliminar.Location = new Point(320, 140);
-            btnEliminar.Name = "btnEliminar";
-            btnEliminar.Size = new Size(100, 25);
-            btnEliminar.TabIndex = 10;
-            btnEliminar.Text = "Eliminar";
-            btnEliminar.UseVisualStyleBackColor = true;
-            btnEliminar.Click += btnEliminar_Click;
+            this.btnEliminar.Location = new System.Drawing.Point(320, 110);
+            this.btnEliminar.Name = "btnEliminar";
+            this.btnEliminar.Size = new System.Drawing.Size(90, 23);
+            this.btnEliminar.Text = "Eliminar";
+            this.btnEliminar.UseVisualStyleBackColor = true;
+            this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
+
+            // 
+            // lblId
+            // 
+            this.lblId.AutoSize = true;
+            this.lblId.Location = new System.Drawing.Point(20, 23);
+            this.lblId.Name = "lblId";
+            this.lblId.Text = "ID:";
+
+            // 
+            // lblNombre
+            // 
+            this.lblNombre.AutoSize = true;
+            this.lblNombre.Location = new System.Drawing.Point(20, 53);
+            this.lblNombre.Name = "lblNombre";
+            this.lblNombre.Text = "Nombre:";
+
+            // 
+            // lblDescripcion
+            // 
+            this.lblDescripcion.AutoSize = true;
+            this.lblDescripcion.Location = new System.Drawing.Point(20, 83);
+            this.lblDescripcion.Name = "lblDescripcion";
+            this.lblDescripcion.Text = "Descripción:";
+
             // 
             // FormCategoria
             // 
-            ClientSize = new Size(775, 430);
-            Controls.Add(dgvCategorias);
-            Controls.Add(txtId);
-            Controls.Add(txtNombre);
-            Controls.Add(txtDescripcion);
-            Controls.Add(lblId);
-            Controls.Add(lblNombre);
-            Controls.Add(lblDescripcion);
-            Controls.Add(btnCargar);
-            Controls.Add(btnCrear);
-            Controls.Add(btnActualizar);
-            Controls.Add(btnEliminar);
-            Name = "FormCategoria";
-            Text = "Gestión de Categorías";
-            Load += FormCategoria_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvCategorias).EndInit();
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(650, 400);
+            this.Controls.Add(this.dgvCategorias);
+            this.Controls.Add(this.txtId);
+            this.Controls.Add(this.txtNombre);
+            this.Controls.Add(this.txtDescripcion);
+            this.Controls.Add(this.btnCargar);
+            this.Controls.Add(this.btnCrear);
+            this.Controls.Add(this.btnActualizar);
+            this.Controls.Add(this.btnEliminar);
+            this.Controls.Add(this.lblId);
+            this.Controls.Add(this.lblNombre);
+            this.Controls.Add(this.lblDescripcion);
+            this.Name = "FormCategoria";
+            this.Text = "Gestión de Categorías";
+            this.Load += new System.EventHandler(this.FormCategoria_Load);
+
+            ((System.ComponentModel.ISupportInitialize)(this.dgvCategorias)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
     }
 }

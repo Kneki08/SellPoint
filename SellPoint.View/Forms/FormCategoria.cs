@@ -1,17 +1,21 @@
+
 using SellPoint.View.Models.ModelsCategoria;
 using SellPoint.View.Services.CategoriaApiClient;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SellPoint.View
 {
     public partial class FormCategoria : Form
     {
-        private readonly CategoriaApiClient _categoriaService;
+        private readonly ICategoriaApiClient _categoriaApiClient;
 
-        public FormCategoria(CategoriaApiClient categoriaService)
+        public FormCategoria(ICategoriaApiClient categoriaApiClient)
         {
             InitializeComponent();
-            _categoriaService = new CategoriaApiClient(new HttpClient());
-            _categoriaService = categoriaService;
+            _categoriaApiClient = categoriaApiClient;
         }
 
         private async void FormCategoria_Load(object sender, EventArgs e)
@@ -24,43 +28,23 @@ namespace SellPoint.View
             await CargarCategoriasAsync();
         }
 
-        private async Task CargarCategoriasAsync()
-        {
-            try
-            {
-                var categorias = await _categoriaService.ObtenerTodosAsync();
-                dgvCategorias.DataSource = categorias != null ? new BindingSource(categorias, null) : null;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar categorías: {ex.Message}");
-            }
-        }
-
         private async void btnCrear_Click(object sender, EventArgs e)
         {
             var dto = new SaveCategoriaDTO
             {
-                Nombre = txtNombre.Text,
-                Descripcion = txtDescripcion.Text
+                Nombre = txtNombre.Text.Trim(),
+                Descripcion = txtDescripcion.Text.Trim()
             };
 
-            try
+            bool creado = await _categoriaApiClient.CrearAsync(dto);
+            if (creado)
             {
-                var success = await _categoriaService.CrearAsync(dto);
-                if (success)
-                {
-                    MessageBox.Show("Categoría creada correctamente.");
-                    await CargarCategoriasAsync();
-                }
-                else
-                {
-                    MessageBox.Show("No se pudo crear la categoría.");
-                }
+                MessageBox.Show("Categoría creada con éxito.");
+                await CargarCategoriasAsync();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"Error al crear: {ex.Message}");
+                MessageBox.Show("Error al crear la categoría.");
             }
         }
 
@@ -75,26 +59,19 @@ namespace SellPoint.View
             var dto = new UpdateCategoriaDTO
             {
                 Id = id,
-                Nombre = txtNombre.Text,
-                Descripcion = txtDescripcion.Text
+                Nombre = txtNombre.Text.Trim(),
+                Descripcion = txtDescripcion.Text.Trim()
             };
 
-            try
+            bool actualizado = await _categoriaApiClient.ActualizarAsync(dto);
+            if (actualizado)
             {
-                var success = await _categoriaService.ActualizarAsync(dto);
-                if (success)
-                {
-                    MessageBox.Show("Categoría actualizada.");
-                    await CargarCategoriasAsync();
-                }
-                else
-                {
-                    MessageBox.Show("No se pudo actualizar.");
-                }
+                MessageBox.Show("Categoría actualizada con éxito.");
+                await CargarCategoriasAsync();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"Error al actualizar: {ex.Message}");
+                MessageBox.Show("Error al actualizar la categoría.");
             }
         }
 
@@ -108,23 +85,30 @@ namespace SellPoint.View
 
             var dto = new RemoveCategoriaDTO { Id = id };
 
+            bool eliminado = await _categoriaApiClient.EliminarAsync(dto);
+            if (eliminado)
+            {
+                MessageBox.Show("Categoría eliminada con éxito.");
+                await CargarCategoriasAsync();
+            }
+            else
+            {
+                MessageBox.Show("Error al eliminar la categoría.");
+            }
+        }
+
+        private async Task CargarCategoriasAsync()
+        {
             try
             {
-                var success = await _categoriaService.EliminarAsync(dto);
-                if (success)
-                {
-                    MessageBox.Show("Categoría eliminada.");
-                    await CargarCategoriasAsync();
-                }
-                else
-                {
-                    MessageBox.Show("No se pudo eliminar.");
-                }
+                var categorias = await _categoriaApiClient.ObtenerTodosAsync();
+                dgvCategorias.DataSource = categorias.ToList();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar: {ex.Message}");
+                MessageBox.Show("Error al cargar categorías: " + ex.Message);
             }
         }
     }
 }
+
