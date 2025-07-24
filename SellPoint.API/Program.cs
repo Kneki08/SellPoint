@@ -14,10 +14,12 @@ namespace SellPoint.API
   public static void Main(string[] args)
 {
 var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration["ConnectionStrings:DefaultConnection"] =
+    "Server=MSI;Database=SellPoint2;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True";
 
             // VALIDACIÓN DE LA CADENA DE CONEXIÓN
             var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
-            Console.WriteLine($"Cadena de conexión: {connStr}");
+            Console.WriteLine($"Cadena de conexión forzada: {connStr}");
 
             //  Swagger
             builder.Services.AddEndpointsApiExplorer();

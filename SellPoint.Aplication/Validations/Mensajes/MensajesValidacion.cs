@@ -39,5 +39,6 @@
         public const string ErrorObtenerTodos = "Error al obtener todos los pedidos";
         public const string FechaPedidoInvalida = "La fecha del pedido no es válida.";
         public const string MetodoPagoNoValido = "El método de pago no es válido.";
+        public const string SinPedidosEncontrados = "No se encontraron pedidos en la base de datos.";
     }
 }

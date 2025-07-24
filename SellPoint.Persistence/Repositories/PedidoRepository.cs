@@ -29,41 +29,59 @@ namespace SellPoint.Persistence.Repositories
 
             try
             {
-                _logger.LogInformation("AgregarAsync {UsuarioId}", pedido.IdUsuario);
+                _logger.LogInformation("AgregarAsync iniciado para UsuarioId: {UsuarioId}", pedido.IdUsuario);
 
                 using var context = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_AgregarPedido", context)
+                using var command = new SqlCommand("sp_CreatePedido", context)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@UsuarioId", pedido.IdUsuario);
-                command.Parameters.AddWithValue("@Subtotal", pedido.Subtotal);
-                command.Parameters.AddWithValue("@Descuento", pedido.Descuento);
-                command.Parameters.AddWithValue("@CostoEnvio", pedido.CostoEnvio);
-                command.Parameters.AddWithValue("@Total", pedido.Total);
-                command.Parameters.AddWithValue("@MetodoPago", pedido.MetodoPago.ToString());
-                command.Parameters.AddWithValue("@ReferenciaPago", pedido.ReferenciaPago ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@CuponId", pedido.CuponId ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@DireccionEnvioId", pedido.DireccionEnvioId ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@Notas", pedido.Notas ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@FechaCreacion", pedido.Fecha_creacion);
+                // Mapeo del enum al valor textual que espera la base de datos
+                var estadoDb = pedido.Estado switch
+                {
+                    EstadoPedido.EnPreparacion => "En preparación",
+                    EstadoPedido.Enviado => "Enviado",
+                    EstadoPedido.Entregado => "Entregado",
+                    EstadoPedido.Cancelado => "Cancelado",
+                    _ => throw new ArgumentOutOfRangeException(nameof(pedido.Estado), "Estado no válido.")
+                };
+
+                // Parámetros con los nombres exactos que espera el SP
+                command.Parameters.AddWithValue("@p_usuario_id", pedido.IdUsuario);
+                command.Parameters.AddWithValue("@p_subtotal", pedido.Subtotal);
+                command.Parameters.AddWithValue("@p_descuento", pedido.Descuento);
+                command.Parameters.AddWithValue("@p_costo_envio", pedido.CostoEnvio);
+                command.Parameters.AddWithValue("@p_total", pedido.Total);
+                command.Parameters.AddWithValue("@p_estado", estadoDb);
+                command.Parameters.AddWithValue("@p_metodo_pago", pedido.MetodoPago.ToString());
+                command.Parameters.AddWithValue("@p_referencia_pago", pedido.ReferenciaPago ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_cupon_id", pedido.CuponId ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_direccion_envio_id", pedido.DireccionEnvioId ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_notas", pedido.Notas ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@p_fecha_pedido", pedido.Fecha_creacion);
 
                 await context.OpenAsync();
                 var rowsAffected = await command.ExecuteNonQueryAsync();
 
                 if (rowsAffected > 1)
-                    _logger.LogWarning("Se afectaron múltiples filas al agregar un pedido. Verifica el SP.");
+                {
+                    _logger.LogWarning("Se afectaron múltiples filas ({Rows}) al agregar un pedido. Verifica el SP.", rowsAffected);
+                }
 
-                return OperationResult.Success(
-                    rowsAffected > 0,
-                    rowsAffected > 0 ? MensajesValidacion.PedidoAgregado : MensajesValidacion.PedidoNoAgregado
-                );
+                if (rowsAffected == 0)
+                {
+                    _logger.LogWarning("No se insertó ningún pedido.");
+                    return OperationResult.Failure(MensajesValidacion.PedidoNoAgregado);
+                }
+
+                _logger.LogInformation("Pedido agregado correctamente.");
+                return OperationResult.Success(true, MensajesValidacion.PedidoAgregado);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al agregar el pedido");
-                return OperationResult.Failure(MensajesValidacion.ErrorAgregarPedido);
+                _logger.LogError(ex, "Error inesperado al agregar el pedido: {Mensaje}", ex.Message);
+                return OperationResult.Failure($"Error inesperado al agregar el pedido. Detalle: {ex.Message}");
             }
         }
 
@@ -71,11 +89,15 @@ namespace SellPoint.Persistence.Repositories
         {
             var validacion = PedidoValidator.ValidarEntidad(pedido, true);
             if (!validacion.IsSuccess)
+            {
+                _logger.LogWarning("Validación fallida en ActualizarAsync: {Mensaje}", validacion.Message);
+                _logger.LogWarning("Datos recibidos: {@Pedido}", pedido);
                 return validacion;
+            }
 
             try
             {
-                _logger.LogInformation("ActualizarAsync UsuarioId: {IdUsuario}", pedido.IdUsuario);
+                _logger.LogInformation("ActualizarAsync iniciado para UsuarioId: {IdUsuario}", pedido.IdUsuario);
 
                 using var context = new SqlConnection(_connectionString);
                 using var command = new SqlCommand("sp_ActualizarPedido", context)
@@ -83,7 +105,7 @@ namespace SellPoint.Persistence.Repositories
                     CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@Id", pedido.Id); // 👈 ESTE FALTABA
+                command.Parameters.AddWithValue("@Id", pedido.Id);
                 command.Parameters.AddWithValue("@UsuarioId", pedido.IdUsuario);
                 command.Parameters.AddWithValue("@Estado", pedido.Estado.ToString());
                 command.Parameters.AddWithValue("@MetodoPago", pedido.MetodoPago.ToString());
@@ -94,18 +116,25 @@ namespace SellPoint.Persistence.Repositories
                 await context.OpenAsync();
                 var rowsAffected = await command.ExecuteNonQueryAsync();
 
-                if (rowsAffected > 1)
-                    _logger.LogWarning("Se afectaron múltiples filas al actualizar un pedido. Verifica el SP.");
+                if (rowsAffected == 0)
+                {
+                    _logger.LogWarning("No se actualizó ningún pedido con ID: {Id}", pedido.Id);
+                    return OperationResult.Success(false, MensajesValidacion.PedidoNoActualizado);
+                }
 
-                return OperationResult.Success(
-                    rowsAffected > 0,
-                    rowsAffected > 0 ? MensajesValidacion.PedidoActualizado : MensajesValidacion.PedidoNoActualizado
-                );
+                if (rowsAffected > 1)
+                {
+                    _logger.LogWarning("Se afectaron múltiples filas al actualizar el pedido. ID: {Id}, Filas: {Filas}", pedido.Id, rowsAffected);
+                }
+
+                _logger.LogInformation("Pedido actualizado correctamente. ID: {Id}", pedido.Id);
+                return OperationResult.Success(true, MensajesValidacion.PedidoActualizado);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al actualizar el pedido");
-                return OperationResult.Failure(MensajesValidacion.ErrorActualizarPedido);
+                _logger.LogError(ex, "Error inesperado al actualizar el pedido. ID: {Id}", pedido.Id);
+                return OperationResult.Failure($"{MensajesValidacion.ErrorActualizarPedido} Detalle: {ex.Message}");
+
             }
         }
 
@@ -113,43 +142,45 @@ namespace SellPoint.Persistence.Repositories
         {
             var validacion = PedidoValidator.ValidarRemove(removePedido);
             if (!validacion.IsSuccess)
+            {
+                _logger.LogWarning("Validación fallida en EliminarAsync: {Mensaje}", validacion.Message);
+                _logger.LogWarning("Datos recibidos: {@RemovePedidoDTO}", removePedido);
                 return validacion;
+            }
 
             try
             {
-                _logger.LogInformation("EliminarAsync {Id}", removePedido.Id);
+                _logger.LogInformation("Iniciando eliminación de pedido. ID: {Id}", removePedido.Id);
 
                 using var context = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_EliminarPedido", context)
+                using var command = new SqlCommand("sp_DeletePedido", context)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@Id", removePedido.Id);
-
-                var outputParam = new SqlParameter("@Resultado", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                command.Parameters.Add(outputParam);
+                command.Parameters.AddWithValue("@p_id", removePedido.Id);
 
                 await context.OpenAsync();
-                await command.ExecuteNonQueryAsync();
+                var rowsAffected = await command.ExecuteNonQueryAsync();
 
-                int filasAfectadas = outputParam.Value != DBNull.Value ? (int)outputParam.Value : 0;
+                if (rowsAffected == 0)
+                {
+                    _logger.LogWarning("No se eliminó ningún pedido. ID proporcionado: {Id}", removePedido.Id);
+                    return OperationResult.Success(false, MensajesValidacion.PedidoNoEliminado);
+                }
 
-                if (filasAfectadas > 1)
-                    _logger.LogWarning("Se afectaron múltiples filas al eliminar un pedido. Verifica el SP.");
+                if (rowsAffected > 1)
+                {
+                    _logger.LogWarning("Se eliminaron múltiples filas inesperadamente. ID: {Id}, Filas afectadas: {Filas}", removePedido.Id, rowsAffected);
+                }
 
-                return OperationResult.Success(
-                    filasAfectadas > 0,
-                    filasAfectadas > 0 ? MensajesValidacion.PedidoEliminado : MensajesValidacion.PedidoNoEliminado
-                );
+                _logger.LogInformation("Pedido eliminado correctamente. ID: {Id}", removePedido.Id);
+                return OperationResult.Success(true, MensajesValidacion.PedidoEliminado);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error en catch: {ex.Message}");
-                return OperationResult.Failure("Error en catch: " + ex.Message);
+                _logger.LogError(ex, "Error inesperado al eliminar el pedido. ID: {Id}", removePedido.Id);
+                return OperationResult.Failure(MensajesValidacion.ErrorEliminarPedido);
             }
         }
 
@@ -157,24 +188,30 @@ namespace SellPoint.Persistence.Repositories
         {
             var validacion = PedidoValidator.ValidarId(id);
             if (!validacion.IsSuccess)
+            {
+                _logger.LogWarning("Validación fallida en ObtenerPorIdAsync. ID: {Id}. Motivo: {Mensaje}", id, validacion.Message);
                 return validacion;
+            }
 
             try
             {
-                _logger.LogInformation("ObtenerPorIdAsync {Id}", id);
+                _logger.LogInformation("ObtenerPorIdAsync iniciado para ID: {Id}", id);
 
                 using var context = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_ObtenerPedidoPorId", context)
+                using var command = new SqlCommand("sp_GetPedidoById", context)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
 
-                command.Parameters.AddWithValue("@Id", id);
+                command.Parameters.AddWithValue("@p_id", id); // <--- Asegúrate que coincida con el SP
 
                 await context.OpenAsync();
                 using var reader = await command.ExecuteReaderAsync();
+
                 if (await reader.ReadAsync())
                 {
+                    _logger.LogInformation("Pedido encontrado. ID: {Id}", id);
+
                     var pedido = new PedidoDTO
                     {
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
@@ -201,59 +238,71 @@ namespace SellPoint.Persistence.Repositories
                 }
                 else
                 {
+                    _logger.LogWarning("No se encontró ningún pedido con ID: {Id}", id);
                     return OperationResult.Failure(MensajesValidacion.PedidoNoEncontradoSimple);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener el pedido por Id");
-                return OperationResult.Failure(MensajesValidacion.ErrorObtenerPedidoPorId);
+                _logger.LogError(ex, "Excepción en ObtenerPorIdAsync para ID: {Id}", id);
+                return OperationResult.Failure($"{MensajesValidacion.ErrorObtenerPedidoPorId}. Detalle: {ex.Message}");
             }
         }
 
         public async Task<OperationResult> ObtenerTodosAsync()
         {
+            var pedidos = new List<PedidoDTO>();
+
             try
             {
-                _logger.LogInformation("ObtenerTodosAsync llamado");
-
-                var pedidos = new List<PedidoDTO>();
+                _logger.LogInformation("Conectando a SQL Server con cadena: {ConnStr}", _connectionString);
 
                 using var context = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_ObtenerTodosPedidos", context)
+                using var command = new SqlCommand("sp_GetAllPedidos", context)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
+
+                _logger.LogInformation("Ejecutando stored procedure sp_GetAllPedidos...");
 
                 await context.OpenAsync();
                 using var reader = await command.ExecuteReaderAsync();
 
                 while (await reader.ReadAsync())
                 {
-                    var pedido = new PedidoDTO
+                    try
                     {
-                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                        IdUsuario = reader.GetInt32(reader.GetOrdinal("UsuarioId")),
-                        FechaPedido = reader.GetDateTime(reader.GetOrdinal("FechaPedido")),
-                        Estado = reader["Estado"] as string ?? string.Empty,
-                        IdDireccionEnvio = reader["DireccionEnvioId"] != DBNull.Value
-                            ? reader.GetInt32(reader.GetOrdinal("DireccionEnvioId"))
-                            : 0,
-                        CuponId = reader["CuponId"] != DBNull.Value
-                            ? reader.GetInt32(reader.GetOrdinal("CuponId"))
-                            : null,
-                        MetodoPago = reader["MetodoPago"] as string ?? string.Empty,
-                        ReferenciaPago = reader["ReferenciaPago"] as string ?? string.Empty,
-                        NumeroPedido = reader["NumeroPedido"] as string ?? string.Empty,
-                        Subtotal = reader.GetDecimal(reader.GetOrdinal("Subtotal")),
-                        Descuento = reader.GetDecimal(reader.GetOrdinal("Descuento")),
-                        CostoEnvio = reader.GetDecimal(reader.GetOrdinal("CostoEnvio")),
-                        Total = reader.GetDecimal(reader.GetOrdinal("Total")),
-                        Notas = reader["Notas"] as string ?? string.Empty
-                    };
+                        var pedido = new PedidoDTO
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("id")),
+                            IdUsuario = reader.GetInt32(reader.GetOrdinal("usuario_id")),
+                            FechaPedido = reader.GetDateTime(reader.GetOrdinal("fecha_pedido")),
+                            Estado = reader["estado"] as string ?? string.Empty,
+                            IdDireccionEnvio = reader["direccion_envio_id"] != DBNull.Value
+                                ? reader.GetInt32(reader.GetOrdinal("direccion_envio_id"))
+                                : 0,
+                            CuponId = reader["cupon_id"] != DBNull.Value
+                                ? reader.GetInt32(reader.GetOrdinal("cupon_id"))
+                                : null,
+                            MetodoPago = reader["metodo_pago"] as string ?? string.Empty,
+                            ReferenciaPago = reader["referencia_pago"] as string ?? string.Empty,
+                            NumeroPedido = reader["numero_pedido"] as string ?? string.Empty,
+                            Subtotal = reader.GetDecimal(reader.GetOrdinal("subtotal")),
+                            Descuento = reader.GetDecimal(reader.GetOrdinal("descuento")),
+                            CostoEnvio = reader.GetDecimal(reader.GetOrdinal("costo_envio")),
+                            Total = reader.GetDecimal(reader.GetOrdinal("total")),
+                            Notas = reader["notas"] as string ?? string.Empty
+                        };
 
-                    pedidos.Add(pedido);
+                        pedidos.Add(pedido);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error al leer un pedido del DataReader.");
+                    }
                 }
+
+                _logger.LogInformation("Se obtuvieron {Count} pedidos.", pedidos.Count);
 
                 if (pedidos.Any())
                 {
@@ -261,13 +310,14 @@ namespace SellPoint.Persistence.Repositories
                 }
                 else
                 {
-                    return OperationResult.Failure(MensajesValidacion.ErrorObtenerPedidos);
+                    _logger.LogWarning("No se encontraron pedidos en la base de datos.");
+                    return OperationResult.Success(new List<PedidoDTO>(), MensajesValidacion.SinPedidosEncontrados);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener todos los pedidos");
-                return OperationResult.Failure(MensajesValidacion.ErrorObtenerTodos);
+                _logger.LogError(ex, "Error general al obtener los pedidos.");
+                return OperationResult.Failure($"No se pudieron obtener los pedidos. Detalle: {ex.Message}");
             }
         }
     }

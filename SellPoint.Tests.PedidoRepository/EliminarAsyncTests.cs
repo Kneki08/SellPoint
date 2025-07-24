@@ -1,10 +1,13 @@
 ﻿using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using SellPoint.Aplication.Dtos.Pedido;
 using PedidoRepositoryClass = SellPoint.Persistence.Repositories.PedidoRepository;
 using SellPoint.Domain.Base;
 using SellPoint.Aplication.Validations.Mensajes;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SellPoint.Tests.PedidoRepository
 {
@@ -14,9 +17,15 @@ namespace SellPoint.Tests.PedidoRepository
 
         public EliminarAsyncTests()
         {
-            var connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SellPointTestDb;";
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
             var loggerMock = new Mock<ILogger<PedidoRepositoryClass>>();
-            _repository = new PedidoRepositoryClass(connectionString, loggerMock.Object);
+            _repository = new PedidoRepositoryClass(connectionString!, loggerMock.Object);
         }
 
         [Fact]
@@ -44,7 +53,7 @@ namespace SellPoint.Tests.PedidoRepository
         [Fact]
         public async Task EliminarAsync_DeberiaRetornarError_CuandoSPNoEliminaNada()
         {
-            var dto = new RemovePedidoDTO { Id = 99999 }; // ID que no exista en la DB
+            var dto = new RemovePedidoDTO { Id = 99999 }; // ID que no existe
 
             var resultado = await _repository.EliminarAsync(dto);
 
@@ -55,34 +64,24 @@ namespace SellPoint.Tests.PedidoRepository
         [Fact]
         public async Task EliminarAsync_DeberiaRetornarSuccess_CuandoPedidoEsValidoYExiste()
         {
-            var dto = new RemovePedidoDTO { Id = 1 }; // ⚠️ Asegúrate de que exista en la DB de prueba
+            var dto = new RemovePedidoDTO { Id = 1 }; // ⚠️ Asegúrate que este ID exista en la DB de prueba
 
             var resultado = await _repository.EliminarAsync(dto);
 
-            if (resultado.IsSuccess)
-            {
-                Assert.True(resultado.IsSuccess);
-                Assert.Equal(MensajesValidacion.PedidoEliminado, resultado.Message);
-            }
-            else
-            {
-                // Asegúrate de que esté claro si no se eliminó por no existir
-                Assert.False(resultado.IsSuccess);
-                Assert.Equal(MensajesValidacion.PedidoNoEliminado, resultado.Message);
-            }
+            Assert.True(resultado.IsSuccess, resultado.Message);
+            Assert.Equal(MensajesValidacion.PedidoEliminado, resultado.Message);
         }
 
         [Fact]
         public async Task EliminarAsync_DeberiaRetornarError_CuandoOcurreExcepcionInesperada()
         {
-            // Usamos una cadena de conexión inválida para provocar una excepción
             var connectionStringInvalida = "Data Source=servidor_invalido;Initial Catalog=BD;Integrated Security=True;";
             var loggerMock = new Mock<ILogger<PedidoRepositoryClass>>();
-            var repositorioConFalla = new PedidoRepositoryClass(connectionStringInvalida, loggerMock.Object);
+            var repositorioFalla = new PedidoRepositoryClass(connectionStringInvalida, loggerMock.Object);
 
-            var dto = new RemovePedidoDTO { Id = 1 }; // ID válido para pasar validación
+            var dto = new RemovePedidoDTO { Id = 1 };
 
-            var resultado = await repositorioConFalla.EliminarAsync(dto);
+            var resultado = await repositorioFalla.EliminarAsync(dto);
 
             Assert.False(resultado.IsSuccess);
             Assert.Equal(MensajesValidacion.ErrorEliminarPedido, resultado.Message);
