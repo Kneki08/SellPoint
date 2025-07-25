@@ -14,17 +14,17 @@ namespace SellPoint.View
         {
             ApplicationConfiguration.Initialize();
 
-           
+            // Instancia de HttpClient con base URI de la API  
             var httpClient = new HttpClient
             {
                 BaseAddress = new Uri("http://localhost:5271/api/")
             };
 
-            
+            // Inyección de dependencias  
             var categoriaService = new CategoriaApiClient(httpClient);
             var cuponService = new CuponApiClient(httpClient);
 
-            
+            // Selección de formulario a ejecutar  
             var opcion = MessageBox.Show(
                 "¿Deseas abrir el formulario de Categorías?\n(Sí: Categorías, No: Cupones)",
                 "Seleccionar módulo",
@@ -32,17 +32,15 @@ namespace SellPoint.View
                 MessageBoxIcon.Question
             );
 
-            
-            Form formulario = opcion switch
-            {
-                DialogResult.Yes => new FormCategoria(categoriaService),
-                DialogResult.No => new FormCupon(cuponService),
-                _ => null
-            };
+            // Elige el formulario según la opción  
+            Form formulario = opcion == DialogResult.Yes
+                ? new FormCategoria(categoriaService)
+                : new FormCupon(cuponService);
 
-            if (formulario != null)
-                Application.Run(formulario);
+            // Ejecuta el formulario  
+            System.Windows.Forms.Application.Run(formulario);
         }
     }
 }
+
 

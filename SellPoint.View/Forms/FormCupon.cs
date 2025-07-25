@@ -1,4 +1,5 @@
 ﻿using SellPoint.Aplication.Dtos.Cupon;
+using SellPoint.View.Models.ModelsCupon;
 using SellPoint.View.Services.CuponApiClient;
 using System;
 using System.Linq;
@@ -7,18 +8,18 @@ using System.Windows.Forms;
 
 namespace SellPoint.View
 {
-    public partial class CuponForm : Form
+    public partial class FormCupon : Form
     {
         private readonly ICuponApiClient _cuponApiClient;
         private readonly ErrorProvider _errorProvider = new ErrorProvider();
 
-        public CuponForm(ICuponApiClient cuponApiClient)
+        public FormCupon(ICuponApiClient cuponApiClient)
         {
             InitializeComponent();
             _cuponApiClient = cuponApiClient;
         }
 
-        private async void CuponForm_Load(object sender, EventArgs e)
+        private async void FormCupon_Load(object sender, EventArgs e)
         {
             await CargarCuponesAsync();
         }
@@ -35,8 +36,8 @@ namespace SellPoint.View
             var dto = new SaveCuponDTO
             {
                 Codigo = txtCodigo.Text.Trim(),
-                ValorDescuento = decimal.Parse(txtValor.Text.Trim()),
-                FechaVencimiento = dtpFecha.Value
+                ValorDescuento = decimal.Parse(txtDescuento.Text),
+                FechaVencimiento = dtpFechaVencimiento.Value
             };
 
             bool creado = await _cuponApiClient.CrearAsync(dto);
@@ -66,8 +67,8 @@ namespace SellPoint.View
             {
                 Id = id,
                 Codigo = txtCodigo.Text.Trim(),
-                ValorDescuento = decimal.Parse(txtValor.Text.Trim()),
-                FechaVencimiento = dtpFecha.Value
+                ValorDescuento = decimal.Parse(txtDescuento.Text),
+                FechaVencimiento = dtpFechaVencimiento.Value
             };
 
             bool actualizado = await _cuponApiClient.ActualizarAsync(dto);
@@ -109,8 +110,16 @@ namespace SellPoint.View
         {
             try
             {
-                var cupones = await _cuponApiClient.ObtenerTodosAsync();
-                dgvCupones.DataSource = cupones.ToList();
+                var cuponesDTO = await _cuponApiClient.ObtenerTodosAsync();
+                var cuponesModel = cuponesDTO.Select(dto => new CuponModel
+                {
+                    Id = dto.Id,
+                    Codigo = dto.Codigo,
+                    ValorDescuento = dto.ValorDescuento,
+                    FechaVencimiento = dto.FechaVencimiento
+                }).ToList();
+
+                dgvCupones.DataSource = cuponesModel;
             }
             catch (Exception ex)
             {
@@ -129,9 +138,9 @@ namespace SellPoint.View
                 valido = false;
             }
 
-            if (!decimal.TryParse(txtValor.Text, out _))
+            if (string.IsNullOrWhiteSpace(txtDescuento.Text) || !decimal.TryParse(txtDescuento.Text, out _))
             {
-                _errorProvider.SetError(txtValor, "Valor inválido.");
+                _errorProvider.SetError(txtDescuento, "El descuento debe ser numérico.");
                 valido = false;
             }
 
@@ -142,11 +151,12 @@ namespace SellPoint.View
         {
             txtId.Text = "";
             txtCodigo.Text = "";
-            txtValor.Text = "";
-            dtpFecha.Value = DateTime.Now;
+            txtDescuento.Text = "";
+            dtpFechaVencimiento.Value = DateTime.Today;
             _errorProvider.Clear();
         }
     }
 }
+
 
 
