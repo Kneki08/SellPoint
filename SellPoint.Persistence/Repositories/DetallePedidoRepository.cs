@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SellPoint.Aplication.Dtos.DetallePedido;
 using SellPoint.Aplication.Interfaces.Repositorios;
 using SellPoint.Domain.Base;
 using SellPoint.Domain.Entities.Orders;
 using SellPoint.Persistence.Context;
+using System.Data;
 using System.Linq.Expressions;
 
 namespace SellPoint.Persistence.Repositories
@@ -26,51 +29,52 @@ namespace SellPoint.Persistence.Repositories
             {
                 var entity = await _context.DetallePedido.FindAsync(id);
                 if (entity == null)
-                    return OperationResult.Failure("Detalle no encontrado.");
+                    return OperationResult.Success(null); // o Failure con código 404 si lo soportas
 
                 return OperationResult.Success(entity);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener por ID");
-                return OperationResult.Failure("Error al obtener por ID.");
+                return OperationResult.Failure("Error al consultar el detalle");
             }
         }
 
-        public async Task<OperationResult> GetAllAsync(Expression<Func<DetallePedido, bool>>? filter = null)
+        public async Task<List<DetallePedidoDTO>> GetAllAsync()
         {
-            try
-            {
-                var query = _context.DetallePedido.AsQueryable();
-
-                if (filter != null)
-                    query = query.Where(filter);
-
-                var result = await query.ToListAsync();
-
-                return OperationResult.Success(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener todos los detalles");
-                return OperationResult.Failure("Error al obtener todos los detalles.");
-            }
+                        return await _context.DetallePedido
+                       .Where(d => !d.Esta_eliminado)
+                       .Select(d => new DetallePedidoDTO
+                       {
+                           Id = d.Id,
+                           Cantidad = d.Cantidad,
+                           PrecioUnitario = d.PrecioUnitario,
+                           PedidoId = d.Pedidoid,
+                           ProductoId = d.ProductoId
+                       })
+                       .ToListAsync();
+           
         }
 
         public async Task<OperationResult> AddAsync(DetallePedido entity)
         {
             try
             {
+                if (entity == null)
+                    return OperationResult.Failure("El detalle del pedido no puede ser nulo.");
+
                 await _context.DetallePedido.AddAsync(entity);
                 await _context.SaveChangesAsync();
+
                 return OperationResult.Success("Detalle agregado correctamente.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al agregar");
-                return OperationResult.Failure("Error al agregar detalle.");
+                Console.WriteLine($"ERROR INTERNO: {ex.Message}");
+                // Esta línea es la más importante
+                return OperationResult.Failure($"Error al agregar detalle: {ex.Message}");
             }
         }
+
 
         public async Task<OperationResult> UpdateAsync(DetallePedido entity)
         {
@@ -82,8 +86,8 @@ namespace SellPoint.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al actualizar");
-                return OperationResult.Failure("Error al actualizar.");
+                _logger.LogError(ex, $"Error al actualiza el detalle: {ex.Message}");
+                return OperationResult.Failure($"Error: {ex.Message}");
             }
         }
 
