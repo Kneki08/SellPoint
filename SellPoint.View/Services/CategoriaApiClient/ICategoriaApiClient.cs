@@ -1,4 +1,5 @@
-﻿using SellPoint.View.Models.ModelsCategoria;
+﻿using SellPoint.Aplication.Dtos.Categoria;
+using SellPoint.View.Models.ModelsCategoria;
 using System;
 using System.Collections.Generic;
 using System.Linq;

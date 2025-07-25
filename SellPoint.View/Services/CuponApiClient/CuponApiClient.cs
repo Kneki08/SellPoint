@@ -1,9 +1,11 @@
-﻿using SellPoint.View.Models.ModelsCupon;
+﻿using SellPoint.Aplication.Dtos.Categoria;
+using SellPoint.Aplication.Dtos.Cupon;
+using SellPoint.View.Models.ModelsCupon;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SellPoint.View.Services.CuponApiClient
@@ -11,25 +13,32 @@ namespace SellPoint.View.Services.CuponApiClient
     public class CuponApiClient : ICuponApiClient
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "http://localhost:5271/api/Cupon";
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public CuponApiClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                WriteIndented = true
+            };
         }
 
         public async Task<IEnumerable<CuponDTO>> ObtenerTodosAsync()
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_baseUrl}/ObtenerTodosAsync");
+                var response = await _httpClient.GetAsync("Cupon/ObtenerTodosAsync");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<IEnumerable<CuponDTO>>() ?? [];
+
+                var wrapper = await response.Content.ReadFromJsonAsync<CuponModelResponse>(_jsonOptions);
+                return ConvertToDtoList(wrapper?.data);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al obtener cupones: {ex.Message}");
-                return [];
+                return new List<CuponDTO>();
             }
         }
 
@@ -37,11 +46,11 @@ namespace SellPoint.View.Services.CuponApiClient
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_baseUrl}?id={id}");
-                if (response.IsSuccessStatusCode)
-                    return await response.Content.ReadFromJsonAsync<CuponDTO>();
+                var response = await _httpClient.GetAsync($"Cupon/{id}");
+                if (!response.IsSuccessStatusCode) return null;
 
-                return null;
+                var wrapper = await response.Content.ReadFromJsonAsync<CuponModelResponseSingle>(_jsonOptions);
+                return ConvertToDto(wrapper?.data);
             }
             catch (Exception ex)
             {
@@ -54,7 +63,7 @@ namespace SellPoint.View.Services.CuponApiClient
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/SaveCuponDTO", dto);
+                var response = await _httpClient.PostAsJsonAsync("Cupon/SaveCuponDTO", dto, _jsonOptions);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -68,7 +77,7 @@ namespace SellPoint.View.Services.CuponApiClient
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/UpdateCuponDTO", dto);
+                var response = await _httpClient.PutAsJsonAsync("Cupon/UpdateCuponDTO", dto, _jsonOptions);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -78,11 +87,11 @@ namespace SellPoint.View.Services.CuponApiClient
             }
         }
 
-        public async Task<bool> EliminarAsync(RemoveCuponDTO dto)
+        public async Task<bool> EliminarAsync(RemoveCuponDTIO dto)
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/RemoveCuponDTO", dto);
+                var response = await _httpClient.PostAsJsonAsync("Cupon/RemoveCuponDTO", dto, _jsonOptions);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -91,7 +100,36 @@ namespace SellPoint.View.Services.CuponApiClient
                 return false;
             }
         }
+
+        private IEnumerable<CuponDTO> ConvertToDtoList(IEnumerable<CuponModel>? models)
+        {
+            if (models == null) return new List<CuponDTO>();
+
+            var result = new List<CuponDTO>();
+            foreach (var item in models)
+            {
+                result.Add(new CuponDTO
+                {
+                    Id = item.Id,
+                    Codigo = item.Codigo,
+                    ValorDescuento = item.ValorDescuento,
+                    FechaVencimiento = item.FechaVencimiento
+                });
+            }
+            return result;
+        }
+
+        private CuponDTO? ConvertToDto(CuponModel? model)
+        {
+            if (model == null) return null;
+
+            return new CuponDTO
+            {
+                Id = model.Id,
+                Codigo = model.Codigo,
+                ValorDescuento = model.ValorDescuento,
+                FechaVencimiento = model.FechaVencimiento
+            };
+        }
     }
-
-
 }

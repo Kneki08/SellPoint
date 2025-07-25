@@ -1,21 +1,28 @@
-﻿namespace SellPoint.View
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace SellPoint.View
 {
     partial class CuponForm
     {
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.DataGridView dgvCupones;
-        private System.Windows.Forms.Button btnCargar;
-        private System.Windows.Forms.Button btnCrear;
-        private System.Windows.Forms.Button btnActualizar;
-        private System.Windows.Forms.Button btnEliminar;
-        private System.Windows.Forms.TextBox txtId;
-        private System.Windows.Forms.TextBox txtCodigo;
-        private System.Windows.Forms.TextBox txtDescuento;
-        private System.Windows.Forms.TextBox txtFechaVencimiento;
-        private System.Windows.Forms.Label lblId;
-        private System.Windows.Forms.Label lblCodigo;
-        private System.Windows.Forms.Label lblDescuento;
-        private System.Windows.Forms.Label lblFechaVencimiento;
+        private DataGridView dgvCupones;
+        private TextBox txtId;
+        private TextBox txtCodigo;
+        private TextBox txtValor;
+        private DateTimePicker dtpFecha;
+        private Button btnCargar;
+        private Button btnCrear;
+        private Button btnActualizar;
+        private Button btnEliminar;
+        private Label lblId;
+        private Label lblCodigo;
+        private Label lblValor;
+        private Label lblFecha;
+        private GroupBox grpDatos;
+        private FlowLayoutPanel pnlBotones;
+        private ToolTip toolTip;
 
         protected override void Dispose(bool disposing)
         {
@@ -26,115 +33,101 @@
 
         private void InitializeComponent()
         {
-            this.dgvCupones = new System.Windows.Forms.DataGridView();
-            this.btnCargar = new System.Windows.Forms.Button();
-            this.btnCrear = new System.Windows.Forms.Button();
-            this.btnActualizar = new System.Windows.Forms.Button();
-            this.btnEliminar = new System.Windows.Forms.Button();
-            this.txtId = new System.Windows.Forms.TextBox();
-            this.txtCodigo = new System.Windows.Forms.TextBox();
-            this.txtDescuento = new System.Windows.Forms.TextBox();
-            this.txtFechaVencimiento = new System.Windows.Forms.TextBox();
-            this.lblId = new System.Windows.Forms.Label();
-            this.lblCodigo = new System.Windows.Forms.Label();
-            this.lblDescuento = new System.Windows.Forms.Label();
-            this.lblFechaVencimiento = new System.Windows.Forms.Label();
+            components = new System.ComponentModel.Container();
+            dgvCupones = new DataGridView();
+            txtId = new TextBox();
+            txtCodigo = new TextBox();
+            txtValor = new TextBox();
+            dtpFecha = new DateTimePicker();
+            btnCargar = new Button();
+            btnCrear = new Button();
+            btnActualizar = new Button();
+            btnEliminar = new Button();
+            lblId = new Label();
+            lblCodigo = new Label();
+            lblValor = new Label();
+            lblFecha = new Label();
+            grpDatos = new GroupBox();
+            pnlBotones = new FlowLayoutPanel();
+            toolTip = new ToolTip(components);
 
-            ((System.ComponentModel.ISupportInitialize)(this.dgvCupones)).BeginInit();
-            this.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(dgvCupones)).BeginInit();
+            SuspendLayout();
 
-            // dgvCupones
-            this.dgvCupones.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvCupones.Location = new System.Drawing.Point(20, 220);
-            this.dgvCupones.Name = "dgvCupones";
-            this.dgvCupones.Size = new System.Drawing.Size(600, 200);
-            this.dgvCupones.TabIndex = 0;
-
-            // txtId
-            this.txtId.Location = new System.Drawing.Point(140, 20);
-            this.txtId.Name = "txtId";
-            this.txtId.Size = new System.Drawing.Size(150, 23);
-
-            // txtCodigo
-            this.txtCodigo.Location = new System.Drawing.Point(140, 60);
-            this.txtCodigo.Name = "txtCodigo";
-            this.txtCodigo.Size = new System.Drawing.Size(150, 23);
-
-            // txtDescuento
-            this.txtDescuento.Location = new System.Drawing.Point(140, 100);
-            this.txtDescuento.Name = "txtDescuento";
-            this.txtDescuento.Size = new System.Drawing.Size(150, 23);
-
-            // txtFechaVencimiento
-            this.txtFechaVencimiento.Location = new System.Drawing.Point(140, 140);
-            this.txtFechaVencimiento.Name = "txtFechaVencimiento";
-            this.txtFechaVencimiento.Size = new System.Drawing.Size(150, 23);
+            // grpDatos
+            grpDatos.Text = "Datos del Cupón";
+            grpDatos.Location = new Point(20, 20);
+            grpDatos.Size = new Size(440, 160);
+            grpDatos.Controls.AddRange(new Control[] { lblId, txtId, lblCodigo, txtCodigo, lblValor, txtValor, lblFecha, dtpFecha });
 
             // lblId
-            this.lblId.Text = "ID:";
-            this.lblId.Location = new System.Drawing.Point(20, 20);
-            this.lblId.Size = new System.Drawing.Size(100, 20);
+            lblId.Location = new Point(20, 25);
+            lblId.Size = new Size(60, 15);
+            lblId.Text = "ID:";
+            txtId.Location = new Point(100, 22);
+            txtId.Size = new Size(300, 23);
 
             // lblCodigo
-            this.lblCodigo.Text = "Código:";
-            this.lblCodigo.Location = new System.Drawing.Point(20, 60);
-            this.lblCodigo.Size = new System.Drawing.Size(100, 20);
+            lblCodigo.Location = new Point(20, 55);
+            lblCodigo.Size = new Size(60, 15);
+            lblCodigo.Text = "Código:";
+            txtCodigo.Location = new Point(100, 52);
+            txtCodigo.Size = new Size(300, 23);
 
-            // lblDescuento
-            this.lblDescuento.Text = "Descuento:";
-            this.lblDescuento.Location = new System.Drawing.Point(20, 100);
-            this.lblDescuento.Size = new System.Drawing.Size(100, 20);
+            // lblValor
+            lblValor.Location = new Point(20, 85);
+            lblValor.Size = new Size(100, 15);
+            lblValor.Text = "Valor Descuento:";
+            txtValor.Location = new Point(130, 82);
+            txtValor.Size = new Size(270, 23);
 
-            // lblFechaVencimiento
-            this.lblFechaVencimiento.Text = "Vence:";
-            this.lblFechaVencimiento.Location = new System.Drawing.Point(20, 140);
-            this.lblFechaVencimiento.Size = new System.Drawing.Size(100, 20);
+            // lblFecha
+            lblFecha.Location = new Point(20, 115);
+            lblFecha.Size = new Size(120, 15);
+            lblFecha.Text = "Fecha Vencimiento:";
+            dtpFecha.Location = new Point(150, 112);
+            dtpFecha.Size = new Size(220, 23);
+            dtpFecha.Format = DateTimePickerFormat.Short;
 
-            // btnCargar
-            this.btnCargar.Text = "Cargar";
-            this.btnCargar.Location = new System.Drawing.Point(320, 20);
-            this.btnCargar.Size = new System.Drawing.Size(100, 30);
-            this.btnCargar.Click += new System.EventHandler(this.btnCargar_Click);
+            // pnlBotones
+            pnlBotones.Location = new Point(480, 20);
+            pnlBotones.Size = new Size(140, 160);
+            pnlBotones.FlowDirection = FlowDirection.TopDown;
+            pnlBotones.Controls.AddRange(new Control[] { btnCargar, btnCrear, btnActualizar, btnEliminar });
 
-            // btnCrear
-            this.btnCrear.Text = "Crear";
-            this.btnCrear.Location = new System.Drawing.Point(320, 60);
-            this.btnCrear.Size = new System.Drawing.Size(100, 30);
-            this.btnCrear.Click += new System.EventHandler(this.btnCrear_Click);
+            ConfigurarBoton(btnCargar, "Cargar", "Cargar todos los cupones");
+            ConfigurarBoton(btnCrear, "Crear", "Crear nuevo cupón");
+            ConfigurarBoton(btnActualizar, "Actualizar", "Actualizar el cupón actual");
+            ConfigurarBoton(btnEliminar, "Eliminar", "Eliminar el cupón seleccionado");
 
-            // btnActualizar
-            this.btnActualizar.Text = "Actualizar";
-            this.btnActualizar.Location = new System.Drawing.Point(320, 100);
-            this.btnActualizar.Size = new System.Drawing.Size(100, 30);
-            this.btnActualizar.Click += new System.EventHandler(this.btnActualizar_Click);
+            btnCargar.Click += btnCargar_Click;
+            btnCrear.Click += btnCrear_Click;
+            btnActualizar.Click += btnActualizar_Click;
+            btnEliminar.Click += btnEliminar_Click;
 
-            // btnEliminar
-            this.btnEliminar.Text = "Eliminar";
-            this.btnEliminar.Location = new System.Drawing.Point(320, 140);
-            this.btnEliminar.Size = new System.Drawing.Size(100, 30);
-            this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
+            // dgvCupones
+            dgvCupones.Location = new Point(20, 200);
+            dgvCupones.Size = new Size(600, 200);
 
             // CuponForm
-            this.ClientSize = new System.Drawing.Size(650, 450);
-            this.Controls.Add(this.dgvCupones);
-            this.Controls.Add(this.txtId);
-            this.Controls.Add(this.txtCodigo);
-            this.Controls.Add(this.txtDescuento);
-            this.Controls.Add(this.txtFechaVencimiento);
-            this.Controls.Add(this.lblId);
-            this.Controls.Add(this.lblCodigo);
-            this.Controls.Add(this.lblDescuento);
-            this.Controls.Add(this.lblFechaVencimiento);
-            this.Controls.Add(this.btnCargar);
-            this.Controls.Add(this.btnCrear);
-            this.Controls.Add(this.btnActualizar);
-            this.Controls.Add(this.btnEliminar);
-            this.Name = "CuponForm";
-            this.Text = "Gestión de Cupones";
-            this.Load += new System.EventHandler(this.CuponForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvCupones)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(650, 420);
+            Controls.AddRange(new Control[] { grpDatos, pnlBotones, dgvCupones });
+            Name = "CuponForm";
+            Text = "Gestión de Cupones";
+            Load += CuponForm_Load;
+
+            ((System.ComponentModel.ISupportInitialize)(dgvCupones)).EndInit();
+            ResumeLayout(false);
+        }
+
+        // ✅ Fuera de InitializeComponent para evitar conflictos con el diseñador
+        private void ConfigurarBoton(Button btn, string texto, string tooltip)
+        {
+            btn.Size = new Size(120, 25);
+            btn.Text = texto;
+            toolTip.SetToolTip(btn, tooltip);
         }
     }
 }

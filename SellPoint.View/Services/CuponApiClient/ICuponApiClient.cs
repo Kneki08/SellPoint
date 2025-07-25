@@ -1,4 +1,6 @@
-﻿using SellPoint.View.Models.ModelsCupon;
+﻿using SellPoint.Aplication.Dtos.Categoria;
+using SellPoint.Aplication.Dtos.Cupon;
+using SellPoint.View.Models.ModelsCupon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,6 @@ namespace SellPoint.View.Services.CuponApiClient
         Task<CuponDTO?> ObtenerPorIdAsync(int id);
         Task<bool> CrearAsync(SaveCuponDTO dto);
         Task<bool> ActualizarAsync(UpdateCuponDTO dto);
-        Task<bool> EliminarAsync(RemoveCuponDTO dto);
+        Task<bool> EliminarAsync(RemoveCuponDTIO dto);
     }
 }

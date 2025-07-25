@@ -1,4 +1,5 @@
 
+using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.View.Models.ModelsCategoria;
 using SellPoint.View.Services.CategoriaApiClient;
 using System;
@@ -108,8 +109,16 @@ namespace SellPoint.View
         {
             try
             {
-                var categorias = await _categoriaApiClient.ObtenerTodosAsync();
-                dgvCategorias.DataSource = categorias.ToList();
+                var categoriasDTO = await _categoriaApiClient.ObtenerTodosAsync();
+                var categoriasModel = categoriasDTO.Select(dto => new CategoriaModel
+                {
+                    Id = dto.Id,
+                    Nombre = dto.Nombre,
+                    Descripcion = dto.Descripcion,
+                    Activo = dto.Activo
+                }).ToList();
+
+                dgvCategorias.DataSource = categoriasModel;
             }
             catch (Exception ex)
             {

@@ -8,8 +8,8 @@ namespace SellPoint.Aplication.Dtos.Producto
 {
     public record SaveProductoDTO 
     {
-        public string Nombre { get; init; }
-        public string Descripcion { get; init; }
+        public string? Nombre { get; init; }
+        public string? Descripcion { get; init; }
         public decimal Precio { get; init; }
         public int Stock { get; init; }
         public int? CategoriaId { get; init; }

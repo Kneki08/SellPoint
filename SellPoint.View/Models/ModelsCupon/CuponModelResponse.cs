@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCupon
 {
-    public record RemoveCuponDTO
+    public class CuponModelResponse
     {
-        public int Id { get; init; }
+        public bool isSuccess { get; set; }
+        public string? message { get; set; }
+        public List<CuponModel> data { get; set; }
     }
 }

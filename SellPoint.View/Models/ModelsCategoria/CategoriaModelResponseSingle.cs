@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCategoria
 {
-    public class CategoriaDTO : BaseCategoriaDTO
+    public class CategoriaModelResponseSingle
     {
-        public int Id { get; init; }
-        public bool Activo { get; init; }
+        public bool isSuccess { get; set; }
+        public string message { get; set; }
+        public CategoriaModel data { get; set; }
     }
 }

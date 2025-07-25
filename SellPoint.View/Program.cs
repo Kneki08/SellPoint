@@ -1,4 +1,3 @@
-
 using SellPoint.View;
 using SellPoint.View.Services.CategoriaApiClient;
 using SellPoint.View.Services.CuponApiClient;
@@ -6,7 +5,7 @@ using System;
 using System.Net.Http;
 using System.Windows.Forms;
 
-namespace SellPoint.View.Service
+namespace SellPoint.View
 {
     internal static class Program
     {
@@ -15,28 +14,35 @@ namespace SellPoint.View.Service
         {
             ApplicationConfiguration.Initialize();
 
-            // Instancia de HttpClient compartida
-            var httpClient = new HttpClient();
+           
+            var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:5271/api/")
+            };
 
-            // Inyección de servicios
+            
             var categoriaService = new CategoriaApiClient(httpClient);
             var cuponService = new CuponApiClient(httpClient);
 
-            // Mostrar menú inicial para elegir el formulario
+            
             var opcion = MessageBox.Show(
                 "¿Deseas abrir el formulario de Categorías?\n(Sí: Categorías, No: Cupones)",
                 "Seleccionar módulo",
                 MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
+                MessageBoxIcon.Question
+            );
 
-            if (opcion == DialogResult.Yes)
+            
+            Form formulario = opcion switch
             {
-                Application.Run(new FormCategoria(categoriaService));
-            }
-            else
-            {
-                Application.Run(new CuponForm(cuponService));
-            }
+                DialogResult.Yes => new FormCategoria(categoriaService),
+                DialogResult.No => new FormCupon(cuponService),
+                _ => null
+            };
+
+            if (formulario != null)
+                Application.Run(formulario);
         }
     }
 }
+
