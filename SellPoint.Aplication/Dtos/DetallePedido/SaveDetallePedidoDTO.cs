@@ -12,6 +12,6 @@ namespace SellPoint.Aplication.Dtos.DetallePedido
         public int ProductoId { get; init; }
         public int Cantidad { get; init; }
         public decimal PrecioUnitario { get; init; }
-        public decimal Subtotal { get; init; }
+       
     }
 }
