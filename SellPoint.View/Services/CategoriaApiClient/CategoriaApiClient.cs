@@ -1,10 +1,5 @@
 ﻿using SellPoint.View.Models.ModelsCategoria;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SellPoint.View.Services.CategoriaApiClient
 {
@@ -25,13 +20,13 @@ namespace SellPoint.View.Services.CategoriaApiClient
                 var response = await _httpClient.GetAsync($"{_baseUrl}/ObtenerTodosAsync");
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<OperationResult<List<CategoriaDTO>>>();
-                return result?.Data ?? [];
+                var result = await response.Content.ReadFromJsonAsync<List<CategoriaDTO>>();
+                return result ?? new List<CategoriaDTO>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al obtener categorías: {ex.Message}");
-                return [];
+                Console.WriteLine($"[ObtenerTodosAsync] Error: {ex.Message}");
+                return new List<CategoriaDTO>();
             }
         }
 
@@ -39,18 +34,14 @@ namespace SellPoint.View.Services.CategoriaApiClient
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_baseUrl}?id={id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadFromJsonAsync<OperationResult<CategoriaDTO>>();
-                    return result?.Data;
-                }
+                var response = await _httpClient.GetAsync($"{_baseUrl}/{id}");
+                response.EnsureSuccessStatusCode();
 
-                return null;
+                return await response.Content.ReadFromJsonAsync<CategoriaDTO>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al obtener categoría por ID: {ex.Message}");
+                Console.WriteLine($"[ObtenerPorIdAsync] Error: {ex.Message}");
                 return null;
             }
         }
@@ -60,11 +51,12 @@ namespace SellPoint.View.Services.CategoriaApiClient
             try
             {
                 var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/SaveCategoriaDTO", dto);
-                return response.IsSuccessStatusCode;
+                response.EnsureSuccessStatusCode();
+                return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al crear categoría: {ex.Message}");
+                Console.WriteLine($"[CrearAsync] Error: {ex.Message}");
                 return false;
             }
         }
@@ -74,11 +66,12 @@ namespace SellPoint.View.Services.CategoriaApiClient
             try
             {
                 var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/UpdateCategoriaDTO", dto);
-                return response.IsSuccessStatusCode;
+                response.EnsureSuccessStatusCode();
+                return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al actualizar categoría: {ex.Message}");
+                Console.WriteLine($"[ActualizarAsync] Error: {ex.Message}");
                 return false;
             }
         }
@@ -88,11 +81,12 @@ namespace SellPoint.View.Services.CategoriaApiClient
             try
             {
                 var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/RemoveCategoriaDTO", dto);
-                return response.IsSuccessStatusCode;
+                response.EnsureSuccessStatusCode();
+                return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al eliminar categoría: {ex.Message}");
+                Console.WriteLine($"[EliminarAsync] Error: {ex.Message}");
                 return false;
             }
         }
