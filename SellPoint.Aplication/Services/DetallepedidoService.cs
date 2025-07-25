@@ -27,37 +27,43 @@ namespace SellPoint.Aplication.Services.DetallepedidoService
 
         public async Task<OperationResult> AddAsync(SaveDetallePedidoDTO dto)
         {
-            if (dto == null)
-                return OperationResult.Failure("El DTO no puede ser nulo.");
-
             try
             {
+                if (dto == null)
+                    return OperationResult.Failure("El DTO no puede ser nulo.");
+               
+
                 var entidad = new DetallePedido
                 {
                     Pedidoid = dto.PedidoId,
                     ProductoId = dto.ProductoId,
                     Cantidad = dto.Cantidad,
                     PrecioUnitario = dto.PrecioUnitario
+                  
                 };
 
-                return await _detallePedidoRepository.AddAsync(entidad);
+                var result = await _detallePedidoRepository.AddAsync(entidad);
+                return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al agregar el detalle del pedido.");
-                return OperationResult.Failure("Error interno.");
+                Console.WriteLine($"ERROR INTERNO: {ex.Message}");
+                _logger.LogError(ex, "Error al agregar detalle");
+                return OperationResult.Failure($"Error al agregar detalle: {ex.Message}");
+                
             }
         }
 
         public async Task<OperationResult> UpdateAsync(UpdateDetallePedidoDTO dto)
         {
-            if (dto == null)
+            if (dto == null || dto.Id <= 0)
                 return OperationResult.Failure("La entidad no puede ser nula.");
 
             try
             {
                 var entidad = new DetallePedido
                 {
+                    Id = dto.Id,
                     Pedidoid = dto.PedidoId,
                     ProductoId = dto.ProductoId,
                     Cantidad = dto.Cantidad,
@@ -68,8 +74,8 @@ namespace SellPoint.Aplication.Services.DetallepedidoService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al actualizar el detalle del pedido.");
-                return OperationResult.Failure("Error interno.");
+                _logger.LogError(ex, $"Error al actualizar el detalle: {ex.Message}");
+                return OperationResult.Failure($"Error: {ex.Message}");
             }
         }
 
@@ -84,8 +90,8 @@ namespace SellPoint.Aplication.Services.DetallepedidoService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al eliminar el detalle del pedido.");
-                return OperationResult.Failure("Error interno.");
+                _logger.LogError(ex, $"Error al eliminar el detalle: {ex.Message}");
+                return OperationResult.Failure($"Error: {ex.Message}");
             }
         }
 
@@ -97,22 +103,28 @@ namespace SellPoint.Aplication.Services.DetallepedidoService
             try
             {
                 var result = await _detallePedidoRepository.GetByIdAsync(id);
-                if (!result.IsSuccess || result.Data is not DetallePedido entidad)
-                    return OperationResult.Failure("Detalle no encontrado.");
+                if (!result.IsSuccess)
+                    return result; // Deja que el repositorio maneje el mensaje
+
+                if (result.Data is not DetallePedido entidad)
+                    return OperationResult.Success(null); // Devolver 200 con data: null
+
 
                 var dto = new DetallePedidoDTO
                 {
+                    Id = entidad.Id,
                     PedidoId = entidad.Pedidoid,
                     ProductoId = entidad.ProductoId,
                     Cantidad = entidad.Cantidad,
+                    PrecioUnitario = entidad.PrecioUnitario
                 };
 
                 return OperationResult.Success(dto);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener el detalle del pedido por ID.");
-                return OperationResult.Failure("Error interno.");
+                _logger.LogError(ex, $"Error al obtener por id el detalle: {ex.Message}");
+                return OperationResult.Failure($"Error: {ex.Message}");
             }
         }
 
@@ -120,26 +132,26 @@ namespace SellPoint.Aplication.Services.DetallepedidoService
         {
             try
             {
-                var result = await _detallePedidoRepository.GetAllAsync();
-                if (!result.IsSuccess || result.Data is not IEnumerable<DetallePedido> lista)
-                    return OperationResult.Failure("No se encontraron datos.");
+                var lista = await _detallePedidoRepository.GetAllAsync();
 
-                var dtoList = lista.Select(dp => new DetallePedidoDTO
-                {
-                    PedidoId = dp.Pedidoid,
-                    ProductoId = dp.ProductoId,
-                    Cantidad = dp.Cantidad,
-                }).ToList();
-
-                return OperationResult.Success(dtoList);
+                return OperationResult.Success(lista);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener todos los detalles del pedido.");
-                return OperationResult.Failure("Error interno.");
+                _logger.LogError(ex, "Error al obtener los detalles del pedido.");
+                return OperationResult.Failure("Error al obtener los detalles del pedido.");
+            }
+            try
+            {
+                await _detallePedidoRepository.GetAllAsync();
+                var lista = new List<DetallePedidoDTO>(); // simula que no hay datos
+                return OperationResult.Success(lista);
+            }
+            catch
+            {
+                return OperationResult.Failure("Error");
             }
         }
-
         public async Task<OperationResult> SaveChangesAsync()
         {
             try
@@ -155,3 +167,4 @@ namespace SellPoint.Aplication.Services.DetallepedidoService
         }
     }
 }
+
