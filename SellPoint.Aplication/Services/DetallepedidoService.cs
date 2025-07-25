@@ -141,16 +141,6 @@ namespace SellPoint.Aplication.Services.DetallepedidoService
                 _logger.LogError(ex, "Error al obtener los detalles del pedido.");
                 return OperationResult.Failure("Error al obtener los detalles del pedido.");
             }
-            try
-            {
-                await _detallePedidoRepository.GetAllAsync();
-                var lista = new List<DetallePedidoDTO>(); // simula que no hay datos
-                return OperationResult.Success(lista);
-            }
-            catch
-            {
-                return OperationResult.Failure("Error");
-            }
         }
         public async Task<OperationResult> SaveChangesAsync()
         {
