@@ -1,20 +1,28 @@
-﻿
-
-using SellPoint.Domainn.Base;
+﻿using SellPoint.Domainn.Base;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SellPoint.Domain.Entities.Orders
 {
+    [Table("detalles_pedido")]
     public sealed class DetallePedido : AuditEntity
     {
+        [Column("id")]
+        public int Id { get; set; }
 
-        public int Pedidoid { get; set; } 
+        [Column("pedido_id")]
+        public int Pedidoid { get; set; }
+
+        [Column("producto_id")]
         public int ProductoId { get; set; }
+
+        [Column("cantidad")]
         public int Cantidad { get; set; }
+
+        [Column("precio_unitario")]
         public decimal PrecioUnitario { get; set; }
-        public decimal Subtotal => Cantidad * PrecioUnitario;
-
-        public DateTime Fechaagregado { get; set; } = DateTime.UtcNow;
-
+        [Column("subtotal")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public decimal Subtotal { get; private set; }
 
     }
 }
