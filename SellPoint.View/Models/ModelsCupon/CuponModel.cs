@@ -9,7 +9,7 @@ namespace SellPoint.View.Models.ModelsCupon
     public class CuponModel
     {
         public int Id { get; set; }
-        public string Codigo { get; set; }
+        public string? Codigo { get; set; }
         public decimal ValorDescuento { get; set; }
         public DateTime FechaVencimiento { get; set; }
     }

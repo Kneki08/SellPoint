@@ -2,86 +2,53 @@
 using SellPoint.Aplication.Dtos.Cupon;
 using SellPoint.Aplication.Interfaces.Repositorios;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Sellpoint.api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CuponController : ControllerBase
     {
-        private readonly ICuponRepository _CuponRepository;
-        public CuponController(ICuponRepository CuponRepository)
+        private readonly ICuponRepository _cuponRepository;
+
+        public CuponController(ICuponRepository cuponRepository)
         {
-            _CuponRepository = CuponRepository;
+            _cuponRepository = cuponRepository;
         }
-        // GET: api/<PedidoController>
+
         [HttpGet("ObtenerTodosAsync")]
         public async Task<IActionResult> Get()
         {
-            var result = await _CuponRepository.ObtenerTodosAsync();
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
+            var result = await _cuponRepository.ObtenerTodosAsync();
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var result = await _CuponRepository.ObtenerPorIdAsync(id);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
+            var result = await _cuponRepository.ObtenerPorIdAsync(id);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // POST api/<PedidoController>
-        [HttpPost("SaveCuponDTO")]
-        public async Task<IActionResult> Post([FromBody] SaveCuponDTO saveCuponDTO)
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] SaveCuponDTO dto)
         {
-            var result = await _CuponRepository.AgregarAsync(saveCuponDTO);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
-
-
+            var result = await _cuponRepository.AgregarAsync(dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // PUT api/<PedidoController>/5
-        [HttpPost("UpdateCuponDTO")]
-        public async Task<IActionResult> Put([FromBody] UpdateCuponDTO updateCuponDTO)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] UpdateCuponDTO dto)
         {
-            var result = await _CuponRepository.ActualizarAsync(updateCuponDTO);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
-
-
+            var result = await _cuponRepository.ActualizarAsync(dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // DELETE api/<PedidoController>/5
-        [HttpPost("RemoveCuponDTO")]
-        public async Task<IActionResult> Put([FromBody] RemoveCuponDTIO removeCuponDTO)
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromBody] RemoveCuponDTIO dto)
         {
-            var result = await _CuponRepository.EliminarAsync(removeCuponDTO);
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            else { return BadRequest(result); }
-
+            var result = await _cuponRepository.EliminarAsync(dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
 }
+

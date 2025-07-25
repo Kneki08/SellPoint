@@ -63,7 +63,7 @@ namespace SellPoint.View.Services.CuponApiClient
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("Cupon/SaveCuponDTO", dto, _jsonOptions);
+                var response = await _httpClient.PostAsJsonAsync("Cupon", dto, _jsonOptions);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -77,7 +77,7 @@ namespace SellPoint.View.Services.CuponApiClient
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync("Cupon/UpdateCuponDTO", dto, _jsonOptions);
+                var response = await _httpClient.PutAsJsonAsync("Cupon", dto, _jsonOptions);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -91,7 +91,11 @@ namespace SellPoint.View.Services.CuponApiClient
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("Cupon/RemoveCuponDTO", dto, _jsonOptions);
+                var request = new HttpRequestMessage(HttpMethod.Delete, "Cupon")
+                {
+                    Content = JsonContent.Create(dto, options: _jsonOptions)
+                };
+                var response = await _httpClient.SendAsync(request);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -133,3 +137,4 @@ namespace SellPoint.View.Services.CuponApiClient
         }
     }
 }
+
