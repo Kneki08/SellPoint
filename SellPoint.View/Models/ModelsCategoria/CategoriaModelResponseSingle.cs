@@ -9,7 +9,7 @@ namespace SellPoint.View.Models.ModelsCategoria
     public class CategoriaModelResponseSingle
     {
         public bool isSuccess { get; set; }
-        public string message { get; set; }
-        public CategoriaModel data { get; set; }
+        public string? message { get; set; }
+        public CategoriaModel? data { get; set; }
     }
 }

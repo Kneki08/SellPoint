@@ -10,6 +10,6 @@ namespace SellPoint.View.Models.ModelsCupon
     {
         public bool isSuccess { get; set; }
         public string? message { get; set; }
-        public List<CuponModel> data { get; set; }
+        public List<CuponModel>? data { get; set; }
     }
 }
