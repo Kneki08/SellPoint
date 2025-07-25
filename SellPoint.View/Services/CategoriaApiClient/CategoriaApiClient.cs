@@ -24,7 +24,9 @@ namespace SellPoint.View.Services.CategoriaApiClient
             {
                 var response = await _httpClient.GetAsync($"{_baseUrl}/ObtenerTodosAsync");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<IEnumerable<CategoriaDTO>>() ?? [];
+
+                var result = await response.Content.ReadFromJsonAsync<OperationResult<List<CategoriaDTO>>>();
+                return result?.Data ?? [];
             }
             catch (Exception ex)
             {
@@ -39,7 +41,10 @@ namespace SellPoint.View.Services.CategoriaApiClient
             {
                 var response = await _httpClient.GetAsync($"{_baseUrl}?id={id}");
                 if (response.IsSuccessStatusCode)
-                    return await response.Content.ReadFromJsonAsync<CategoriaDTO>();
+                {
+                    var result = await response.Content.ReadFromJsonAsync<OperationResult<CategoriaDTO>>();
+                    return result?.Data;
+                }
 
                 return null;
             }
@@ -68,7 +73,7 @@ namespace SellPoint.View.Services.CategoriaApiClient
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/UpdateCategoriaDTO", dto);
+                var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/UpdateCategoriaDTO", dto);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -82,7 +87,7 @@ namespace SellPoint.View.Services.CategoriaApiClient
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/RemoveCategoriaDTO", dto);
+                var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/RemoveCategoriaDTO", dto);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -92,5 +97,4 @@ namespace SellPoint.View.Services.CategoriaApiClient
             }
         }
     }
-
 }

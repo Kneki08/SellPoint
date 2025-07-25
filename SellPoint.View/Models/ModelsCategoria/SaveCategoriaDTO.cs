@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCategoria
 {
-    public record SaveCategoriaDTO : BaseCategoriaDTO
+    public class SaveCategoriaDTO : BaseCategoriaDTO
     { 
     }
 }

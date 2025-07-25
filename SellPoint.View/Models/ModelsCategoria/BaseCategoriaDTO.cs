@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCategoria
 {
-    public abstract record BaseCategoriaDTO
+    public abstract class BaseCategoriaDTO
     {
         public string Nombre { get; init; } = string.Empty;
         public string? Descripcion { get; init; }

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCategoria
 {
-    public class RemoveCategoriaDTO : BaseCategoriaDTO
+    public class OperationResult<T>
     {
-        public int Id { get; init; }
+        public bool IsSuccess { get; set; }
+        public T Data { get; set; } = default!;
+        public string? Message { get; set; }
     }
 }

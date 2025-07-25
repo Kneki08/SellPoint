@@ -14,6 +14,9 @@
         private System.Windows.Forms.Label lblId;
         private System.Windows.Forms.Label lblNombre;
         private System.Windows.Forms.Label lblDescripcion;
+        private System.Windows.Forms.GroupBox grpDatos;
+        private System.Windows.Forms.FlowLayoutPanel pnlBotones;
+        private System.Windows.Forms.ToolTip toolTip;
 
         protected override void Dispose(bool disposing)
         {
@@ -24,139 +27,108 @@
 
         private void InitializeComponent()
         {
-            this.dgvCategorias = new System.Windows.Forms.DataGridView();
-            this.txtId = new System.Windows.Forms.TextBox();
-            this.txtNombre = new System.Windows.Forms.TextBox();
-            this.txtDescripcion = new System.Windows.Forms.TextBox();
-            this.btnCargar = new System.Windows.Forms.Button();
-            this.btnCrear = new System.Windows.Forms.Button();
-            this.btnActualizar = new System.Windows.Forms.Button();
-            this.btnEliminar = new System.Windows.Forms.Button();
-            this.lblId = new System.Windows.Forms.Label();
-            this.lblNombre = new System.Windows.Forms.Label();
-            this.lblDescripcion = new System.Windows.Forms.Label();
+            components = new System.ComponentModel.Container();
+            dgvCategorias = new DataGridView();
+            txtId = new TextBox();
+            txtNombre = new TextBox();
+            txtDescripcion = new TextBox();
+            btnCargar = new Button();
+            btnCrear = new Button();
+            btnActualizar = new Button();
+            btnEliminar = new Button();
+            lblId = new Label();
+            lblNombre = new Label();
+            lblDescripcion = new Label();
+            grpDatos = new GroupBox();
+            pnlBotones = new FlowLayoutPanel();
+            toolTip = new ToolTip(components);
 
-            ((System.ComponentModel.ISupportInitialize)(this.dgvCategorias)).BeginInit();
-            this.SuspendLayout();
-
-            // 
-            // dgvCategorias
-            // 
-            this.dgvCategorias.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvCategorias.Location = new System.Drawing.Point(20, 160);
-            this.dgvCategorias.Name = "dgvCategorias";
-            this.dgvCategorias.Size = new System.Drawing.Size(600, 200);
-            this.dgvCategorias.TabIndex = 0;
+            ((System.ComponentModel.ISupportInitialize)(dgvCategorias)).BeginInit();
+            SuspendLayout();
 
             // 
-            // txtId
+            // grpDatos
             // 
-            this.txtId.Location = new System.Drawing.Point(120, 20);
-            this.txtId.Name = "txtId";
-            this.txtId.Size = new System.Drawing.Size(180, 23);
-
-            // 
-            // txtNombre
-            // 
-            this.txtNombre.Location = new System.Drawing.Point(120, 50);
-            this.txtNombre.Name = "txtNombre";
-            this.txtNombre.Size = new System.Drawing.Size(180, 23);
-
-            // 
-            // txtDescripcion
-            // 
-            this.txtDescripcion.Location = new System.Drawing.Point(120, 80);
-            this.txtDescripcion.Name = "txtDescripcion";
-            this.txtDescripcion.Size = new System.Drawing.Size(180, 23);
-
-            // 
-            // btnCargar
-            // 
-            this.btnCargar.Location = new System.Drawing.Point(320, 20);
-            this.btnCargar.Name = "btnCargar";
-            this.btnCargar.Size = new System.Drawing.Size(90, 23);
-            this.btnCargar.Text = "Cargar";
-            this.btnCargar.UseVisualStyleBackColor = true;
-            this.btnCargar.Click += new System.EventHandler(this.btnCargar_Click);
-
-            // 
-            // btnCrear
-            // 
-            this.btnCrear.Location = new System.Drawing.Point(320, 50);
-            this.btnCrear.Name = "btnCrear";
-            this.btnCrear.Size = new System.Drawing.Size(90, 23);
-            this.btnCrear.Text = "Crear";
-            this.btnCrear.UseVisualStyleBackColor = true;
-            this.btnCrear.Click += new System.EventHandler(this.btnCrear_Click);
-
-            // 
-            // btnActualizar
-            // 
-            this.btnActualizar.Location = new System.Drawing.Point(320, 80);
-            this.btnActualizar.Name = "btnActualizar";
-            this.btnActualizar.Size = new System.Drawing.Size(90, 23);
-            this.btnActualizar.Text = "Actualizar";
-            this.btnActualizar.UseVisualStyleBackColor = true;
-            this.btnActualizar.Click += new System.EventHandler(this.btnActualizar_Click);
-
-            // 
-            // btnEliminar
-            // 
-            this.btnEliminar.Location = new System.Drawing.Point(320, 110);
-            this.btnEliminar.Name = "btnEliminar";
-            this.btnEliminar.Size = new System.Drawing.Size(90, 23);
-            this.btnEliminar.Text = "Eliminar";
-            this.btnEliminar.UseVisualStyleBackColor = true;
-            this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
+            grpDatos.Text = "Datos de Categoría";
+            grpDatos.Location = new Point(20, 20);
+            grpDatos.Size = new Size(440, 130);
+            grpDatos.Controls.AddRange(new Control[] { lblId, txtId, lblNombre, txtNombre, lblDescripcion, txtDescripcion });
 
             // 
             // lblId
             // 
-            this.lblId.AutoSize = true;
-            this.lblId.Location = new System.Drawing.Point(20, 23);
-            this.lblId.Name = "lblId";
-            this.lblId.Text = "ID:";
+            lblId.Location = new Point(20, 25);
+            lblId.Size = new Size(60, 15);
+            lblId.Text = "ID:";
+
+            txtId.Location = new Point(100, 22);
+            txtId.Size = new Size(300, 23);
 
             // 
             // lblNombre
             // 
-            this.lblNombre.AutoSize = true;
-            this.lblNombre.Location = new System.Drawing.Point(20, 53);
-            this.lblNombre.Name = "lblNombre";
-            this.lblNombre.Text = "Nombre:";
+            lblNombre.Location = new Point(20, 55);
+            lblNombre.Size = new Size(60, 15);
+            lblNombre.Text = "Nombre:";
+
+            txtNombre.Location = new Point(100, 52);
+            txtNombre.Size = new Size(300, 23);
 
             // 
             // lblDescripcion
             // 
-            this.lblDescripcion.AutoSize = true;
-            this.lblDescripcion.Location = new System.Drawing.Point(20, 83);
-            this.lblDescripcion.Name = "lblDescripcion";
-            this.lblDescripcion.Text = "Descripción:";
+            lblDescripcion.Location = new Point(20, 85);
+            lblDescripcion.Size = new Size(75, 15);
+            lblDescripcion.Text = "Descripción:";
+
+            txtDescripcion.Location = new Point(100, 82);
+            txtDescripcion.Size = new Size(300, 23);
+
+            // 
+            // pnlBotones
+            // 
+            pnlBotones.Location = new Point(480, 20);
+            pnlBotones.Size = new Size(140, 130);
+            pnlBotones.FlowDirection = FlowDirection.TopDown;
+            pnlBotones.Controls.AddRange(new Control[] { btnCargar, btnCrear, btnActualizar, btnEliminar });
+
+            // Configuración de botones con ToolTip
+            void ConfigurarBoton(Button btn, string texto, string tooltip)
+            {
+                btn.Size = new Size(120, 25);
+                btn.Text = texto;
+                toolTip.SetToolTip(btn, tooltip);
+            }
+
+            ConfigurarBoton(btnCargar, "Cargar", "Cargar todas las categorías");
+            ConfigurarBoton(btnCrear, "Crear", "Crear nueva categoría");
+            ConfigurarBoton(btnActualizar, "Actualizar", "Actualizar la categoría actual");
+            ConfigurarBoton(btnEliminar, "Eliminar", "Eliminar la categoría seleccionada");
+
+            btnCargar.Click += btnCargar_Click;
+            btnCrear.Click += btnCrear_Click;
+            btnActualizar.Click += btnActualizar_Click;
+            btnEliminar.Click += btnEliminar_Click;
+
+            // 
+            // dgvCategorias
+            // 
+            dgvCategorias.Location = new Point(20, 170);
+            dgvCategorias.Size = new Size(600, 200);
 
             // 
             // FormCategoria
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(650, 400);
-            this.Controls.Add(this.dgvCategorias);
-            this.Controls.Add(this.txtId);
-            this.Controls.Add(this.txtNombre);
-            this.Controls.Add(this.txtDescripcion);
-            this.Controls.Add(this.btnCargar);
-            this.Controls.Add(this.btnCrear);
-            this.Controls.Add(this.btnActualizar);
-            this.Controls.Add(this.btnEliminar);
-            this.Controls.Add(this.lblId);
-            this.Controls.Add(this.lblNombre);
-            this.Controls.Add(this.lblDescripcion);
-            this.Name = "FormCategoria";
-            this.Text = "Gestión de Categorías";
-            this.Load += new System.EventHandler(this.FormCategoria_Load);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(650, 400);
+            Controls.AddRange(new Control[] { grpDatos, pnlBotones, dgvCategorias });
+            Name = "FormCategoria";
+            Text = "Gestión de Categorías";
+            Load += FormCategoria_Load;
 
-            ((System.ComponentModel.ISupportInitialize)(this.dgvCategorias)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(dgvCategorias)).EndInit();
+            ResumeLayout(false);
         }
     }
 }
