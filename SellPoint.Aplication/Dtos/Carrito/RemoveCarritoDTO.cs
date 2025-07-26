@@ -10,5 +10,6 @@ namespace SellPoint.Aplication.Dtos.Carrito
     {
         public int UsuarioId { get; init; }
         public int ProductoId { get; init; }
+        public int Id { get; set; }
     }
 }

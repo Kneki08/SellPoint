@@ -74,7 +74,7 @@ namespace SellPoint.Aplication.Services.CarritoService
                     return operation;
                 }
                 _logger.LogInformation("Carrito agregado correctamente para UsuarioId: {UsuarioId}, ProductoId: {ProductoId}, Cantidad: {Cantidad}",
-                    saveCarrito.UsuarioId, saveCarrito.ProductoId, saveCarrito.Cantidad);
+                    saveCarrito.ClienteId, saveCarrito.ProductoId, saveCarrito.Cantidad);
                 return operation;
             }
             catch (Exception ex)

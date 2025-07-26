@@ -8,13 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Context\**" />
     <Compile Remove="Interfaces\**" />
     <Compile Remove="Repository\**" />
-    <EmbeddedResource Remove="Context\**" />
     <EmbeddedResource Remove="Interfaces\**" />
     <EmbeddedResource Remove="Repository\**" />
-    <None Remove="Context\**" />
     <None Remove="Interfaces\**" />
     <None Remove="Repository\**" />
   </ItemGroup>
@@ -27,10 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SellPoint.Aplication\SellPoint.Aplication.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IContext\" />
+    <ProjectReference Include="..\SellPoint.Domainn\SellPoint.Domain.csproj" />
   </ItemGroup>
 
 </Project>

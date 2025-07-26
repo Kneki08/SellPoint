@@ -8,12 +8,14 @@ namespace SellPoint.Aplication.Dtos.Carrito
 {
     public record ObtenerCarritoDTO
     {
-        public int UsuarioId { get; set; }
+        public object ClienteId { get; set; }
         public int ProductoId { get; set; }
         public string Nombre { get; set; }
         public decimal Precio { get; set; }
         public int Cantidad { get; set; }
         public decimal Subtotal { get; set; }
         public DateTime FechaAgregado { get; set; }
+        public int Id { get; set; }
+        public object Estado { get; set; }
     }
 }

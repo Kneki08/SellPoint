@@ -19,7 +19,7 @@ namespace SellPoint.Aplication.Validations.CarritoValidations
             }
             if (dto.ProductoId <= 0)
                 errors.Add("El Id del producto debe ser mayor que cero.");
-            if (dto.UsuarioId <= 0)
+            if (dto.ClienteId <= 0)
                 errors.Add("El Id del usuario debe ser mayor que cero.");
             if (dto.Cantidad <= 0)
                 errors.Add("La cantidad debe ser mayor que cero.");

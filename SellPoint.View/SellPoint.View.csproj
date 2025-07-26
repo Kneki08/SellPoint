@@ -12,6 +12,7 @@
     <ProjectReference Include="..\SellPoint.Aplication\SellPoint.Aplication.csproj" />
     <ProjectReference Include="..\SellPoint.IOC\SellPoint.IOC.csproj" />
     <ProjectReference Include="..\SellPoint.Persistence\SellPoint.Persistence.csproj" />
+    <ProjectReference Include="..\SellPointAPI\SellPointAPI.csproj" />
   </ItemGroup>
 
 </Project>

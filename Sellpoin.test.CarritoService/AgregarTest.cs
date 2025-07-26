@@ -34,7 +34,7 @@ namespace Sellpoin.test.CarritoService
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarExito_CuandoDTOEsValido()
         {
-            var dto = new SaveCarritoDTO { UsuarioId = 1, ProductoId = 2, Cantidad = 3 };
+            var dto = new SaveCarritoDTO { ClienteId = 1, ProductoId = 2, Cantidad = 3 };
             var expectedResult = OperationResult.Success("Carrito agregado correctamente");
 
             _carritoRepositoryMock.Setup(repo => repo.AgregarAsync(dto)).ReturnsAsync(expectedResult);
@@ -56,7 +56,7 @@ namespace Sellpoin.test.CarritoService
         [Fact]
         public async Task AgregarAsync_DeberiaRetornarError_CuandoRepositorioLanzaExcepcion()
         {
-            var dto = new SaveCarritoDTO { UsuarioId = 1, ProductoId = 2, Cantidad = 3 };
+            var dto = new SaveCarritoDTO { ClienteId = 1, ProductoId = 2, Cantidad = 3 };
             _carritoRepositoryMock.Setup(repo => repo.AgregarAsync(dto)).ThrowsAsync(new Exception("Error DB"));
 
             var result = await _carritoService.AgregarAsync(dto);

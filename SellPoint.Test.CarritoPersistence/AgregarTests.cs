@@ -35,7 +35,7 @@ namespace SellPoint.Test.CarritoPersistence
         {
             var dto = new SaveCarritoDTO
             {
-                UsuarioId = -1,
+                ClienteId = -1,
                 ProductoId = 1,
                 Cantidad = 1
             };
@@ -51,7 +51,7 @@ namespace SellPoint.Test.CarritoPersistence
         {
             var dto = new SaveCarritoDTO
             {
-                UsuarioId = 1,
+                ClienteId = 1,
                 ProductoId = -1,
                 Cantidad = 1
             };
@@ -67,7 +67,7 @@ namespace SellPoint.Test.CarritoPersistence
         {
             var dto = new SaveCarritoDTO
             {
-                UsuarioId = 1,
+                ClienteId = 1,
                 ProductoId = 1,
                 Cantidad = 0
             };
@@ -83,7 +83,7 @@ namespace SellPoint.Test.CarritoPersistence
         {
             var dto = new SaveCarritoDTO
             {
-                UsuarioId = 1,
+                ClienteId= 1,
                 ProductoId = 1,
                 Cantidad = -5
             };
