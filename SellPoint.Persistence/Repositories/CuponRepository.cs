@@ -37,15 +37,26 @@ namespace SellPoint.Persistence.Repositories
             try
             {
                 _logger.LogInformation("AgregarAsync {Codigo}", saveCupon.Codigo);
+
                 using var connection = new SqlConnection(_connectionString);
                 using var command = new SqlCommand("sp_AgregarCupon", connection);
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Codigo", saveCupon.Codigo);
-                command.Parameters.AddWithValue("@Descuento", saveCupon.ValorDescuento);
-                command.Parameters.AddWithValue("@FechaExpiracion", saveCupon.FechaVencimiento);
-                await connection.OpenAsync();
 
+                command.Parameters.AddWithValue("@codigo", saveCupon.Codigo);
+                command.Parameters.AddWithValue("@descripcion", (object?)saveCupon.Descripcion ?? DBNull.Value);
+                command.Parameters.AddWithValue("@tipo_descuento", (object?)saveCupon.TipoDescuento ?? DBNull.Value);
+                command.Parameters.AddWithValue("@valor_descuento", saveCupon.ValorDescuento);
+                command.Parameters.AddWithValue("@monto_minimo", saveCupon.MontoMinimo);
+                command.Parameters.AddWithValue("@fecha_inicio", saveCupon.FechaInicio);
+                command.Parameters.AddWithValue("@fecha_vencimiento", saveCupon.FechaVencimiento);
+                command.Parameters.AddWithValue("@usos_maximos", (object?)saveCupon.UsosMaximos ?? DBNull.Value);
+                command.Parameters.AddWithValue("@usos_actuales", 0); // inicial
+                command.Parameters.AddWithValue("@activo", saveCupon.Activo);
+                command.Parameters.AddWithValue("@fecha_creacion", DateTime.Now);
+
+                await connection.OpenAsync();
                 var rows = await command.ExecuteNonQueryAsync();
+
                 result.IsSuccess = rows > 0;
                 result.Message = rows > 0 ? "Cupón agregado correctamente." : "No se pudo agregar el cupón.";
             }
@@ -59,78 +70,123 @@ namespace SellPoint.Persistence.Repositories
             return result;
         }
 
+
         public async Task<OperationResult> ActualizarAsync(UpdateCuponDTO updateCupon)
         {
-            var result = new OperationResult();
-
             if (updateCupon is null)
                 return OperationResult.Failure("La entidad no puede ser nula.");
+
             if (updateCupon.Id <= 0)
-                return OperationResult.Failure("El Id debe ser mayor que cero.");
+                return OperationResult.Failure("El ID del cupón debe ser mayor que cero.");
+
             if (string.IsNullOrWhiteSpace(updateCupon.Codigo))
                 return OperationResult.Failure("El código del cupón no puede estar vacío.");
+
+            if (string.IsNullOrWhiteSpace(updateCupon.TipoDescuento))
+                return OperationResult.Failure("El tipo de descuento es obligatorio.");
+
             if (updateCupon.ValorDescuento <= 0)
                 return OperationResult.Failure("El valor del descuento debe ser mayor que cero.");
-            if (updateCupon.FechaVencimiento <= DateTime.Now)
-                return OperationResult.Failure("La fecha de vencimiento debe ser una fecha futura.");
+
+            if (updateCupon.MontoMinimo < 0)
+                return OperationResult.Failure("El monto mínimo no puede ser negativo.");
+
+            if (updateCupon.FechaVencimiento <= updateCupon.FechaInicio)
+                return OperationResult.Failure("La fecha de vencimiento debe ser posterior a la fecha de inicio.");
 
             try
             {
-                _logger.LogInformation("ActualizarAsync {Id}", updateCupon.Id);
+                _logger.LogInformation("Iniciando actualización del cupón con ID: {Id}", updateCupon.Id);
+
                 using var connection = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_ActualizarCupon", connection);
-                command.CommandType = CommandType.StoredProcedure;
+                using var command = new SqlCommand("sp_ActualizarCupon", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
                 command.Parameters.AddWithValue("@Id", updateCupon.Id);
                 command.Parameters.AddWithValue("@Codigo", updateCupon.Codigo);
-                command.Parameters.AddWithValue("@Descuento", updateCupon.ValorDescuento);
-                command.Parameters.AddWithValue("@FechaExpiracion", updateCupon.FechaVencimiento);
-                await connection.OpenAsync();
+                command.Parameters.AddWithValue("@Descripcion", updateCupon.Descripcion ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@TipoDescuento", updateCupon.TipoDescuento);
+                command.Parameters.AddWithValue("@ValorDescuento", updateCupon.ValorDescuento);
+                command.Parameters.AddWithValue("@MontoMinimo", updateCupon.MontoMinimo);
+                command.Parameters.AddWithValue("@FechaInicio", updateCupon.FechaInicio);
+                command.Parameters.AddWithValue("@FechaVencimiento", updateCupon.FechaVencimiento);
+                command.Parameters.AddWithValue("@UsosMaximos", updateCupon.UsosMaximos ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Activo", updateCupon.Activo);
 
+                await connection.OpenAsync();
                 var rows = await command.ExecuteNonQueryAsync();
-                result.IsSuccess = rows > 0;
-                result.Message = rows > 0 ? "Cupón actualizado correctamente." : "No se pudo actualizar el cupón.";
+
+                if (rows > 0)
+                {
+                    _logger.LogInformation("Cupón actualizado correctamente. ID: {Id}", updateCupon.Id);
+                    return OperationResult.Success("Cupón actualizado correctamente.");
+                }
+                else
+                {
+                    _logger.LogWarning("No se encontró un cupón con el ID proporcionado: {Id}", updateCupon.Id);
+                    return OperationResult.Failure("No se encontró ningún cupón con el ID proporcionado para actualizar.");
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Error SQL al actualizar el cupón. ID: {Id}", updateCupon.Id);
+                return OperationResult.Failure($"Error SQL al actualizar el cupón: {ex.Message}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al actualizar el cupón");
-                result.IsSuccess = false;
-                result.Message = $"Error al actualizar el cupón: {ex.Message}";
+                _logger.LogError(ex, "Error general al actualizar el cupón. ID: {Id}", updateCupon.Id);
+                return OperationResult.Failure($"Error inesperado al actualizar el cupón: {ex.Message}");
             }
-
-            return result;
         }
+
 
         public async Task<OperationResult> EliminarAsync(RemoveCuponDTIO removeCupon)
         {
-            var result = new OperationResult();
-
             if (removeCupon is null)
                 return OperationResult.Failure("La entidad no puede ser nula.");
+
             if (removeCupon.Id <= 0)
-                return OperationResult.Failure("El Id debe ser mayor que cero.");
+                return OperationResult.Failure("El ID del cupón debe ser mayor que cero.");
 
             try
             {
-                _logger.LogInformation("EliminarAsync {Id}", removeCupon.Id);
-                using var connection = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_EliminarCupon", connection);
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Id", removeCupon.Id);
-                await connection.OpenAsync();
+                _logger.LogInformation("Intentando eliminar cupón con ID: {Id}", removeCupon.Id);
 
+                using var connection = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_EliminarCupon", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                command.Parameters.AddWithValue("@Id", removeCupon.Id);
+
+                await connection.OpenAsync();
                 var rows = await command.ExecuteNonQueryAsync();
-                result.IsSuccess = rows > 0;
-                result.Message = rows > 0 ? "Cupón eliminado correctamente." : "No se pudo eliminar el cupón.";
+
+                if (rows > 0)
+                {
+                    _logger.LogInformation("Cupón eliminado correctamente. ID: {Id}", removeCupon.Id);
+                    return OperationResult.Success("Cupón eliminado correctamente.");
+                }
+                else
+                {
+                    _logger.LogWarning("No se encontró ningún cupón con el ID proporcionado: {Id}", removeCupon.Id);
+                    return OperationResult.Failure("No se encontró ningún cupón con el ID proporcionado para eliminar.");
+                }
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Error SQL al eliminar el cupón. ID: {Id}", removeCupon.Id);
+                return OperationResult.Failure($"Error SQL al eliminar el cupón: {ex.Message}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al eliminar el cupón");
-                result.IsSuccess = false;
-                result.Message = $"Error al eliminar el cupón: {ex.Message}";
+                _logger.LogError(ex, "Error general al eliminar el cupón. ID: {Id}", removeCupon.Id);
+                return OperationResult.Failure($"Error inesperado al eliminar el cupón: {ex.Message}");
             }
-
-            return result;
         }
+
 
         public async Task<OperationResult> ObtenerPorIdAsync(int id)
         {

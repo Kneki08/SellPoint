@@ -75,67 +75,108 @@ namespace SellPoint.Persistence.Repositories
 
         public async Task<OperationResult> ActualizarAsync(UpdateCategoriaDTO updateCategoria)
         {
-            var validacionBase = ValidateCategoriaBase(updateCategoria, true, updateCategoria?.Id);
-            if (!validacionBase.IsSuccess) return validacionBase;
+            // Validaciones de entrada
+            if (updateCategoria is null)
+                return OperationResult.Failure("La entidad categoría no puede ser nula.");
+
+            if (updateCategoria.Id <= 0)
+                return OperationResult.Failure("El ID debe ser mayor que cero.");
+
+            var validacionBase = ValidateCategoriaBase(updateCategoria, true, updateCategoria.Id);
+            if (!validacionBase.IsSuccess)
+                return validacionBase;
 
             var validacionNombre = ValidateNombre(updateCategoria.Nombre);
-            if (!validacionNombre.IsSuccess) return validacionNombre;
-
-            OperationResult result = OperationResult.Success();
+            if (!validacionNombre.IsSuccess)
+                return validacionNombre;
 
             try
             {
-                _logger.LogInformation("ActualizarAsync {Id}", updateCategoria.Id);
+                _logger.LogInformation("Iniciando actualización de categoría. ID: {Id}, Nombre: {Nombre}",
+                    updateCategoria.Id, updateCategoria.Nombre);
+
                 using var connection = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_ActualizarCategoria", connection);
-                command.CommandType = CommandType.StoredProcedure;
+                using var command = new SqlCommand("sp_ActualizarCategoria", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
                 command.Parameters.AddWithValue("@Id", updateCategoria.Id);
                 command.Parameters.AddWithValue("@Nombre", updateCategoria.Nombre);
                 command.Parameters.AddWithValue("@Descripcion", updateCategoria.Descripcion ?? (object)DBNull.Value);
-                await connection.OpenAsync();
 
+                await connection.OpenAsync();
                 var rowsAffected = await command.ExecuteNonQueryAsync();
-                result.IsSuccess = rowsAffected > 0;
-                result.Message = rowsAffected > 0
-                    ? "Categoría actualizada correctamente."
-                    : "No se pudo actualizar la categoría.";
+
+                if (rowsAffected == 0)
+                {
+                    _logger.LogWarning("No se actualizó ninguna categoría. ID posiblemente inexistente: {Id}", updateCategoria.Id);
+                    return OperationResult.Failure("No se encontró ninguna categoría con el ID proporcionado para actualizar.");
+                }
+
+                _logger.LogInformation("Categoría actualizada correctamente. ID: {Id}", updateCategoria.Id);
+                return OperationResult.Success("Categoría actualizada correctamente.");
+            }
+            catch (SqlException sqlEx)
+            {
+                _logger.LogError(sqlEx, "Error de SQL al actualizar la categoría. ID: {Id}", updateCategoria.Id);
+                return OperationResult.Failure($"Error de base de datos al actualizar la categoría: {sqlEx.Message}");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar la categoría", ex);
+                _logger.LogError(ex, "Error general al actualizar la categoría. ID: {Id}", updateCategoria.Id);
+                return OperationResult.Failure($"Error inesperado al actualizar la categoría: {ex.Message}");
             }
-
-            return result;
         }
+
+
+
 
         public async Task<OperationResult> EliminarAsync(RemoveCategoriaDTO removeCategoria)
         {
             var validacion = ValidateCategoriaBase(removeCategoria, true, removeCategoria?.Id);
-            if (!validacion.IsSuccess) return validacion;
-
-            OperationResult result = OperationResult.Success();
+            if (!validacion.IsSuccess)
+                return validacion;
 
             try
             {
-                _logger.LogInformation("EliminarAsync {Id}", removeCategoria.Id);
-                using var connection = new SqlConnection(_connectionString);
-                using var command = new SqlCommand("sp_EliminarCategoria", connection);
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Id", removeCategoria.Id);
-                await connection.OpenAsync();
+                _logger.LogInformation("Intentando eliminar categoría con ID: {Id}", removeCategoria.Id);
 
+                using var connection = new SqlConnection(_connectionString);
+                using var command = new SqlCommand("sp_EliminarCategoria", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@Id", removeCategoria.Id);
+
+                await connection.OpenAsync();
                 var rowsAffected = await command.ExecuteNonQueryAsync();
-                result.IsSuccess = rowsAffected > 0;
-                result.Message = rowsAffected > 0
-                    ? "Categoría eliminada correctamente."
-                    : "No se pudo eliminar la categoría.";
+
+                if (rowsAffected > 0)
+                {
+                    var mensajeExito = $"Categoría eliminada correctamente. ID: {removeCategoria.Id}";
+                    _logger.LogInformation(mensajeExito);
+                    return OperationResult.Success(mensajeExito);
+                }
+                else
+                {
+                    var mensajeFallo = $"No se encontró ninguna categoría con el ID {removeCategoria.Id} para eliminar. Verifique si ya fue eliminada o si el ID es correcto.";
+                    _logger.LogWarning(mensajeFallo);
+                    return OperationResult.Failure(mensajeFallo);
+                }
+
+            }
+            catch (SqlException sqlEx)
+            {
+                _logger.LogError(sqlEx, "Error de SQL al eliminar la categoría. ID: {Id}", removeCategoria.Id);
+                return OperationResult.Failure($"Error de base de datos al eliminar la categoría: {sqlEx.Message}");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar la categoría", ex);
+                _logger.LogError(ex, "Error inesperado al eliminar la categoría. ID: {Id}", removeCategoria.Id);
+                return OperationResult.Failure($"Error inesperado al eliminar la categoría: {ex.Message}");
             }
-
-            return result;
         }
 
         public async Task<OperationResult> ObtenerPorIdAsync(int id)
