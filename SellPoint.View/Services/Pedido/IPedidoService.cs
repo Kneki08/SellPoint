@@ -10,5 +10,6 @@ namespace SellPoint.View.Services.Pedido
         Task<(bool exito, string mensaje)> AgregarAsync(SavePedidoDTO dto);
         Task<(bool exito, string mensaje)> ActualizarAsync(UpdatePedidoDTO dto);
         Task<(bool exito, string mensaje)> EliminarAsync(int id);
+        Task<PedidoDTO?> ObtenerPorIdAsync(int id);
     }
 }

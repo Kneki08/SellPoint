@@ -44,9 +44,10 @@
             btnCargar = new Button();
             btnLimpiar = new Button();
             panelBotones = new Panel();
+            lblBuscarId = new Label();
+            txtBuscarId = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgvPedidos).BeginInit();
             groupBoxDatos.SuspendLayout();
-            panelBotones.SuspendLayout();
             SuspendLayout();
             // 
             // dgvPedidos
@@ -55,13 +56,13 @@
             dgvPedidos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dgvPedidos.BackgroundColor = Color.White;
             dgvPedidos.ColumnHeadersHeight = 29;
-            dgvPedidos.Location = new Point(30, 400);
+            dgvPedidos.Location = new Point(30, 360);
             dgvPedidos.MultiSelect = false;
             dgvPedidos.Name = "dgvPedidos";
             dgvPedidos.ReadOnly = true;
             dgvPedidos.RowHeadersWidth = 51;
             dgvPedidos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPedidos.Size = new Size(1470, 450);
+            dgvPedidos.Size = new Size(1470, 500);
             dgvPedidos.TabIndex = 2;
             dgvPedidos.SelectionChanged += dgvPedidos_SelectionChanged;
             // 
@@ -262,7 +263,7 @@
             // 
             btnAgregar.BackColor = Color.LightGreen;
             btnAgregar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnAgregar.Location = new Point(0, 5);
+            btnAgregar.Location = new Point(365, 290);
             btnAgregar.Name = "btnAgregar";
             btnAgregar.Size = new Size(140, 50);
             btnAgregar.TabIndex = 0;
@@ -274,7 +275,7 @@
             // 
             btnActualizar.BackColor = Color.Khaki;
             btnActualizar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnActualizar.Location = new Point(1, 5);
+            btnActualizar.Location = new Point(523, 290);
             btnActualizar.Name = "btnActualizar";
             btnActualizar.Size = new Size(140, 50);
             btnActualizar.TabIndex = 1;
@@ -286,7 +287,7 @@
             // 
             btnEliminar.BackColor = Color.LightCoral;
             btnEliminar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnEliminar.Location = new Point(2, 5);
+            btnEliminar.Location = new Point(683, 290);
             btnEliminar.Name = "btnEliminar";
             btnEliminar.Size = new Size(140, 50);
             btnEliminar.TabIndex = 2;
@@ -298,7 +299,7 @@
             // 
             btnCargar.BackColor = Color.LightBlue;
             btnCargar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnCargar.Location = new Point(3, 5);
+            btnCargar.Location = new Point(843, 290);
             btnCargar.Name = "btnCargar";
             btnCargar.Size = new Size(140, 50);
             btnCargar.TabIndex = 3;
@@ -310,7 +311,7 @@
             // 
             btnLimpiar.BackColor = Color.Silver;
             btnLimpiar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnLimpiar.Location = new Point(4, 5);
+            btnLimpiar.Location = new Point(1003, 290);
             btnLimpiar.Name = "btnLimpiar";
             btnLimpiar.Size = new Size(140, 50);
             btnLimpiar.TabIndex = 4;
@@ -320,25 +321,40 @@
             // 
             // panelBotones
             // 
-            panelBotones.Anchor = AnchorStyles.Top;
-            panelBotones.BackColor = Color.Transparent;
-            panelBotones.Controls.Add(btnAgregar);
-            panelBotones.Controls.Add(btnActualizar);
-            panelBotones.Controls.Add(btnEliminar);
-            panelBotones.Controls.Add(btnCargar);
-            panelBotones.Controls.Add(btnLimpiar);
-            panelBotones.Location = new Point(282, 300);
+            panelBotones.Location = new Point(0, 0);
             panelBotones.Name = "panelBotones";
-            panelBotones.Size = new Size(800, 60);
-            panelBotones.TabIndex = 1;
+            panelBotones.Size = new Size(200, 100);
+            panelBotones.TabIndex = 0;
+            // 
+            // lblBuscarId
+            // 
+            lblBuscarId.ForeColor = Color.White;
+            lblBuscarId.Location = new Point(50, 300);
+            lblBuscarId.Name = "lblBuscarId";
+            lblBuscarId.Size = new Size(100, 30);
+            lblBuscarId.TabIndex = 5;
+            lblBuscarId.Text = "ID a buscar:";
+            // 
+            // txtBuscarId
+            // 
+            txtBuscarId.Location = new Point(160, 300);
+            txtBuscarId.Name = "txtBuscarId";
+            txtBuscarId.Size = new Size(120, 30);
+            txtBuscarId.TabIndex = 6;
             // 
             // PedidoForm
             // 
             BackColor = Color.FromArgb(34, 40, 49);
             ClientSize = new Size(1550, 900);
             Controls.Add(groupBoxDatos);
-            Controls.Add(panelBotones);
+            Controls.Add(btnAgregar);
+            Controls.Add(btnActualizar);
+            Controls.Add(btnEliminar);
+            Controls.Add(btnCargar);
+            Controls.Add(btnLimpiar);
             Controls.Add(dgvPedidos);
+            Controls.Add(lblBuscarId);
+            Controls.Add(txtBuscarId);
             Font = new Font("Segoe UI", 10F);
             Name = "PedidoForm";
             StartPosition = FormStartPosition.CenterScreen;
@@ -346,8 +362,8 @@
             ((System.ComponentModel.ISupportInitialize)dgvPedidos).EndInit();
             groupBoxDatos.ResumeLayout(false);
             groupBoxDatos.PerformLayout();
-            panelBotones.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         private void AgregarCampo(Control contenedor, Label label, string texto, Control control, int xLabel, int xControl, int y)
@@ -372,5 +388,7 @@
             labelDescuento, labelCostoEnvio, labelTotal, labelNotas, labelEstado;
         private Button btnAgregar, btnActualizar, btnEliminar, btnCargar, btnLimpiar;
         private Panel panelBotones;
+        private TextBox txtBuscarId;
+        private Label lblBuscarId;
     }
 }

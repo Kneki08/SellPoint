@@ -140,9 +140,27 @@ namespace SellPoint.View.Forms
             LimpiarCampos();
         }
 
-        private void btnCargar_Click(object sender, EventArgs e)
+        private async void btnCargar_Click(object sender, EventArgs e)
         {
-            CargarPedidosAsync();
+            if (!string.IsNullOrWhiteSpace(txtBuscarId.Text) && int.TryParse(txtBuscarId.Text, out int id))
+            {
+                var pedido = await _pedidoService.ObtenerPorIdAsync(id);
+                if (pedido != null)
+                {
+                    dgvPedidos.DataSource = new List<PedidoDTO> { pedido };
+                    MessageBox.Show("Pedido cargado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("No se encontró el pedido con ese ID.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                txtBuscarId.Text = ""; // limpiar después de cargar
+            }
+            else
+            {
+                CargarPedidosAsync(); // si está vacío o inválido, se cargan todos
+            }
         }
     }
 }
