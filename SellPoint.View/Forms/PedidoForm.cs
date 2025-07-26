@@ -24,6 +24,10 @@ namespace SellPoint.View.Forms
         {
             var pedidos = await _pedidoService.ObtenerTodosAsync();
             dgvPedidos.DataSource = pedidos;
+
+            // Autoajustar columnas al contenido de las celdas
+            dgvPedidos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvPedidos.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
 
         private void LimpiarCampos()

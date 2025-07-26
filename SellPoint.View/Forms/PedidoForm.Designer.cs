@@ -1,25 +1,14 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
-
-namespace SellPoint.View.Forms
+﻿namespace SellPoint.View.Forms
 {
     partial class PedidoForm
     {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
                 components.Dispose();
-            }
+
             base.Dispose(disposing);
         }
 
@@ -27,332 +16,361 @@ namespace SellPoint.View.Forms
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             dgvPedidos = new DataGridView();
+            groupBoxDatos = new GroupBox();
+            labelUsuario = new Label();
             txtIdUsuario = new TextBox();
-            txtNotas = new TextBox();
-            txtTotal = new TextBox();
-            txtCostoEnvio = new TextBox();
+            labelDireccion = new Label();
             txtDireccion = new TextBox();
-            txtDescuento = new TextBox();
-            txtReferencia = new TextBox();
+            labelMetodoPago = new Label();
             txtMetodoPago = new TextBox();
+            labelReferencia = new Label();
+            txtReferencia = new TextBox();
+            labelSubtotal = new Label();
             txtSubtotal = new TextBox();
-            label1 = new Label();
-            label9 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            label6 = new Label();
-            label7 = new Label();
-            label8 = new Label();
+            labelDescuento = new Label();
+            txtDescuento = new TextBox();
+            labelCostoEnvio = new Label();
+            txtCostoEnvio = new TextBox();
+            labelTotal = new Label();
+            txtTotal = new TextBox();
+            labelEstado = new Label();
+            cmbEstado = new ComboBox();
+            labelNotas = new Label();
+            txtNotas = new TextBox();
             btnAgregar = new Button();
             btnActualizar = new Button();
             btnEliminar = new Button();
             btnCargar = new Button();
             btnLimpiar = new Button();
-            cmbEstado = new ComboBox();
+            panelBotones = new Panel();
             ((System.ComponentModel.ISupportInitialize)dgvPedidos).BeginInit();
+            groupBoxDatos.SuspendLayout();
+            panelBotones.SuspendLayout();
             SuspendLayout();
             // 
             // dgvPedidos
             // 
-            dgvPedidos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPedidos.Location = new Point(2, 332);
+            dgvPedidos.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvPedidos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvPedidos.BackgroundColor = Color.White;
+            dgvPedidos.ColumnHeadersHeight = 29;
+            dgvPedidos.Location = new Point(30, 400);
+            dgvPedidos.MultiSelect = false;
             dgvPedidos.Name = "dgvPedidos";
+            dgvPedidos.ReadOnly = true;
             dgvPedidos.RowHeadersWidth = 51;
-            dgvPedidos.Size = new Size(908, 421);
-            dgvPedidos.TabIndex = 0;
+            dgvPedidos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvPedidos.Size = new Size(1470, 450);
+            dgvPedidos.TabIndex = 2;
+            dgvPedidos.SelectionChanged += dgvPedidos_SelectionChanged;
+            // 
+            // groupBoxDatos
+            // 
+            groupBoxDatos.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBoxDatos.BackColor = Color.FromArgb(57, 62, 70);
+            groupBoxDatos.Controls.Add(labelUsuario);
+            groupBoxDatos.Controls.Add(txtIdUsuario);
+            groupBoxDatos.Controls.Add(labelDireccion);
+            groupBoxDatos.Controls.Add(txtDireccion);
+            groupBoxDatos.Controls.Add(labelMetodoPago);
+            groupBoxDatos.Controls.Add(txtMetodoPago);
+            groupBoxDatos.Controls.Add(labelReferencia);
+            groupBoxDatos.Controls.Add(txtReferencia);
+            groupBoxDatos.Controls.Add(labelSubtotal);
+            groupBoxDatos.Controls.Add(txtSubtotal);
+            groupBoxDatos.Controls.Add(labelDescuento);
+            groupBoxDatos.Controls.Add(txtDescuento);
+            groupBoxDatos.Controls.Add(labelCostoEnvio);
+            groupBoxDatos.Controls.Add(txtCostoEnvio);
+            groupBoxDatos.Controls.Add(labelTotal);
+            groupBoxDatos.Controls.Add(txtTotal);
+            groupBoxDatos.Controls.Add(labelEstado);
+            groupBoxDatos.Controls.Add(cmbEstado);
+            groupBoxDatos.Controls.Add(labelNotas);
+            groupBoxDatos.Controls.Add(txtNotas);
+            groupBoxDatos.ForeColor = Color.White;
+            groupBoxDatos.Location = new Point(30, 20);
+            groupBoxDatos.Name = "groupBoxDatos";
+            groupBoxDatos.Size = new Size(1470, 260);
+            groupBoxDatos.TabIndex = 0;
+            groupBoxDatos.TabStop = false;
+            groupBoxDatos.Text = "Datos del Pedido";
+            // 
+            // labelUsuario
+            // 
+            labelUsuario.ForeColor = Color.White;
+            labelUsuario.Location = new Point(30, 30);
+            labelUsuario.Name = "labelUsuario";
+            labelUsuario.Size = new Size(150, 25);
+            labelUsuario.TabIndex = 0;
+            labelUsuario.Text = "ID Usuario:";
             // 
             // txtIdUsuario
             // 
-            txtIdUsuario.Location = new Point(935, 347);
+            txtIdUsuario.Location = new Point(200, 30);
             txtIdUsuario.Name = "txtIdUsuario";
-            txtIdUsuario.Size = new Size(125, 27);
+            txtIdUsuario.Size = new Size(180, 30);
             txtIdUsuario.TabIndex = 1;
             // 
-            // txtNotas
+            // labelDireccion
             // 
-            txtNotas.Location = new Point(935, 687);
-            txtNotas.Name = "txtNotas";
-            txtNotas.Size = new Size(125, 27);
-            txtNotas.TabIndex = 2;
-            // 
-            // txtTotal
-            // 
-            txtTotal.Location = new Point(935, 645);
-            txtTotal.Name = "txtTotal";
-            txtTotal.Size = new Size(125, 27);
-            txtTotal.TabIndex = 3;
-            // 
-            // txtCostoEnvio
-            // 
-            txtCostoEnvio.Location = new Point(935, 599);
-            txtCostoEnvio.Name = "txtCostoEnvio";
-            txtCostoEnvio.Size = new Size(125, 27);
-            txtCostoEnvio.TabIndex = 4;
+            labelDireccion.ForeColor = Color.White;
+            labelDireccion.Location = new Point(30, 65);
+            labelDireccion.Name = "labelDireccion";
+            labelDireccion.Size = new Size(150, 25);
+            labelDireccion.TabIndex = 2;
+            labelDireccion.Text = "ID Dirección:";
             // 
             // txtDireccion
             // 
-            txtDireccion.Location = new Point(935, 391);
+            txtDireccion.Location = new Point(200, 65);
             txtDireccion.Name = "txtDireccion";
-            txtDireccion.Size = new Size(125, 27);
-            txtDireccion.TabIndex = 5;
+            txtDireccion.Size = new Size(180, 30);
+            txtDireccion.TabIndex = 3;
             // 
-            // txtDescuento
+            // labelMetodoPago
             // 
-            txtDescuento.Location = new Point(935, 566);
-            txtDescuento.Name = "txtDescuento";
-            txtDescuento.Size = new Size(125, 27);
-            txtDescuento.TabIndex = 6;
-            // 
-            // txtReferencia
-            // 
-            txtReferencia.Location = new Point(935, 478);
-            txtReferencia.Name = "txtReferencia";
-            txtReferencia.Size = new Size(125, 27);
-            txtReferencia.TabIndex = 7;
+            labelMetodoPago.ForeColor = Color.White;
+            labelMetodoPago.Location = new Point(30, 100);
+            labelMetodoPago.Name = "labelMetodoPago";
+            labelMetodoPago.Size = new Size(150, 25);
+            labelMetodoPago.TabIndex = 4;
+            labelMetodoPago.Text = "Método de Pago:";
             // 
             // txtMetodoPago
             // 
-            txtMetodoPago.Location = new Point(935, 435);
+            txtMetodoPago.Location = new Point(200, 100);
             txtMetodoPago.Name = "txtMetodoPago";
-            txtMetodoPago.Size = new Size(125, 27);
-            txtMetodoPago.TabIndex = 8;
+            txtMetodoPago.Size = new Size(180, 30);
+            txtMetodoPago.TabIndex = 5;
+            // 
+            // labelReferencia
+            // 
+            labelReferencia.ForeColor = Color.White;
+            labelReferencia.Location = new Point(30, 135);
+            labelReferencia.Name = "labelReferencia";
+            labelReferencia.Size = new Size(150, 25);
+            labelReferencia.TabIndex = 6;
+            labelReferencia.Text = "Referencia Pago:";
+            // 
+            // txtReferencia
+            // 
+            txtReferencia.Location = new Point(200, 135);
+            txtReferencia.Name = "txtReferencia";
+            txtReferencia.Size = new Size(180, 30);
+            txtReferencia.TabIndex = 7;
+            // 
+            // labelSubtotal
+            // 
+            labelSubtotal.ForeColor = Color.White;
+            labelSubtotal.Location = new Point(450, 30);
+            labelSubtotal.Name = "labelSubtotal";
+            labelSubtotal.Size = new Size(150, 25);
+            labelSubtotal.TabIndex = 8;
+            labelSubtotal.Text = "Subtotal:";
             // 
             // txtSubtotal
             // 
-            txtSubtotal.Location = new Point(935, 523);
+            txtSubtotal.Location = new Point(630, 30);
             txtSubtotal.Name = "txtSubtotal";
-            txtSubtotal.Size = new Size(125, 27);
+            txtSubtotal.Size = new Size(180, 30);
             txtSubtotal.TabIndex = 9;
             // 
-            // label1
+            // labelDescuento
             // 
-            label1.AutoSize = true;
-            label1.BackColor = SystemColors.ActiveCaption;
-            label1.Location = new Point(1085, 354);
-            label1.Name = "label1";
-            label1.Size = new Size(166, 20);
-            label1.TabIndex = 10;
-            label1.Text = " Ingresar ID del usuario ";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
+            labelDescuento.ForeColor = Color.White;
+            labelDescuento.Location = new Point(450, 65);
+            labelDescuento.Name = "labelDescuento";
+            labelDescuento.Size = new Size(150, 25);
+            labelDescuento.TabIndex = 10;
+            labelDescuento.Text = "Descuento:";
             // 
-            // label9
+            // txtDescuento
             // 
-            label9.AutoSize = true;
-            label9.BackColor = SystemColors.ActiveCaption;
-            label9.Location = new Point(1085, 398);
-            label9.Name = "label9";
-            label9.Size = new Size(179, 20);
-            label9.TabIndex = 18;
-            label9.Text = " ID de dirección de envío ";
-            label9.TextAlign = ContentAlignment.MiddleCenter;
+            txtDescuento.Location = new Point(630, 65);
+            txtDescuento.Name = "txtDescuento";
+            txtDescuento.Size = new Size(180, 30);
+            txtDescuento.TabIndex = 11;
             // 
-            // label2
+            // labelCostoEnvio
             // 
-            label2.AutoSize = true;
-            label2.BackColor = SystemColors.ActiveCaption;
-            label2.Location = new Point(1066, 690);
-            label2.Name = "label2";
-            label2.Size = new Size(56, 20);
-            label2.TabIndex = 19;
-            label2.Text = " Notas ";
-            label2.TextAlign = ContentAlignment.MiddleCenter;
+            labelCostoEnvio.ForeColor = Color.White;
+            labelCostoEnvio.Location = new Point(450, 100);
+            labelCostoEnvio.Name = "labelCostoEnvio";
+            labelCostoEnvio.Size = new Size(150, 25);
+            labelCostoEnvio.TabIndex = 12;
+            labelCostoEnvio.Text = "Costo Envío:";
             // 
-            // label3
+            // txtCostoEnvio
             // 
-            label3.AutoSize = true;
-            label3.BackColor = SystemColors.ActiveCaption;
-            label3.Location = new Point(1085, 652);
-            label3.Name = "label3";
-            label3.Size = new Size(50, 20);
-            label3.TabIndex = 20;
-            label3.Text = " Total ";
-            label3.TextAlign = ContentAlignment.MiddleCenter;
+            txtCostoEnvio.Location = new Point(630, 100);
+            txtCostoEnvio.Name = "txtCostoEnvio";
+            txtCostoEnvio.Size = new Size(180, 30);
+            txtCostoEnvio.TabIndex = 13;
             // 
-            // label4
+            // labelTotal
             // 
-            label4.AutoSize = true;
-            label4.BackColor = SystemColors.ActiveCaption;
-            label4.Location = new Point(1085, 606);
-            label4.Name = "label4";
-            label4.Size = new Size(116, 20);
-            label4.TabIndex = 21;
-            label4.Text = " Costo de Envio ";
-            label4.TextAlign = ContentAlignment.MiddleCenter;
+            labelTotal.ForeColor = Color.White;
+            labelTotal.Location = new Point(450, 135);
+            labelTotal.Name = "labelTotal";
+            labelTotal.Size = new Size(150, 25);
+            labelTotal.TabIndex = 14;
+            labelTotal.Text = "Total:";
             // 
-            // label5
+            // txtTotal
             // 
-            label5.AutoSize = true;
-            label5.BackColor = SystemColors.ActiveCaption;
-            label5.Location = new Point(1066, 569);
-            label5.Name = "label5";
-            label5.Size = new Size(87, 20);
-            label5.TabIndex = 22;
-            label5.Text = " Descuento ";
-            label5.TextAlign = ContentAlignment.MiddleCenter;
+            txtTotal.Location = new Point(630, 135);
+            txtTotal.Name = "txtTotal";
+            txtTotal.Size = new Size(180, 30);
+            txtTotal.TabIndex = 15;
             // 
-            // label6
+            // labelEstado
             // 
-            label6.AutoSize = true;
-            label6.BackColor = SystemColors.ActiveCaption;
-            label6.Location = new Point(1066, 521);
-            label6.Name = "label6";
-            label6.Size = new Size(73, 20);
-            label6.TabIndex = 23;
-            label6.Text = " Subtotal ";
-            label6.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.BackColor = SystemColors.ActiveCaption;
-            label7.Location = new Point(1066, 478);
-            label7.Name = "label7";
-            label7.Size = new Size(147, 20);
-            label7.TabIndex = 24;
-            label7.Text = " Referencia de pago ";
-            label7.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.BackColor = SystemColors.ActiveCaption;
-            label8.Location = new Point(1085, 438);
-            label8.Name = "label8";
-            label8.Size = new Size(128, 20);
-            label8.TabIndex = 25;
-            label8.Text = " Metodo de Pago ";
-            label8.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // btnAgregar
-            // 
-            btnAgregar.Location = new Point(2, 297);
-            btnAgregar.Name = "btnAgregar";
-            btnAgregar.Size = new Size(136, 29);
-            btnAgregar.TabIndex = 26;
-            btnAgregar.Text = " Agregar Pedido";
-            btnAgregar.UseVisualStyleBackColor = true;
-            // 
-            // btnActualizar
-            // 
-            btnActualizar.Location = new Point(144, 297);
-            btnActualizar.Name = "btnActualizar";
-            btnActualizar.Size = new Size(160, 29);
-            btnActualizar.TabIndex = 27;
-            btnActualizar.Text = " Actualizar Pedido";
-            btnActualizar.UseVisualStyleBackColor = true;
-            // 
-            // btnEliminar
-            // 
-            btnEliminar.Location = new Point(310, 297);
-            btnEliminar.Name = "btnEliminar";
-            btnEliminar.Size = new Size(125, 29);
-            btnEliminar.TabIndex = 28;
-            btnEliminar.Text = "Eliminar Pedido";
-            btnEliminar.UseVisualStyleBackColor = true;
-            // 
-            // btnCargar
-            // 
-            btnCargar.Location = new Point(441, 297);
-            btnCargar.Name = "btnCargar";
-            btnCargar.Size = new Size(141, 29);
-            btnCargar.TabIndex = 29;
-            btnCargar.Text = " Cargar Pedido";
-            btnCargar.UseVisualStyleBackColor = true;
-            // 
-            // btnLimpiar
-            // 
-            btnLimpiar.Location = new Point(588, 297);
-            btnLimpiar.Name = "btnLimpiar";
-            btnLimpiar.Size = new Size(87, 29);
-            btnLimpiar.TabIndex = 30;
-            btnLimpiar.Text = " Limpiar";
-            btnLimpiar.UseVisualStyleBackColor = true;
+            labelEstado.ForeColor = Color.White;
+            labelEstado.Location = new Point(870, 30);
+            labelEstado.Name = "labelEstado";
+            labelEstado.Size = new Size(150, 25);
+            labelEstado.TabIndex = 16;
+            labelEstado.Text = "Estado:";
             // 
             // cmbEstado
             // 
-            cmbEstado.FormattingEnabled = true;
-            cmbEstado.Location = new Point(926, 297);
+            cmbEstado.Location = new Point(1050, 30);
             cmbEstado.Name = "cmbEstado";
-            cmbEstado.Size = new Size(151, 28);
-            cmbEstado.TabIndex = 31;
-            cmbEstado.Text = "Estado del pedido";
+            cmbEstado.Size = new Size(180, 31);
+            cmbEstado.TabIndex = 17;
+            // 
+            // labelNotas
+            // 
+            labelNotas.ForeColor = Color.White;
+            labelNotas.Location = new Point(870, 65);
+            labelNotas.Name = "labelNotas";
+            labelNotas.Size = new Size(150, 25);
+            labelNotas.TabIndex = 18;
+            labelNotas.Text = "Notas:";
+            // 
+            // txtNotas
+            // 
+            txtNotas.Location = new Point(1050, 65);
+            txtNotas.Multiline = true;
+            txtNotas.Name = "txtNotas";
+            txtNotas.Size = new Size(350, 31);
+            txtNotas.TabIndex = 19;
+            // 
+            // btnAgregar
+            // 
+            btnAgregar.BackColor = Color.LightGreen;
+            btnAgregar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnAgregar.Location = new Point(0, 5);
+            btnAgregar.Name = "btnAgregar";
+            btnAgregar.Size = new Size(140, 50);
+            btnAgregar.TabIndex = 0;
+            btnAgregar.Text = "Agregar";
+            btnAgregar.UseVisualStyleBackColor = false;
+            btnAgregar.Click += btnAgregar_Click;
+            // 
+            // btnActualizar
+            // 
+            btnActualizar.BackColor = Color.Khaki;
+            btnActualizar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnActualizar.Location = new Point(1, 5);
+            btnActualizar.Name = "btnActualizar";
+            btnActualizar.Size = new Size(140, 50);
+            btnActualizar.TabIndex = 1;
+            btnActualizar.Text = "Actualizar";
+            btnActualizar.UseVisualStyleBackColor = false;
+            btnActualizar.Click += btnActualizar_Click;
+            // 
+            // btnEliminar
+            // 
+            btnEliminar.BackColor = Color.LightCoral;
+            btnEliminar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEliminar.Location = new Point(2, 5);
+            btnEliminar.Name = "btnEliminar";
+            btnEliminar.Size = new Size(140, 50);
+            btnEliminar.TabIndex = 2;
+            btnEliminar.Text = "Eliminar";
+            btnEliminar.UseVisualStyleBackColor = false;
+            btnEliminar.Click += btnEliminar_Click;
+            // 
+            // btnCargar
+            // 
+            btnCargar.BackColor = Color.LightBlue;
+            btnCargar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnCargar.Location = new Point(3, 5);
+            btnCargar.Name = "btnCargar";
+            btnCargar.Size = new Size(140, 50);
+            btnCargar.TabIndex = 3;
+            btnCargar.Text = "Cargar";
+            btnCargar.UseVisualStyleBackColor = false;
+            btnCargar.Click += btnCargar_Click;
+            // 
+            // btnLimpiar
+            // 
+            btnLimpiar.BackColor = Color.Silver;
+            btnLimpiar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnLimpiar.Location = new Point(4, 5);
+            btnLimpiar.Name = "btnLimpiar";
+            btnLimpiar.Size = new Size(140, 50);
+            btnLimpiar.TabIndex = 4;
+            btnLimpiar.Text = "Limpiar";
+            btnLimpiar.UseVisualStyleBackColor = false;
+            btnLimpiar.Click += btnLimpiar_Click;
+            // 
+            // panelBotones
+            // 
+            panelBotones.Anchor = AnchorStyles.Top;
+            panelBotones.BackColor = Color.Transparent;
+            panelBotones.Controls.Add(btnAgregar);
+            panelBotones.Controls.Add(btnActualizar);
+            panelBotones.Controls.Add(btnEliminar);
+            panelBotones.Controls.Add(btnCargar);
+            panelBotones.Controls.Add(btnLimpiar);
+            panelBotones.Location = new Point(282, 300);
+            panelBotones.Name = "panelBotones";
+            panelBotones.Size = new Size(800, 60);
+            panelBotones.TabIndex = 1;
             // 
             // PedidoForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1475, 750);
-            Controls.Add(cmbEstado);
-            Controls.Add(btnLimpiar);
-            Controls.Add(btnCargar);
-            Controls.Add(btnEliminar);
-            Controls.Add(btnActualizar);
-            Controls.Add(btnAgregar);
-            Controls.Add(label8);
-            Controls.Add(label7);
-            Controls.Add(label6);
-            Controls.Add(label5);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label9);
-            Controls.Add(label1);
-            Controls.Add(txtSubtotal);
-            Controls.Add(txtMetodoPago);
-            Controls.Add(txtReferencia);
-            Controls.Add(txtDescuento);
-            Controls.Add(txtDireccion);
-            Controls.Add(txtCostoEnvio);
-            Controls.Add(txtTotal);
-            Controls.Add(txtNotas);
-            Controls.Add(txtIdUsuario);
+            BackColor = Color.FromArgb(34, 40, 49);
+            ClientSize = new Size(1550, 900);
+            Controls.Add(groupBoxDatos);
+            Controls.Add(panelBotones);
             Controls.Add(dgvPedidos);
+            Font = new Font("Segoe UI", 10F);
             Name = "PedidoForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Gestión de Pedidos";
             ((System.ComponentModel.ISupportInitialize)dgvPedidos).EndInit();
-
-            // === ENLACE DE EVENTOS ===
-            btnAgregar.Click += btnAgregar_Click;
-            btnActualizar.Click += btnActualizar_Click;
-            btnEliminar.Click += btnEliminar_Click;
-            btnCargar.Click += btnCargar_Click;
-            btnLimpiar.Click += btnLimpiar_Click;
-            dgvPedidos.SelectionChanged += dgvPedidos_SelectionChanged;
-
+            groupBoxDatos.ResumeLayout(false);
+            groupBoxDatos.PerformLayout();
+            panelBotones.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
+        }
+
+        private void AgregarCampo(Control contenedor, Label label, string texto, Control control, int xLabel, int xControl, int y)
+        {
+            label.Text = texto;
+            label.Location = new Point(xLabel, y);
+            label.Size = new Size(150, 25);
+            control.Location = new Point(xControl, y);
+            control.Size = new Size(180, 27);
+            contenedor.Controls.Add(label);
+            contenedor.Controls.Add(control);
         }
 
         #endregion
 
         private DataGridView dgvPedidos;
-        private TextBox txtIdUsuario;
-        private TextBox txtNotas;
-        private TextBox txtTotal;
-        private TextBox txtCostoEnvio;
-        private TextBox txtDireccion;
-        private TextBox txtDescuento;
-        private TextBox txtReferencia;
-        private TextBox txtMetodoPago;
-        private TextBox txtSubtotal;
-        private Label label1;
-        private Label label9;
-        private Label label2;
-        private Label label3;
-        private Label label4;
-        private Label label5;
-        private Label label6;
-        private Label label7;
-        private Label label8;
-        private Button btnAgregar;
-        private Button btnActualizar;
-        private Button btnEliminar;
-        private Button btnCargar;
-        private Button btnLimpiar;
+        private GroupBox groupBoxDatos;
+        private TextBox txtIdUsuario, txtDireccion, txtMetodoPago, txtReferencia, txtSubtotal,
+            txtDescuento, txtCostoEnvio, txtTotal, txtNotas;
         private ComboBox cmbEstado;
+        private Label labelUsuario, labelDireccion, labelMetodoPago, labelReferencia, labelSubtotal,
+            labelDescuento, labelCostoEnvio, labelTotal, labelNotas, labelEstado;
+        private Button btnAgregar, btnActualizar, btnEliminar, btnCargar, btnLimpiar;
+        private Panel panelBotones;
     }
 }
