@@ -12,7 +12,7 @@ namespace SellPoint.View.Forms
         public PedidoForm()
         {
             InitializeComponent();
-            _pedidoService = new PedidoService(); // o inyectar si configuras IoC
+            _pedidoService = new PedidoService();
 
             cmbEstado.Items.AddRange(new[] { "EnPreparacion", "Enviado", "Entregado", "Cancelado" });
             cmbEstado.SelectedIndex = 0;
