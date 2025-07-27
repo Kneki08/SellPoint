@@ -378,17 +378,16 @@
         }
 
         #endregion
-
-        private DataGridView dgvPedidos;
-        private GroupBox groupBoxDatos;
-        private TextBox txtIdUsuario, txtDireccion, txtMetodoPago, txtReferencia, txtSubtotal,
+        public DataGridView dgvPedidos;
+        public GroupBox groupBoxDatos;
+        public TextBox txtIdUsuario, txtDireccion, txtMetodoPago, txtReferencia, txtSubtotal,
             txtDescuento, txtCostoEnvio, txtTotal, txtNotas;
-        private ComboBox cmbEstado;
-        private Label labelUsuario, labelDireccion, labelMetodoPago, labelReferencia, labelSubtotal,
+        public ComboBox cmbEstado;
+        public Label labelUsuario, labelDireccion, labelMetodoPago, labelReferencia, labelSubtotal,
             labelDescuento, labelCostoEnvio, labelTotal, labelNotas, labelEstado;
-        private Button btnAgregar, btnActualizar, btnEliminar, btnCargar, btnLimpiar;
-        private Panel panelBotones;
-        private TextBox txtBuscarId;
-        private Label lblBuscarId;
+        public Button btnAgregar, btnActualizar, btnEliminar, btnCargar, btnLimpiar;
+        public Panel panelBotones;
+        public TextBox txtBuscarId;
+        public Label lblBuscarId;
     }
 }

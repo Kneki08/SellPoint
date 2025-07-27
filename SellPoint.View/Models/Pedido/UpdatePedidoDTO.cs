@@ -1,4 +1,4 @@
-﻿namespace SellPoint.View.Dtos.Pedido
+﻿namespace SellPoint.View.Models.Pedido
 {
     /// <summary>
     /// DTO para actualizar un pedido existente.

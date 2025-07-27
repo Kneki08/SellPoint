@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using SellPoint.View.Models;
-using SellPoint.View.Dtos.Pedido;
+using SellPoint.View.Models.Pedido;
 
 namespace SellPoint.View.Services.Pedido
 {
@@ -20,39 +20,63 @@ namespace SellPoint.View.Services.Pedido
             _httpClient = new HttpClient();
         }
 
-        public async Task<List<PedidoDTO>> ObtenerTodosAsync()
+        public async Task<ApiResponse<List<PedidoDTO>>> ObtenerTodosAsync()
         {
             try
             {
                 var response = await _httpClient.GetAsync(BaseUrl);
-                response.EnsureSuccessStatusCode();
-
                 var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<PedidoDTO>>>();
-                return apiResponse?.Data ?? new List<PedidoDTO>();
+                if (response.IsSuccessStatusCode && apiResponse != null)
+                {
+                    return apiResponse;
+                }
+                return new ApiResponse<List<PedidoDTO>>
+                {
+                    IsSuccess = false,
+                    Message = apiResponse?.Message ?? "Error al obtener los pedidos.",
+                    Data = new List<PedidoDTO>()
+                };
             }
-            catch
+            catch (Exception ex)
             {
-                return new List<PedidoDTO>();
+                return new ApiResponse<List<PedidoDTO>>
+                {
+                    IsSuccess = false,
+                    Message = $"Excepción al obtener pedidos: {ex.Message}",
+                    Data = new List<PedidoDTO>()
+                };
             }
         }
 
-        public async Task<PedidoDTO?> ObtenerPorIdAsync(int id)
+        public async Task<ApiResponse<PedidoDTO>> ObtenerPorIdAsync(int id)
         {
             try
             {
                 var response = await _httpClient.GetAsync($"{BaseUrl}/{id}");
-                response.EnsureSuccessStatusCode();
-
                 var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<PedidoDTO>>();
-                return apiResponse?.Data;
+                if (response.IsSuccessStatusCode && apiResponse != null)
+                {
+                    return apiResponse;
+                }
+                return new ApiResponse<PedidoDTO>
+                {
+                    IsSuccess = false,
+                    Message = apiResponse?.Message ?? "No se encontró el pedido.",
+                    Data = default
+                };
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                return new ApiResponse<PedidoDTO>
+                {
+                    IsSuccess = false,
+                    Message = $"Excepción al buscar pedido: {ex.Message}",
+                    Data = default
+                };
             }
         }
 
-        public async Task<(bool exito, string mensaje)> AgregarAsync(SavePedidoDTO dto)
+        public async Task<ApiResponse<bool>> AgregarAsync(SavePedidoDTO dto)
         {
             try
             {
@@ -64,18 +88,28 @@ namespace SellPoint.View.Services.Pedido
 
                 if (response.IsSuccessStatusCode && resultado != null)
                 {
-                    return (resultado.IsSuccess, resultado.Message);
+                    return resultado;
                 }
 
-                return (false, resultado?.Message ?? "Error desconocido al agregar el pedido.");
+                return new ApiResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = resultado?.Message ?? "Error desconocido al agregar el pedido.",
+                    Data = false
+                };
             }
             catch (Exception ex)
             {
-                return (false, $"Excepción al agregar: {ex.Message}");
+                return new ApiResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = $"Excepción al agregar: {ex.Message}",
+                    Data = false
+                };
             }
         }
 
-        public async Task<(bool exito, string mensaje)> ActualizarAsync(UpdatePedidoDTO dto)
+        public async Task<ApiResponse<bool>> ActualizarAsync(UpdatePedidoDTO dto)
         {
             try
             {
@@ -88,18 +122,28 @@ namespace SellPoint.View.Services.Pedido
 
                 if (response.IsSuccessStatusCode && resultado != null)
                 {
-                    return (resultado.IsSuccess, resultado.Message);
+                    return resultado;
                 }
 
-                return (false, resultado?.Message ?? "Error desconocido al actualizar el pedido.");
+                return new ApiResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = resultado?.Message ?? "Error desconocido al actualizar el pedido.",
+                    Data = false
+                };
             }
             catch (Exception ex)
             {
-                return (false, $"Excepción al actualizar: {ex.Message}");
+                return new ApiResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = $"Excepción al actualizar: {ex.Message}",
+                    Data = false
+                };
             }
         }
 
-        public async Task<(bool exito, string mensaje)> EliminarAsync(int id)
+        public async Task<ApiResponse<bool>> EliminarAsync(int id)
         {
             try
             {
@@ -108,14 +152,24 @@ namespace SellPoint.View.Services.Pedido
 
                 if (response.IsSuccessStatusCode && resultado != null)
                 {
-                    return (resultado.IsSuccess, resultado.Message);
+                    return resultado;
                 }
 
-                return (false, resultado?.Message ?? "Error desconocido al eliminar el pedido.");
+                return new ApiResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = resultado?.Message ?? "Error desconocido al eliminar el pedido.",
+                    Data = false
+                };
             }
             catch (Exception ex)
             {
-                return (false, $"Excepción al eliminar: {ex.Message}");
+                return new ApiResponse<bool>
+                {
+                    IsSuccess = false,
+                    Message = $"Excepción al eliminar: {ex.Message}",
+                    Data = false
+                };
             }
         }
     }

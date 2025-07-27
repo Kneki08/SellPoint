@@ -1,4 +1,4 @@
-﻿namespace SellPoint.View.Dtos.Pedido
+﻿namespace SellPoint.View.Models.Pedido
 {
     /// <summary>
     /// Contiene los datos base comunes a todos los pedidos.

@@ -1,7 +1,8 @@
-using SellPoint.View.Dtos.Pedido;
-using SellPoint.View.Services.Pedido;
 using System;
 using System.Windows.Forms;
+using SellPoint.View.Models.Pedido;
+using SellPoint.View.Services.Pedido;
+using SellPoint.View.Validations;
 
 namespace SellPoint.View.Forms
 {
@@ -9,10 +10,10 @@ namespace SellPoint.View.Forms
     {
         private readonly IPedidoService _pedidoService;
 
-        public PedidoForm()
-        {
+        public PedidoForm(IPedidoService pedidoService)
+        {   
+            _pedidoService = pedidoService;
             InitializeComponent();
-            _pedidoService = new PedidoService();
 
             cmbEstado.Items.AddRange(new[] { "EnPreparacion", "Enviado", "Entregado", "Cancelado" });
             cmbEstado.SelectedIndex = 0;
@@ -22,49 +23,55 @@ namespace SellPoint.View.Forms
 
         private async void CargarPedidosAsync()
         {
-            var pedidos = await _pedidoService.ObtenerTodosAsync();
-            dgvPedidos.DataSource = pedidos;
+            var respuesta = await _pedidoService.ObtenerTodosAsync();
+            dgvPedidos.DataSource = respuesta.Data ?? new List<PedidoDTO>();
 
-            // Autoajustar columnas al contenido de las celdas
+            if (!respuesta.IsSuccess)
+                MessageBox.Show(respuesta.Message, "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
             dgvPedidos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dgvPedidos.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
         }
 
         private void LimpiarCampos()
         {
-            txtIdUsuario.Text = "";
-            txtDireccion.Text = "";
-            txtMetodoPago.Text = "";
-            txtReferencia.Text = "";
-            txtSubtotal.Text = "";
-            txtDescuento.Text = "";
-            txtCostoEnvio.Text = "";
-            txtTotal.Text = "";
-            txtNotas.Text = "";
-            cmbEstado.SelectedIndex = 0;
+            foreach (Control c in groupBoxDatos.Controls)
+            {
+                if (c is TextBox tb)
+                    tb.Text = "";
+                else if (c is ComboBox cb && cb.Items.Count > 0)
+                    cb.SelectedIndex = 0;
+            }
         }
 
         private async void btnAgregar_Click(object sender, EventArgs e)
         {
-            var dto = new SavePedidoDTO
-            {
-                IdUsuario = int.Parse(txtIdUsuario.Text),
-                IdDireccionEnvio = int.Parse(txtDireccion.Text),
-                MetodoPago = txtMetodoPago.Text,
-                ReferenciaPago = txtReferencia.Text,
-                Subtotal = decimal.Parse(txtSubtotal.Text),
-                Descuento = decimal.Parse(txtDescuento.Text),
-                CostoEnvio = decimal.Parse(txtCostoEnvio.Text),
-                Total = decimal.Parse(txtTotal.Text),
-                Estado = cmbEstado.SelectedItem?.ToString() ?? "EnPreparacion",
-                FechaPedido = DateTime.Now,
-                CuponId = null,
-                Notas = txtNotas.Text
-            };
+            var campos = PedidoCamposParser.TryParseCampos(
+                txtIdUsuario.Text, txtDireccion.Text, txtSubtotal.Text, txtDescuento.Text, txtCostoEnvio.Text, txtTotal.Text);
 
-            var (exito, mensaje) = await _pedidoService.AgregarAsync(dto);
-            MessageBox.Show(mensaje, exito ? "Éxito" : "Error", MessageBoxButtons.OK, exito ? MessageBoxIcon.Information : MessageBoxIcon.Error);
-            if (exito)
+            if (!campos.Success)
+            {
+                MessageBox.Show(campos.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var dto = PedidoDtoFactory.CrearSaveDTO(
+                campos,
+                txtMetodoPago.Text,
+                txtReferencia.Text,
+                cmbEstado.SelectedItem?.ToString() ?? "EnPreparacion",
+                txtNotas.Text
+            );
+
+            var (valido, mensaje) = SavePedidoValidator.Validar(dto);
+            if (!valido)
+            {
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var respuesta = await _pedidoService.AgregarAsync(dto);
+            MessageBox.Show(respuesta.Message, respuesta.IsSuccess ? "Éxito" : "Error", MessageBoxButtons.OK, respuesta.IsSuccess ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+
+            if (respuesta.IsSuccess)
             {
                 CargarPedidosAsync();
                 LimpiarCampos();
@@ -75,13 +82,20 @@ namespace SellPoint.View.Forms
         {
             if (dgvPedidos.CurrentRow?.DataBoundItem is not PedidoDTO pedido)
                 return;
-
+            
+            var (valido, mensaje) = RemovePedidoValidator.Validar(pedido.Id);
+            if (!valido)
+            {
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             var confirmado = MessageBox.Show("¿Seguro que deseas eliminar este pedido?", "Confirmar", MessageBoxButtons.YesNo);
             if (confirmado == DialogResult.Yes)
             {
-                var (exito, mensaje) = await _pedidoService.EliminarAsync(pedido.Id);
-                MessageBox.Show(mensaje, exito ? "Éxito" : "Error", MessageBoxButtons.OK, exito ? MessageBoxIcon.Information : MessageBoxIcon.Error);
-                if (exito)
+                var respuesta = await _pedidoService.EliminarAsync(pedido.Id);
+                MessageBox.Show(respuesta.Message, respuesta.IsSuccess ? "Éxito" : "Error", MessageBoxButtons.OK, respuesta.IsSuccess ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+
+                if (respuesta.IsSuccess)
                     CargarPedidosAsync();
             }
         }
@@ -91,16 +105,7 @@ namespace SellPoint.View.Forms
             if (dgvPedidos.CurrentRow?.DataBoundItem is not PedidoDTO pedido)
                 return;
 
-            txtIdUsuario.Text = pedido.IdUsuario.ToString();
-            txtDireccion.Text = pedido.IdDireccionEnvio.ToString();
-            txtMetodoPago.Text = pedido.MetodoPago;
-            txtReferencia.Text = pedido.ReferenciaPago;
-            txtSubtotal.Text = pedido.Subtotal.ToString();
-            txtDescuento.Text = pedido.Descuento.ToString();
-            txtCostoEnvio.Text = pedido.CostoEnvio.ToString();
-            txtTotal.Text = pedido.Total.ToString();
-            cmbEstado.SelectedItem = pedido.Estado;
-            txtNotas.Text = pedido.Notas;
+            PedidoUiMapper.CargarEnCampos(pedido, this);
         }
 
         private async void btnActualizar_Click(object sender, EventArgs e)
@@ -108,27 +113,35 @@ namespace SellPoint.View.Forms
             if (dgvPedidos.CurrentRow?.DataBoundItem is not PedidoDTO selected)
                 return;
 
-            var dto = new UpdatePedidoDTO
-            {
-                Id = selected.Id,
-                IdUsuario = int.Parse(txtIdUsuario.Text),
-                IdDireccionEnvio = int.Parse(txtDireccion.Text),
-                MetodoPago = txtMetodoPago.Text,
-                ReferenciaPago = txtReferencia.Text,
-                Subtotal = decimal.Parse(txtSubtotal.Text),
-                Descuento = decimal.Parse(txtDescuento.Text),
-                CostoEnvio = decimal.Parse(txtCostoEnvio.Text),
-                Total = decimal.Parse(txtTotal.Text),
-                Estado = cmbEstado.SelectedItem?.ToString() ?? "EnPreparacion",
-                FechaPedido = selected.FechaPedido,
-                FechaActualizacion = DateTime.Now,
-                CuponId = null,
-                Notas = txtNotas.Text
-            };
+            var campos = PedidoCamposParser.TryParseCampos(
+                txtIdUsuario.Text, txtDireccion.Text, txtSubtotal.Text, txtDescuento.Text, txtCostoEnvio.Text, txtTotal.Text);
 
-            var (exito, mensaje) = await _pedidoService.ActualizarAsync(dto);
-            MessageBox.Show(mensaje, exito ? "Éxito" : "Error", MessageBoxButtons.OK, exito ? MessageBoxIcon.Information : MessageBoxIcon.Error);
-            if (exito)
+            if (!campos.Success)
+            {
+                MessageBox.Show(campos.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var dto = PedidoDtoFactory.CrearUpdateDTO(
+                campos,
+                selected,
+                txtMetodoPago.Text,
+                txtReferencia.Text,
+                cmbEstado.SelectedItem?.ToString() ?? "EnPreparacion",
+                txtNotas.Text
+            );
+
+            var (valido, mensaje) = UpdatePedidoValidator.Validar(dto);
+            if (!valido)
+            {
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var respuesta = await _pedidoService.ActualizarAsync(dto);
+            MessageBox.Show(respuesta.Message, respuesta.IsSuccess ? "Éxito" : "Error", MessageBoxButtons.OK, respuesta.IsSuccess ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+
+            if (respuesta.IsSuccess)
             {
                 CargarPedidosAsync();
                 LimpiarCampos();
@@ -144,15 +157,22 @@ namespace SellPoint.View.Forms
         {
             if (!string.IsNullOrWhiteSpace(txtBuscarId.Text) && int.TryParse(txtBuscarId.Text, out int id))
             {
-                var pedido = await _pedidoService.ObtenerPorIdAsync(id);
-                if (pedido != null)
+                var (valido, mensaje) = PedidoIdValidator.Validar(id);
+                if (!valido)
                 {
-                    dgvPedidos.DataSource = new List<PedidoDTO> { pedido };
+                    MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                        
+                var respuesta = await _pedidoService.ObtenerPorIdAsync(id);
+                if (respuesta.IsSuccess && respuesta.Data != null)
+                {
+                    dgvPedidos.DataSource = new List<PedidoDTO> { respuesta.Data };
                     MessageBox.Show("Pedido cargado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("No se encontró el pedido con ese ID.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(respuesta.Message, "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);  
                 }
 
                 txtBuscarId.Text = ""; // limpiar después de cargar

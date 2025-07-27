@@ -1,4 +1,4 @@
-﻿namespace SellPoint.View.Dtos.Pedido
+﻿namespace SellPoint.View.Models.Pedido
 {
     /// <summary>
     /// DTO para eliminar un pedido por ID.

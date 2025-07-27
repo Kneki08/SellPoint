@@ -1,4 +1,4 @@
-﻿namespace SellPoint.View.Dtos.Pedido
+﻿namespace SellPoint.View.Models.Pedido
 {
     /// <summary>
     /// DTO para visualizar un pedido obtenido desde la API.

@@ -1,4 +1,5 @@
-﻿using SellPoint.View.Dtos.Pedido;
+﻿using SellPoint.View.Models.Pedido;
+using SellPoint.View.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,10 +7,10 @@ namespace SellPoint.View.Services.Pedido
 {
     public interface IPedidoService
     {
-        Task<List<PedidoDTO>> ObtenerTodosAsync();
-        Task<(bool exito, string mensaje)> AgregarAsync(SavePedidoDTO dto);
-        Task<(bool exito, string mensaje)> ActualizarAsync(UpdatePedidoDTO dto);
-        Task<(bool exito, string mensaje)> EliminarAsync(int id);
-        Task<PedidoDTO?> ObtenerPorIdAsync(int id);
+        Task<ApiResponse<List<PedidoDTO>>> ObtenerTodosAsync();
+        Task<ApiResponse<PedidoDTO>> ObtenerPorIdAsync(int id);
+        Task<ApiResponse<bool>> AgregarAsync(SavePedidoDTO dto);
+        Task<ApiResponse<bool>> ActualizarAsync(UpdatePedidoDTO dto);
+        Task<ApiResponse<bool>> EliminarAsync(int id);
     }
 }
