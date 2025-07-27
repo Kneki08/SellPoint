@@ -13,18 +13,19 @@ namespace SellPoint.View.Services.Pedido
     public class PedidoService : IPedidoService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "http://localhost:5271/api/Pedido";
+        private readonly string _baseUrl;
 
-        public PedidoService()
+        public PedidoService(string baseUrl)
         {
             _httpClient = new HttpClient();
+            _baseUrl = baseUrl;
         }
 
         public async Task<ApiResponse<List<PedidoDTO>>> ObtenerTodosAsync()
         {
             try
             {
-                var response = await _httpClient.GetAsync(BaseUrl);
+                var response = await _httpClient.GetAsync(_baseUrl);
                 var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<PedidoDTO>>>();
                 if (response.IsSuccessStatusCode && apiResponse != null)
                 {
@@ -52,7 +53,7 @@ namespace SellPoint.View.Services.Pedido
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{BaseUrl}/{id}");
+                var response = await _httpClient.GetAsync($"{_baseUrl}/{id}");
                 var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<PedidoDTO>>();
                 if (response.IsSuccessStatusCode && apiResponse != null)
                 {
@@ -83,7 +84,7 @@ namespace SellPoint.View.Services.Pedido
                 var json = JsonSerializer.Serialize(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync(BaseUrl, content);
+                var response = await _httpClient.PostAsync(_baseUrl, content);
                 var resultado = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
 
                 if (response.IsSuccessStatusCode && resultado != null)
@@ -116,7 +117,7 @@ namespace SellPoint.View.Services.Pedido
                 var json = JsonSerializer.Serialize(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var url = $"{BaseUrl}/{dto.Id}";
+                var url = $"{_baseUrl}/{dto.Id}";
                 var response = await _httpClient.PutAsync(url, content);
                 var resultado = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
 
@@ -147,7 +148,7 @@ namespace SellPoint.View.Services.Pedido
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
+                var response = await _httpClient.DeleteAsync($"{_baseUrl}/{id}");
                 var resultado = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
 
                 if (response.IsSuccessStatusCode && resultado != null)
