@@ -20,7 +20,7 @@ namespace SellPoint.View
 
             var apiSettings = configuration.GetSection("ApiSettings").Get<ApiSettings>();
 
-            // Inyección de dependencias correcta:
+            // Inyección de dependencias 
             var pedidoApiClient = new PedidoApiClient(
                 apiSettings!.PedidoBaseUrl
                     ?? throw new InvalidOperationException("Falta la ruta PedidoBaseUrl en appsettings.json")

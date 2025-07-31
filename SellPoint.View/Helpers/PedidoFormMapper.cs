@@ -11,7 +11,7 @@ namespace SellPoint.View.Helpers
         {
             return new PedidoViewModel
             {
-                Id = 0, // Al agregar normalmente no asignas el Id, solo al actualizar (así es seguro)
+                Id = 0, 
                 IdUsuario = Convert.ToInt32(form.cmbUsuarios.SelectedItem ?? "0"),
                 IdDireccionEnvio = Convert.ToInt32(form.cmbDirecciones.SelectedItem ?? "0"),
                 MetodoPago = form.cmbMetodoPago.SelectedItem?.ToString() ?? "PayPal",
@@ -22,11 +22,11 @@ namespace SellPoint.View.Helpers
                 Total = decimal.TryParse(form.txtTotal.Text, out var t) ? t : 0,
                 Estado = form.cmbEstado.SelectedItem?.ToString() ?? "EnPreparacion",
                 Notas = form.txtNotas.Text ?? "",
-                // Puedes setear FechaPedido y CuponId en el form si lo necesitas
+
             };
         }
 
-        // 2. Carga los datos de un ViewModel en los controles del formulario (cuando seleccionas en el grid)
+        // 2. Carga los datos de un ViewModel en los controles del formulario (en el grid)
         public static void ViewModelToForm(PedidoViewModel vm, PedidoForm form)
         {
             form.cmbUsuarios.SelectedItem = vm.IdUsuario;

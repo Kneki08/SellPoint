@@ -17,7 +17,6 @@ namespace SellPoint.View.Services.Pedido
 
         public async Task<ApiResponse<List<PedidoDTO>>> ObtenerTodosAsync()
         {
-            // Sin validaciones adicionales aquí, ya que es una consulta global.
             return await _apiClient.ObtenerTodosAsync();
         }
 

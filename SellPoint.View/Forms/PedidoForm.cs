@@ -39,7 +39,7 @@ namespace SellPoint.View.Forms
         private void CargarDireccionesCombo()
         {
             cmbDirecciones.Items.Clear();
-            cmbDirecciones.Items.Add(1); // Solo existe la 1 por ahora
+            cmbDirecciones.Items.Add(1);
             cmbDirecciones.SelectedIndex = 0;
         }
 
