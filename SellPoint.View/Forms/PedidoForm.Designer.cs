@@ -19,11 +19,11 @@
             dgvPedidos = new DataGridView();
             groupBoxDatos = new GroupBox();
             labelUsuario = new Label();
-            txtIdUsuario = new TextBox();
+            cmbUsuarios = new ComboBox();
             labelDireccion = new Label();
-            txtDireccion = new TextBox();
+            cmbDirecciones = new ComboBox();
             labelMetodoPago = new Label();
-            txtMetodoPago = new TextBox();
+            cmbMetodoPago = new ComboBox();
             labelReferencia = new Label();
             txtReferencia = new TextBox();
             labelSubtotal = new Label();
@@ -71,11 +71,11 @@
             groupBoxDatos.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupBoxDatos.BackColor = Color.FromArgb(57, 62, 70);
             groupBoxDatos.Controls.Add(labelUsuario);
-            groupBoxDatos.Controls.Add(txtIdUsuario);
+            groupBoxDatos.Controls.Add(cmbUsuarios);
             groupBoxDatos.Controls.Add(labelDireccion);
-            groupBoxDatos.Controls.Add(txtDireccion);
+            groupBoxDatos.Controls.Add(cmbDirecciones);
             groupBoxDatos.Controls.Add(labelMetodoPago);
-            groupBoxDatos.Controls.Add(txtMetodoPago);
+            groupBoxDatos.Controls.Add(cmbMetodoPago);
             groupBoxDatos.Controls.Add(labelReferencia);
             groupBoxDatos.Controls.Add(txtReferencia);
             groupBoxDatos.Controls.Add(labelSubtotal);
@@ -106,13 +106,15 @@
             labelUsuario.Size = new Size(150, 25);
             labelUsuario.TabIndex = 0;
             labelUsuario.Text = "ID Usuario:";
-            // 
-            // txtIdUsuario
-            // 
-            txtIdUsuario.Location = new Point(200, 30);
-            txtIdUsuario.Name = "txtIdUsuario";
-            txtIdUsuario.Size = new Size(180, 30);
-            txtIdUsuario.TabIndex = 1;
+            //
+            // cmbUsuarios
+            //
+            cmbUsuarios.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbUsuarios.Location = new Point(200, 30);
+            cmbUsuarios.Name = "cmbUsuarios";
+            cmbUsuarios.Size = new Size(180, 30);
+            cmbUsuarios.TabIndex = 1;
+
             // 
             // labelDireccion
             // 
@@ -123,12 +125,13 @@
             labelDireccion.TabIndex = 2;
             labelDireccion.Text = "ID Dirección:";
             // 
-            // txtDireccion
+            // cmbDirecciones
             // 
-            txtDireccion.Location = new Point(200, 65);
-            txtDireccion.Name = "txtDireccion";
-            txtDireccion.Size = new Size(180, 30);
-            txtDireccion.TabIndex = 3;
+            cmbDirecciones.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDirecciones.Location = new Point(200, 65);
+            cmbDirecciones.Name = "cmbDirecciones";
+            cmbDirecciones.Size = new Size(180, 30);
+            cmbDirecciones.TabIndex = 3;
             // 
             // labelMetodoPago
             // 
@@ -139,12 +142,13 @@
             labelMetodoPago.TabIndex = 4;
             labelMetodoPago.Text = "Método de Pago:";
             // 
-            // txtMetodoPago
+            // cmbMetodoPago
             // 
-            txtMetodoPago.Location = new Point(200, 100);
-            txtMetodoPago.Name = "txtMetodoPago";
-            txtMetodoPago.Size = new Size(180, 30);
-            txtMetodoPago.TabIndex = 5;
+            cmbMetodoPago.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbMetodoPago.Location = new Point(200, 100);
+            cmbMetodoPago.Name = "cmbMetodoPago";
+            cmbMetodoPago.Size = new Size(180, 30);
+            cmbMetodoPago.TabIndex = 5;
             // 
             // labelReferencia
             // 
@@ -378,16 +382,15 @@
         }
 
         #endregion
-        public DataGridView dgvPedidos;
-        public GroupBox groupBoxDatos;
-        public TextBox txtIdUsuario, txtDireccion, txtMetodoPago, txtReferencia, txtSubtotal,
-            txtDescuento, txtCostoEnvio, txtTotal, txtNotas;
-        public ComboBox cmbEstado;
+        public ComboBox cmbUsuarios, cmbDirecciones, cmbMetodoPago, cmbEstado;
+        public TextBox txtReferencia, txtSubtotal, txtDescuento, txtCostoEnvio, txtTotal, txtNotas;
         public Label labelUsuario, labelDireccion, labelMetodoPago, labelReferencia, labelSubtotal,
             labelDescuento, labelCostoEnvio, labelTotal, labelNotas, labelEstado;
         public Button btnAgregar, btnActualizar, btnEliminar, btnCargar, btnLimpiar;
         public Panel panelBotones;
         public TextBox txtBuscarId;
         public Label lblBuscarId;
+        public DataGridView dgvPedidos;
+        public GroupBox groupBoxDatos;
     }
 }
