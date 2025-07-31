@@ -1,4 +1,5 @@
-﻿using SellPoint.Aplication.Dtos.Cupon;
+﻿using System.Runtime.Versioning; 
+using SellPoint.Aplication.Dtos.Cupon;
 using SellPoint.View.Models.ModelsCupon;
 using SellPoint.View.Services.CuponApiClient;
 using System;
@@ -8,6 +9,7 @@ using System.Windows.Forms;
 
 namespace SellPoint.View
 {
+    [SupportedOSPlatform("windows")]
     public partial class FormCupon : Form
     {
         private readonly ICuponApiClient _cuponApiClient;
@@ -19,15 +21,9 @@ namespace SellPoint.View
             _cuponApiClient = cuponApiClient;
         }
 
-        private async void FormCupon_Load(object sender, EventArgs e)
-        {
-            await CargarCuponesAsync();
-        }
+        private async void FormCupon_Load(object sender, EventArgs e) => await CargarCuponesAsync();
 
-        private async void btnCargar_Click(object sender, EventArgs e)
-        {
-            await CargarCuponesAsync();
-        }
+        private async void btnCargar_Click(object sender, EventArgs e) => await CargarCuponesAsync();
 
         private async void btnCrear_Click(object sender, EventArgs e)
         {
@@ -40,17 +36,7 @@ namespace SellPoint.View
                 FechaVencimiento = dtpFechaVencimiento.Value
             };
 
-            bool creado = await _cuponApiClient.CrearAsync(dto);
-            if (creado)
-            {
-                MessageBox.Show("Cupón creado con éxito.");
-                await CargarCuponesAsync();
-                LimpiarFormulario();
-            }
-            else
-            {
-                MessageBox.Show("Error al crear el cupón.");
-            }
+            await ProcesarResultadoAsync(await _cuponApiClient.CrearAsync(dto), "creado");
         }
 
         private async void btnActualizar_Click(object sender, EventArgs e)
@@ -71,17 +57,7 @@ namespace SellPoint.View
                 FechaVencimiento = dtpFechaVencimiento.Value
             };
 
-            bool actualizado = await _cuponApiClient.ActualizarAsync(dto);
-            if (actualizado)
-            {
-                MessageBox.Show("Cupón actualizado con éxito.");
-                await CargarCuponesAsync();
-                LimpiarFormulario();
-            }
-            else
-            {
-                MessageBox.Show("Error al actualizar el cupón.");
-            }
+            await ProcesarResultadoAsync(await _cuponApiClient.ActualizarAsync(dto), "actualizado");
         }
 
         private async void btnEliminar_Click(object sender, EventArgs e)
@@ -93,17 +69,7 @@ namespace SellPoint.View
             }
 
             var dto = new RemoveCuponDTIO { Id = id };
-            bool eliminado = await _cuponApiClient.EliminarAsync(dto);
-            if (eliminado)
-            {
-                MessageBox.Show("Cupón eliminado con éxito.");
-                await CargarCuponesAsync();
-                LimpiarFormulario();
-            }
-            else
-            {
-                MessageBox.Show("Error al eliminar el cupón.");
-            }
+            await ProcesarResultadoAsync(await _cuponApiClient.EliminarAsync(dto), "eliminado");
         }
 
         private async Task CargarCuponesAsync()
@@ -111,19 +77,31 @@ namespace SellPoint.View
             try
             {
                 var cuponesDTO = await _cuponApiClient.ObtenerTodosAsync();
-                var cuponesModel = cuponesDTO.Select(dto => new CuponModel
+                dgvCupones.DataSource = cuponesDTO.Select(dto => new CuponModel
                 {
                     Id = dto.Id,
                     Codigo = dto.Codigo,
                     ValorDescuento = dto.ValorDescuento,
                     FechaVencimiento = dto.FechaVencimiento
                 }).ToList();
-
-                dgvCupones.DataSource = cuponesModel;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar cupones: " + ex.Message);
+            }
+        }
+
+        private async Task ProcesarResultadoAsync(bool resultado, string accion)
+        {
+            if (resultado)
+            {
+                MessageBox.Show($"Cupón {accion} con éxito.");
+                await CargarCuponesAsync();
+                LimpiarFormulario();
+            }
+            else
+            {
+                MessageBox.Show($"Error al {accion} el cupón.");
             }
         }
 
@@ -157,6 +135,7 @@ namespace SellPoint.View
         }
     }
 }
+
 
 
 

@@ -1,11 +1,6 @@
 ﻿using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Dtos.Cupon;
-using SellPoint.View.Models.ModelsCupon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SellPoint.View.Services.CuponApiClient
 {

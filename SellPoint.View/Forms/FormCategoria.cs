@@ -1,4 +1,4 @@
-
+using System.Runtime.Versioning; 
 using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.View.Models.ModelsCategoria;
 using SellPoint.View.Services.CategoriaApiClient;
@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 namespace SellPoint.View
 {
+    [SupportedOSPlatform("windows")]
     public partial class FormCategoria : Form
     {
         private readonly ICategoriaApiClient _categoriaApiClient;
@@ -20,15 +21,9 @@ namespace SellPoint.View
             _categoriaApiClient = categoriaApiClient;
         }
 
-        private async void FormCategoria_Load(object sender, EventArgs e)
-        {
-            await CargarCategoriasAsync();
-        }
+        private async void FormCategoria_Load(object sender, EventArgs e) => await CargarCategoriasAsync();
 
-        private async void btnCargar_Click(object sender, EventArgs e)
-        {
-            await CargarCategoriasAsync();
-        }
+        private async void btnCargar_Click(object sender, EventArgs e) => await CargarCategoriasAsync();
 
         private async void btnCrear_Click(object sender, EventArgs e)
         {
@@ -40,17 +35,7 @@ namespace SellPoint.View
                 Descripcion = txtDescripcion.Text.Trim()
             };
 
-            bool creado = await _categoriaApiClient.CrearAsync(dto);
-            if (creado)
-            {
-                MessageBox.Show("Categoría creada con éxito.");
-                await CargarCategoriasAsync();
-                LimpiarFormulario();
-            }
-            else
-            {
-                MessageBox.Show("Error al crear la categoría.");
-            }
+            await ProcesarResultadoAsync(await _categoriaApiClient.CrearAsync(dto), "creada");
         }
 
         private async void btnActualizar_Click(object sender, EventArgs e)
@@ -70,17 +55,7 @@ namespace SellPoint.View
                 Descripcion = txtDescripcion.Text.Trim()
             };
 
-            bool actualizado = await _categoriaApiClient.ActualizarAsync(dto);
-            if (actualizado)
-            {
-                MessageBox.Show("Categoría actualizada con éxito.");
-                await CargarCategoriasAsync();
-                LimpiarFormulario();
-            }
-            else
-            {
-                MessageBox.Show("Error al actualizar la categoría.");
-            }
+            await ProcesarResultadoAsync(await _categoriaApiClient.ActualizarAsync(dto), "actualizada");
         }
 
         private async void btnEliminar_Click(object sender, EventArgs e)
@@ -91,38 +66,39 @@ namespace SellPoint.View
                 return;
             }
 
-            var dto = new RemoveCategoriaDTO { Id = id };
-            bool eliminado = await _categoriaApiClient.EliminarAsync(dto);
-            if (eliminado)
-            {
-                MessageBox.Show("Categoría eliminada con éxito.");
-                await CargarCategoriasAsync();
-                LimpiarFormulario();
-            }
-            else
-            {
-                MessageBox.Show("Error al eliminar la categoría.");
-            }
+            await ProcesarResultadoAsync(await _categoriaApiClient.EliminarAsync(new RemoveCategoriaDTO { Id = id }), "eliminada");
         }
 
         private async Task CargarCategoriasAsync()
         {
             try
             {
-                var categoriasDTO = await _categoriaApiClient.ObtenerTodosAsync();
-                var categoriasModel = categoriasDTO.Select(dto => new CategoriaModel
+                var categorias = await _categoriaApiClient.ObtenerTodosAsync();
+                dgvCategorias.DataSource = categorias.Select(dto => new CategoriaModel
                 {
                     Id = dto.Id,
                     Nombre = dto.Nombre,
                     Descripcion = dto.Descripcion,
                     Activo = dto.Activo
                 }).ToList();
-
-                dgvCategorias.DataSource = categoriasModel;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar categorías: " + ex.Message);
+            }
+        }
+
+        private async Task ProcesarResultadoAsync(bool resultado, string accion)
+        {
+            if (resultado)
+            {
+                MessageBox.Show($"Categoría {accion} con éxito.");
+                await CargarCategoriasAsync();
+                LimpiarFormulario();
+            }
+            else
+            {
+                MessageBox.Show($"Error al {accion} la categoría.");
             }
         }
 

@@ -1,27 +1,21 @@
 ﻿using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.View.Models.ModelsCategoria;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SellPoint.View.Services.CategoriaApiClient
 {
     public class CategoriaApiClient : ICategoriaApiClient
     {
         private readonly HttpClient _httpClient;
+        private readonly ICategoriaMapper _mapper;
         private readonly JsonSerializerOptions _jsonOptions;
 
-        public CategoriaApiClient(HttpClient httpClient)
+        public CategoriaApiClient(HttpClient httpClient, ICategoriaMapper mapper, JsonSerializerOptions jsonOptions)
         {
             _httpClient = httpClient;
-            _jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                WriteIndented = true
-            };
+            _mapper = mapper;
+            _jsonOptions = jsonOptions;
         }
 
         public async Task<IEnumerable<CategoriaDTO>> ObtenerTodosAsync()
@@ -32,7 +26,7 @@ namespace SellPoint.View.Services.CategoriaApiClient
                 response.EnsureSuccessStatusCode();
 
                 var wrapper = await response.Content.ReadFromJsonAsync<CategoriaModelResponse>(_jsonOptions);
-                return ConvertToDtoList(wrapper?.data);
+                return _mapper.Convert(wrapper?.data ?? Enumerable.Empty<CategoriaModel>());
             }
             catch (Exception ex)
             {
@@ -49,7 +43,7 @@ namespace SellPoint.View.Services.CategoriaApiClient
                 if (!response.IsSuccessStatusCode) return null;
 
                 var wrapper = await response.Content.ReadFromJsonAsync<CategoriaModelResponseSingle>(_jsonOptions);
-                return ConvertToDto(wrapper?.data);
+                return wrapper?.data != null ? _mapper.Convert(wrapper.data) : null;
             }
             catch (Exception ex)
             {
@@ -99,37 +93,7 @@ namespace SellPoint.View.Services.CategoriaApiClient
                 return false;
             }
         }
-
-        private IEnumerable<CategoriaDTO> ConvertToDtoList(IEnumerable<CategoriaModel>? models)
-        {
-            if (models == null) return new List<CategoriaDTO>();
-
-            var result = new List<CategoriaDTO>();
-            foreach (var item in models)
-            {
-                result.Add(new CategoriaDTO
-                {
-                    Id = item.Id,
-                    Nombre = item.Nombre,
-                    Descripcion = item.Descripcion,
-                    Activo = item.Activo
-                });
-            }
-            return result;
-        }
-
-        private CategoriaDTO? ConvertToDto(CategoriaModel? model)
-        {
-            if (model == null) return null;
-
-            return new CategoriaDTO
-            {
-                Id = model.Id,
-                Nombre = model.Nombre,
-                Descripcion = model.Descripcion,
-                Activo = model.Activo
-            };
-        }
     }
 }
+
 
