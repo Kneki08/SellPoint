@@ -11,5 +11,7 @@ namespace SellPoint.Aplication.Dtos.Categoria
         public int Id { get; init; }
         public string Nombre { get; init; } = string.Empty;
         public string? Descripcion { get; init; }
+        public bool Activo { get; set; }
+        public bool EstaEliminado { get; set; }
     }
 }
