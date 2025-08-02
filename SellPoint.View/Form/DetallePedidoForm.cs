@@ -142,7 +142,7 @@ namespace SellPoint.View
 
                 if (response.Success)
                 {
-                    MessageBox.Show("Detalle creado exitosamente", "蓌ito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Detalle creado exitosamente", "脡xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await RecargarDatosAsync();
                 }
                 else
@@ -152,7 +152,7 @@ namespace SellPoint.View
             }
             catch (ValidationException vex)
             {
-                MessageBox.Show(vex.ValidationResult.ErrorMessage, "Error de validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(vex.ValidationResult.ErrorMessage, "Error de validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
@@ -183,7 +183,7 @@ namespace SellPoint.View
 
                 if (response.Success)
                 {
-                    MessageBox.Show("Detalle actualizado exitosamente", "蓌ito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Detalle actualizado exitosamente", "脡xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await RecargarDatosAsync();
                 }
                 else
@@ -193,7 +193,7 @@ namespace SellPoint.View
             }
             catch (ValidationException vex)
             {
-                MessageBox.Show(vex.ValidationResult.ErrorMessage, "Error de validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(vex.ValidationResult.ErrorMessage, "Error de validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
@@ -209,7 +209,7 @@ namespace SellPoint.View
                 return;
             }
 
-            if (MessageBox.Show("緾onfirmar eliminaci髇?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (MessageBox.Show("驴Confirmar eliminaci贸n?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
             try
@@ -218,7 +218,7 @@ namespace SellPoint.View
 
                 if (response.Success)
                 {
-                    MessageBox.Show("Detalle eliminado exitosamente", "蓌ito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Detalle eliminado exitosamente", "脡xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await RecargarDatosAsync();
                 }
                 else
@@ -260,7 +260,7 @@ namespace SellPoint.View
                 string.IsNullOrWhiteSpace(txtCantidad.Text) ||
                 string.IsNullOrWhiteSpace(txtPrecio.Text))
             {
-                MessageBox.Show("Todos los campos son requeridos", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Todos los campos son requeridos", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
@@ -269,7 +269,7 @@ namespace SellPoint.View
                 !int.TryParse(txtCantidad.Text, out _) ||
                 !decimal.TryParse(txtPrecio.Text, out _))
             {
-                MessageBox.Show("Ingrese valores num閞icos v醠idos", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Ingrese valores num茅ricos v谩lidos", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
@@ -286,7 +286,7 @@ namespace SellPoint.View
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Configurar el evento de selecci髇 del DataGridView
+            // Configurar el evento de selecci贸n del DataGridView
           
         }
     }
