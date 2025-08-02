@@ -1,27 +1,50 @@
-using SellPoint.View.Service.ServiceProducto;
-using SellPoint.View.Services.ProductoApiClient;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using SellPoint.View.Forms;
+using SellPoint.View.Service.ServiceApiCarrito;
+using SellPoint.View.Service.ServiceCarrito;
+using SellPoint.View.Service.ServiceApiProducto;
+using System.Text.Json;
 
 namespace SellPoint.View
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            // Create an instance of HttpClient to pass as a parameter to ProductoApiClient
-            HttpClient httpClient = new HttpClient();
+            var host = CreateHostBuilder().Build();
 
-            // Pass the HttpClient instance to the ProductoApiClient constructor
-            IProductoApiClient productoApiClient = new ProductoApiClient(httpClient);
-
-            Application.Run(new FormProducto(productoApiClient));
+            // Puedes cambiar aquí el formulario que quieres abrir:
+            var form = host.Services.GetRequiredService<FormProducto>();
+            Application.Run(form);
         }
+
+        static IHostBuilder CreateHostBuilder() =>
+            Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    // JSON options globales
+                    services.AddSingleton(new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    // Cliente HTTP
+                    services.AddHttpClient();
+
+                    // Carrito
+                    services.AddScoped<ICarritoApiClient, CarritoApiClient>();
+                    services.AddScoped<ICarritoService, CarritoService>();
+                    services.AddScoped<FormCarrito>();
+
+                    // Producto
+                    services.AddScoped<IProductoApiClient, ProductoApiClient>();
+                    services.AddScoped<IProductoService, ProductoService>();
+                    services.AddScoped<FormProducto>();
+                });
     }
 }
+

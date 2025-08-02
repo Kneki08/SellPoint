@@ -17,5 +17,7 @@ namespace SellPoint.Aplication.Dtos.Carrito
         public DateTime FechaAgregado { get; set; }
         public int Id { get; set; }
         public object Estado { get; set; }
+        
+       
     }
 }

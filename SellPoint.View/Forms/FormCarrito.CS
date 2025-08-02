@@ -1,22 +1,16 @@
-﻿using SellPoint.Aplication.Dtos.Carrito;
-using SellPoint.View.Models.ModelsCarito;
+﻿using SellPoint.View.Models.ModelsCarito;
 using SellPoint.View.Service.ServiceCarrito;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace SellPoint.View
+namespace SellPoint.View.Forms
 {
     public partial class FormCarrito : Form
     {
-        private readonly ICarritoApiClient _carritoApiClient;
-        private readonly ErrorProvider _errorProvider = new ErrorProvider();
+        private readonly ICarritoService _carritoService;
 
-        public FormCarrito(ICarritoApiClient carritoApiClient)
+        public FormCarrito(ICarritoService carritoService)
         {
             InitializeComponent();
-            _carritoApiClient = carritoApiClient;
+            _carritoService = carritoService;
         }
 
         private async void FormCarrito_Load(object sender, EventArgs e)
@@ -24,63 +18,51 @@ namespace SellPoint.View
             await CargarCarritosAsync();
         }
 
-        private async void btnCargar_Click(object sender, EventArgs e)
+        private async void btnAgregar_Click(object sender, EventArgs e)
         {
-            await CargarCarritosAsync();
-        }
+            var carrito = ObtenerDesdeFormulario();
 
-        private async void btnCrear_Click(object sender, EventArgs e)
-        {
-            if (!ValidarFormulario()) return;
-
-            var dto = new SaveCarritoDTO
+            if (!_carritoService.ValidarFormulario(carrito, out string mensaje))
             {
-                ClienteId = int.Parse(txtClienteId.Text.Trim()),
-                FechaCreacion = dtpFechaCreacion.Value,
-                Estado = txtEstado.Text.Trim()
-            };
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-            bool creado = await _carritoApiClient.CrearAsync(dto);
-            if (creado)
+            var exito = await _carritoService.AgregarAsync(carrito);
+
+            if (exito)
             {
-                MessageBox.Show("Carrito creado con éxito.");
+                MessageBox.Show("Carrito agregado correctamente.");
                 await CargarCarritosAsync();
-                LimpiarFormulario();
+                LimpiarCampos();
             }
             else
             {
-                MessageBox.Show("Error al crear el carrito.");
+                MessageBox.Show("Error al agregar carrito.");
             }
         }
 
         private async void btnActualizar_Click(object sender, EventArgs e)
         {
-            if (!int.TryParse(txtId.Text, out int id))
+            var carrito = ObtenerDesdeFormulario();
+
+            if (!_carritoService.ValidarFormulario(carrito, out string mensaje))
             {
-                MessageBox.Show("ID inválido.");
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (!ValidarFormulario()) return;
+            var exito = await _carritoService.ActualizarAsync(carrito);
 
-            var dto = new UpdateCarritoDTO
+            if (exito)
             {
-                Id = id,
-                ClienteId = int.Parse(txtClienteId.Text.Trim()),
-                FechaCreacion = dtpFechaCreacion.Value,
-                Estado = txtEstado.Text.Trim()
-            };
-
-            bool actualizado = await _carritoApiClient.ActualizarAsync(dto);
-            if (actualizado)
-            {
-                MessageBox.Show("Carrito actualizado con éxito.");
+                MessageBox.Show("Carrito actualizado correctamente.");
                 await CargarCarritosAsync();
-                LimpiarFormulario();
+                LimpiarCampos();
             }
             else
             {
-                MessageBox.Show("Error al actualizar el carrito.");
+                MessageBox.Show("Error al actualizar carrito.");
             }
         }
 
@@ -88,72 +70,53 @@ namespace SellPoint.View
         {
             if (!int.TryParse(txtId.Text, out int id))
             {
-                MessageBox.Show("ID inválido.");
+                MessageBox.Show("ID no válido para eliminar.");
                 return;
             }
 
-            var dto = new RemoveCarritoDTO { Id = id };
-            bool eliminado = await _carritoApiClient.EliminarAsync(dto);
-            if (eliminado)
+            var exito = await _carritoService.EliminarAsync(id);
+
+            if (exito)
             {
-                MessageBox.Show("Carrito eliminado con éxito.");
+                MessageBox.Show("Carrito eliminado correctamente.");
                 await CargarCarritosAsync();
-                LimpiarFormulario();
+                LimpiarCampos();
             }
             else
             {
-                MessageBox.Show("Error al eliminar el carrito.");
+                MessageBox.Show("Error al eliminar carrito.");
             }
+        }
+
+        private async void btnCargar_Click(object sender, EventArgs e)
+        {
+            await CargarCarritosAsync();
         }
 
         private async Task CargarCarritosAsync()
         {
-            try
-            {
-                var carritosDTO = await _carritoApiClient.ObtenerTodosAsync();
-                var carritosModel = carritosDTO.Select(dto => new CarritoModel
-                {
-                    Id = dto.Id,
-                    ClienteId = dto.ClienteId,
-                    FechaAgregado = dto.FechaAgregado,
-                    Estado = dto.Estado
-                }).ToList();
-
-                dgvCarritos.DataSource = carritosModel;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar carritos: " + ex.Message);
-            }
+            var lista = await _carritoService.ObtenerTodosAsync();
+            dgvCarrito.DataSource = lista;
         }
 
-        private bool ValidarFormulario()
+        private CarritoModel ObtenerDesdeFormulario()
         {
-            _errorProvider.Clear();
-            bool valido = true;
-
-            if (string.IsNullOrWhiteSpace(txtClienteId.Text) || !int.TryParse(txtClienteId.Text, out _))
+            return new CarritoModel
             {
-                _errorProvider.SetError(txtClienteId, "Cliente ID válido requerido.");
-                valido = false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtEstado.Text))
-            {
-                _errorProvider.SetError(txtEstado, "Estado es obligatorio.");
-                valido = false;
-            }
-
-            return valido;
+                Id = string.IsNullOrWhiteSpace(txtId.Text) ? 0 : Convert.ToInt32(txtId.Text),
+                ClienteId = Convert.ToInt32(txtIdCliente.Text),
+                IdProducto = Convert.ToInt32(txtIdProducto.Text),
+                Cantidad = Convert.ToInt32(txtCantidad.Text)
+            };
         }
 
-        private void LimpiarFormulario()
+        private void LimpiarCampos()
         {
             txtId.Text = "";
-            txtClienteId.Text = "";
-            txtEstado.Text = "";
-            dtpFechaCreacion.Value = DateTime.Now;
-            _errorProvider.Clear();
+            txtIdCliente.Text = "";
+            txtIdProducto.Text = "";
+            txtCantidad.Text = "";
         }
     }
 }
+

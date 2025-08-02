@@ -1,7 +1,7 @@
 ﻿using SellPoint.Aplication.Dtos.Producto;
 using SellPoint.Aplication.Dtos.ProductoDTO;
 
-namespace SellPoint.View.Service.ServiceProducto
+namespace SellPoint.View.Service.ServiceApiProducto
 {
     public interface IProductoApiClient
     {

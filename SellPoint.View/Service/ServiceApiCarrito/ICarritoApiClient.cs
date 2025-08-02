@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SellPoint.View.Service.ServiceCarrito
+namespace SellPoint.View.Service.ServiceApiCarrito
 {
     public interface ICarritoApiClient
     {

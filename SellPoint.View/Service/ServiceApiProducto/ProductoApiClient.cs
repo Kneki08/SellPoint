@@ -1,9 +1,8 @@
 ﻿using SellPoint.Aplication.Dtos.Producto;
 using SellPoint.Aplication.Dtos.ProductoDTO;
-using SellPoint.View.Service.ServiceProducto;
 using System.Net.Http.Json;
 
-namespace SellPoint.View.Services.ProductoApiClient
+namespace SellPoint.View.Service.ServiceApiProducto
 {
     public class ProductoApiClient : IProductoApiClient
     {

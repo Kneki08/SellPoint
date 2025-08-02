@@ -1,11 +1,10 @@
 ﻿using SellPoint.Aplication.Dtos.Carrito;
-using SellPoint.View.Service.ServiceCarrito;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace SellPoint.View.Services.CarritoApiClient
+namespace SellPoint.View.Service.ServiceApiCarrito
 {
     public class CarritoApiClient : ICarritoApiClient
     {
