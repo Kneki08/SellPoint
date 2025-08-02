@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace SellPoint.View
@@ -51,91 +50,86 @@ namespace SellPoint.View
             pnlBotones = new FlowLayoutPanel();
             toolTip = new ToolTip(components);
 
-            ((System.ComponentModel.ISupportInitialize)(dgvCupones)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvCupones).BeginInit();
             SuspendLayout();
 
-            // grpDatos
+            // === GroupBox Datos ===
             grpDatos.Text = "Datos del Cupón";
             grpDatos.Location = new Point(20, 20);
-            grpDatos.Size = new Size(440, 160);
-            grpDatos.Controls.AddRange(new Control[] {
+            grpDatos.Size = new Size(440, 180);
+            grpDatos.Controls.AddRange(new Control[]
+            {
                 lblId, txtId, lblCodigo, txtCodigo,
                 lblDescuento, txtDescuento,
                 lblFechaVencimiento, dtpFechaVencimiento
             });
 
-            // lblId
-            lblId.Location = new Point(20, 25);
-            lblId.Size = new Size(60, 15);
+            // === Labels y TextBoxes ===
             lblId.Text = "ID:";
-            txtId.Location = new Point(120, 22);
-            txtId.Size = new Size(280, 23);
+            lblId.Location = new Point(20, 25);
+            txtId.Location = new Point(150, 22);
+            txtId.Size = new Size(250, 23);
 
-            // lblCodigo
-            lblCodigo.Location = new Point(20, 55);
-            lblCodigo.Size = new Size(60, 15);
             lblCodigo.Text = "Código:";
-            txtCodigo.Location = new Point(120, 52);
-            txtCodigo.Size = new Size(280, 23);
+            lblCodigo.Location = new Point(20, 55);
+            txtCodigo.Location = new Point(150, 52);
+            txtCodigo.Size = new Size(250, 23);
 
-            // lblDescuento
-            lblDescuento.Location = new Point(20, 85);
-            lblDescuento.Size = new Size(90, 15);
             lblDescuento.Text = "Descuento:";
-            txtDescuento.Location = new Point(120, 82);
-            txtDescuento.Size = new Size(280, 23);
+            lblDescuento.Location = new Point(20, 85);
+            txtDescuento.Location = new Point(150, 82);
+            txtDescuento.Size = new Size(250, 23);
 
-            // lblFechaVencimiento
-            lblFechaVencimiento.Location = new Point(20, 115);
-            lblFechaVencimiento.Size = new Size(120, 15);
             lblFechaVencimiento.Text = "Fecha Vencimiento:";
+            lblFechaVencimiento.Location = new Point(20, 115);
             dtpFechaVencimiento.Location = new Point(150, 112);
             dtpFechaVencimiento.Size = new Size(250, 23);
             dtpFechaVencimiento.Format = DateTimePickerFormat.Short;
 
-            // pnlBotones
+            // === Panel de Botones ===
             pnlBotones.Location = new Point(480, 20);
-            pnlBotones.Size = new Size(140, 160);
+            pnlBotones.Size = new Size(140, 180);
             pnlBotones.FlowDirection = FlowDirection.TopDown;
             pnlBotones.Controls.AddRange(new Control[] {
                 btnCargar, btnCrear, btnActualizar, btnEliminar
             });
 
-            ConfigurarBoton(btnCargar, "Cargar", "Cargar todos los cupones");
+            // === Botones ===
+            ConfigurarBoton(btnCargar, "Cargar", "Cargar cupones");
             ConfigurarBoton(btnCrear, "Crear", "Crear nuevo cupón");
-            ConfigurarBoton(btnActualizar, "Actualizar", "Actualizar el cupón actual");
-            ConfigurarBoton(btnEliminar, "Eliminar", "Eliminar el cupón seleccionado");
+            ConfigurarBoton(btnActualizar, "Actualizar", "Actualizar cupón");
+            ConfigurarBoton(btnEliminar, "Eliminar", "Eliminar cupón");
 
-            btnCargar.Click += btnCargar_Click;
-            btnCrear.Click += btnCrear_Click;
-            btnActualizar.Click += btnActualizar_Click;
-            btnEliminar.Click += btnEliminar_Click;
-
-            // dgvCupones
-            dgvCupones.Location = new Point(20, 200);
+            // === DataGridView ===
+            dgvCupones.Location = new Point(20, 220);
             dgvCupones.Size = new Size(600, 200);
+            dgvCupones.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            dgvCupones.ReadOnly = true;
+            dgvCupones.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvCupones.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
-            // FormCupon
+            // === Form ===
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(650, 430);
+            ClientSize = new Size(650, 450);
             Controls.AddRange(new Control[] {
                 grpDatos, pnlBotones, dgvCupones
             });
+            Font = new Font("Segoe UI", 10F);
             Name = "FormCupon";
             Text = "Gestión de Cupones";
-            Load += FormCupon_Load;
 
-            ((System.ComponentModel.ISupportInitialize)(dgvCupones)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvCupones).EndInit();
             ResumeLayout(false);
         }
 
-        private void ConfigurarBoton(Button btn, string texto, string tooltip)
+        private void ConfigurarBoton(Button btn, string texto, string tooltipText)
         {
-            btn.Size = new Size(120, 25);
+            btn.Size = new Size(120, 30);
             btn.Text = texto;
-            toolTip.SetToolTip(btn, tooltip);
+            toolTip.SetToolTip(btn, tooltipText);
         }
     }
 }
+
 

@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using SellPoint.Aplication.Dtos.Categoria;
+using SellPoint.View.Helpers;
 using SellPoint.View.Models.ModelsCategoria;
 using SellPoint.View.Services.CategoriaApiClient;
 
@@ -16,7 +17,6 @@ namespace SellPoint.View
             InitializeComponent();
             _categoriaApiClient = categoriaApiClient;
 
-            // Opcional: configurar tooltips si deseas
             ConfigurarBoton(btnCargar, "Cargar", "Cargar categorías desde la base de datos");
             ConfigurarBoton(btnAgregar, "Crear", "Crear nueva categoría");
             ConfigurarBoton(btnActualizar, "Actualizar", "Actualizar categoría");
@@ -43,37 +43,22 @@ namespace SellPoint.View
 
         private async void btnAgregar_Click(object? sender, EventArgs e)
         {
-            if (!ValidarFormulario()) return;
+            if (!CategoriaFormHelper.ValidarFormulario(txtNombre, txtDescripcion, _errorProvider)) return;
 
-            var dto = new SaveCategoriaDTO
-            {
-                Nombre = txtNombre.Text.Trim(),
-                Descripcion = txtDescripcion.Text.Trim(),
-                Activo = chkActivo.Checked,
-                EstaEliminado = chkEliminado.Checked
-            };
-
+            var dto = CategoriaFormHelper.ConstruirSaveDTO(txtNombre, txtDescripcion, chkActivo, chkEliminado);
             await ProcesarResultadoAsync(await _categoriaApiClient.CrearAsync(dto), "creada");
         }
 
         private async void btnActualizar_Click(object? sender, EventArgs e)
         {
-            if (!int.TryParse(txtId.Text, out int id))
+            var dto = CategoriaFormHelper.ConstruirUpdateDTO(txtId, txtNombre, txtDescripcion, chkActivo, chkEliminado);
+            if (dto == null)
             {
                 MessageBox.Show("ID inválido.");
                 return;
             }
 
-            if (!ValidarFormulario()) return;
-
-            var dto = new UpdateCategoriaDTO
-            {
-                Id = id,
-                Nombre = txtNombre.Text.Trim(),
-                Descripcion = txtDescripcion.Text.Trim(),
-                Activo = chkActivo.Checked,
-                EstaEliminado = chkEliminado.Checked
-            };
+            if (!CategoriaFormHelper.ValidarFormulario(txtNombre, txtDescripcion, _errorProvider)) return;
 
             await ProcesarResultadoAsync(await _categoriaApiClient.ActualizarAsync(dto), "actualizada");
         }
@@ -127,26 +112,6 @@ namespace SellPoint.View
             }
         }
 
-        private bool ValidarFormulario()
-        {
-            _errorProvider.Clear();
-            bool valido = true;
-
-            if (string.IsNullOrWhiteSpace(txtNombre.Text))
-            {
-                _errorProvider.SetError(txtNombre, "El nombre es obligatorio.");
-                valido = false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtDescripcion.Text))
-            {
-                _errorProvider.SetError(txtDescripcion, "La descripción es obligatoria.");
-                valido = false;
-            }
-
-            return valido;
-        }
-
         private void LimpiarFormulario()
         {
             txtId.Text = "";
@@ -171,29 +136,18 @@ namespace SellPoint.View
                 chkActivo.Checked = Convert.ToBoolean(fila.Cells["Activo"].Value);
                 chkEliminado.Checked = Convert.ToBoolean(fila.Cells["EstaEliminado"].Value);
 
-                // Fecha de creación
                 if (DateTime.TryParse(fila.Cells["FechaCreacion"].Value?.ToString(), out var fechaCreacion) &&
                     fechaCreacion >= dtpFechaCreacion.MinDate && fechaCreacion <= dtpFechaCreacion.MaxDate)
-                {
                     dtpFechaCreacion.Value = fechaCreacion;
-                }
                 else
-                {
                     dtpFechaCreacion.Value = DateTime.Now;
-                }
 
-                // Fecha de actualización
                 if (DateTime.TryParse(fila.Cells["FechaActualizacion"].Value?.ToString(), out var fechaActualizacion) &&
                     fechaActualizacion >= dtpFechaActualizacion.MinDate && fechaActualizacion <= dtpFechaActualizacion.MaxDate)
-                {
                     dtpFechaActualizacion.Value = fechaActualizacion;
-                }
                 else
-                {
                     dtpFechaActualizacion.Value = DateTime.Now;
-                }
             }
         }
     }
-
 }

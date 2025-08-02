@@ -1,8 +1,8 @@
 ﻿using SellPoint.Aplication.Dtos.Categoria;
-using SellPoint.Aplication.Dtos.Cupon;
 using SellPoint.View.Models.ModelsCupon;
 
-namespace SellPoint.View.Services.CuponApiClient
+
+namespace SellPoint.View.Mappers.Cupon
 {
     public interface ICuponMapper
     {
@@ -18,8 +18,17 @@ namespace SellPoint.View.Services.CuponApiClient
             {
                 Id = model.Id,
                 Codigo = model.Codigo,
+                Descripcion = model.Descripcion,
+                TipoDescuento = model.TipoDescuento,
                 ValorDescuento = model.ValorDescuento,
-                FechaVencimiento = model.FechaVencimiento
+                MontoMinimo = model.MontoMinimo,
+                FechaInicio = model.FechaInicio,
+                FechaVencimiento = model.FechaVencimiento,
+                UsosMaximos = model.UsosMaximos,
+                UsosActuales = model.UsosActuales,
+                Activo = model.Activo,
+                FechaCreacion = model.FechaCreacion,
+                FechaActualizacion = model.FechaActualizacion
             };
         }
 
@@ -29,3 +38,4 @@ namespace SellPoint.View.Services.CuponApiClient
         }
     }
 }
+

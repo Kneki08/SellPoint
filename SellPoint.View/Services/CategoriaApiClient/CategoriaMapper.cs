@@ -18,7 +18,10 @@ namespace SellPoint.View.Services.CategoriaApiClient
                 Id = model.Id,
                 Nombre = model.Nombre,
                 Descripcion = model.Descripcion,
-                Activo = model.Activo
+                Activo = model.Activo,
+                EstaEliminado = model.EstaEliminado,   
+                FechaCreacion = model.FechaCreacion,   
+                FechaActualizacion = model.FechaActualizacion
             };
         }
 

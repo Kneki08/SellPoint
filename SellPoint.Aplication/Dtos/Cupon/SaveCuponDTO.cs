@@ -4,7 +4,7 @@ namespace SellPoint.Aplication.Dtos.Cupon
 {
     public record SaveCuponDTO
     {
-        public string Codigo { get; init; }
+        public string? Codigo { get; init; }
         public string? Descripcion { get; init; }
         public string? TipoDescuento { get; init; } 
         public decimal ValorDescuento { get; init; }

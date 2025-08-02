@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using SellPoint.View.Mappers.Cupon;
 using SellPoint.View.Services.CategoriaApiClient;
 using SellPoint.View.Services.CuponApiClient;
 using System.Runtime.Versioning;
@@ -14,28 +16,39 @@ namespace SellPoint.View
         {
             ApplicationConfiguration.Initialize();
 
-            // HttpClient compartido
-            using var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("http://localhost:5271/api/")
-            };
+            
+            var services = new ServiceCollection();
 
-            // Crear instancias de los mapeadores
-            var categoriaMapper = new CategoriaMapper();
-            var cuponMapper = new CuponMapper();
-
-            // Opciones JSON centralizadas
+            
             var jsonOptions = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
                 WriteIndented = true
             };
+            services.AddSingleton(jsonOptions);
 
-            // Servicios con sus dependencias
-            var categoriaService = new CategoriaApiClient(httpClient, categoriaMapper, jsonOptions);
-            var cuponService = new CuponApiClient(httpClient, cuponMapper, jsonOptions);
+            
+            services.AddSingleton(new HttpClient
+            {
+                BaseAddress = new Uri("http://localhost:5271/api/")
+            });
 
-            // Diálogo para elegir el módulo
+            
+            services.AddSingleton<ICategoriaMapper, CategoriaMapper>();
+            services.AddSingleton<ICuponMapper, CuponMapper>();
+
+            
+            services.AddSingleton<ICategoriaApiClient, CategoriaApiClient>();
+            services.AddSingleton<ICuponApiClient, CuponApiClient>();
+
+            
+            services.AddTransient<FormCategoria>();
+            services.AddTransient<FormCupon>();
+
+            
+            var provider = services.BuildServiceProvider();
+
+           
             var opcion = MessageBox.Show(
                 "¿Deseas abrir el formulario de Categorías?\n(Sí: Categorías, No: Cupones)",
                 "Seleccionar módulo",
@@ -43,13 +56,13 @@ namespace SellPoint.View
                 MessageBoxIcon.Question
             );
 
-            // Ejecutar el formulario correspondiente
             System.Windows.Forms.Application.Run(opcion == DialogResult.Yes
-                ? new FormCategoria(categoriaService)
-                : new FormCupon(cuponService));
+                ? provider.GetRequiredService<FormCategoria>()
+                : provider.GetRequiredService<FormCupon>());
         }
     }
 }
+
 
 
 

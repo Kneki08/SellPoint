@@ -6,11 +6,21 @@ using System.Threading.Tasks;
 
 namespace SellPoint.Aplication.Dtos.Categoria
 {
-    public record CuponDTO
+    public class CuponDTO
     {
-        public int Id { get; init; }
-        public string Codigo { get; init; }
-        public decimal ValorDescuento { get; init; }
-        public DateTime FechaVencimiento { get; init; }
+        public int Id { get; set; }
+        public string? Codigo { get; set; }
+        public string? Descripcion { get; set; }
+        public string? TipoDescuento { get; set; }
+        public decimal ValorDescuento { get; set; }
+        public decimal? MontoMinimo { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime FechaVencimiento { get; set; }
+        public int? UsosMaximos { get; set; }
+        public int? UsosActuales { get; set; }
+        public bool Activo { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaActualizacion { get; set; }
     }
+
 }

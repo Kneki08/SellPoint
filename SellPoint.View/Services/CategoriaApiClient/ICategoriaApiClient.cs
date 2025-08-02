@@ -1,10 +1,5 @@
 ﻿using SellPoint.Aplication.Dtos.Categoria;
-using SellPoint.View.Models.ModelsCategoria;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SellPoint.View.Services.CategoriaApiClient
 {

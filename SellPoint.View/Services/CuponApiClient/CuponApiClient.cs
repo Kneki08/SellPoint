@@ -1,5 +1,6 @@
 ﻿using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.Aplication.Dtos.Cupon;
+using SellPoint.View.Mappers.Cupon;
 using SellPoint.View.Models.ModelsCupon;
 using System.Net.Http.Json;
 using System.Text.Json;
