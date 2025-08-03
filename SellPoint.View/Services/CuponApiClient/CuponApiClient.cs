@@ -1,104 +1,47 @@
-﻿using SellPoint.Aplication.Dtos.Categoria;
-using SellPoint.Aplication.Dtos.Cupon;
-using SellPoint.View.Mappers.Cupon;
+﻿using SellPoint.View.Mappers.Cupon;
 using SellPoint.View.Models.ModelsCupon;
-using System.Net.Http.Json;
-using System.Text.Json;
+
 
 namespace SellPoint.View.Services.CuponApiClient
 {
     public class CuponApiClient : ICuponApiClient
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpServiceBase _httpService;
         private readonly ICuponMapper _mapper;
-        private readonly JsonSerializerOptions _jsonOptions;
 
-        public CuponApiClient(HttpClient httpClient, ICuponMapper mapper, JsonSerializerOptions jsonOptions)
+        public CuponApiClient(HttpServiceBase httpService, ICuponMapper mapper)
         {
-            _httpClient = httpClient;
+            _httpService = httpService;
             _mapper = mapper;
-            _jsonOptions = jsonOptions;
         }
 
-        public async Task<IEnumerable<CuponDTO>> ObtenerTodosAsync()
+        public async Task<IEnumerable<CuponModel>> ObtenerTodosAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync("Cupon/ObtenerTodosAsync");
-                response.EnsureSuccessStatusCode();
-
-                var wrapper = await response.Content.ReadFromJsonAsync<CuponModelResponse>(_jsonOptions);
-                return _mapper.Convert(wrapper?.data ?? Enumerable.Empty<CuponModel>());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al obtener cupones: {ex.Message}");
-                return new List<CuponDTO>();
-            }
+            var response = await _httpService.GetAsync<CuponModelResponse>("Cupon/ObtenerTodosAsync");
+            return response?.data ?? new List<CuponModel>();
         }
 
-        public async Task<CuponDTO?> ObtenerPorIdAsync(int id)
+        public async Task<CuponModel?> ObtenerPorIdAsync(int id)
         {
-            try
-            {
-                var response = await _httpClient.GetAsync($"Cupon/{id}");
-                if (!response.IsSuccessStatusCode) return null;
-
-                var wrapper = await response.Content.ReadFromJsonAsync<CuponModelResponseSingle>(_jsonOptions);
-                return wrapper?.data != null ? _mapper.Convert(wrapper.data) : null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al obtener cupón por ID: {ex.Message}");
-                return null;
-            }
+            var response = await _httpService.GetAsync<CuponModelResponseSingle>($"Cupon/{id}");
+            return response?.data;
         }
 
-        public async Task<bool> CrearAsync(SaveCuponDTO dto)
+        public async Task<bool> CrearAsync(SaveCuponModel dto)
         {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("Cupon", dto, _jsonOptions);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al crear cupón: {ex.Message}");
-                return false;
-            }
+            var result = await _httpService.PostAsync<object>("Cupon", dto);
+            return result != null;
         }
 
-        public async Task<bool> ActualizarAsync(UpdateCuponDTO dto)
+        public async Task<bool> ActualizarAsync(UpdateCuponModel dto)
         {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync("Cupon", dto, _jsonOptions);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al actualizar cupón: {ex.Message}");
-                return false;
-            }
+            var result = await _httpService.PutAsync<object>("Cupon", dto);
+            return result != null;
         }
 
-        public async Task<bool> EliminarAsync(RemoveCuponDTIO dto)
+        public async Task<bool> EliminarAsync(RemoveCuponModel dto)
         {
-            try
-            {
-                var request = new HttpRequestMessage(HttpMethod.Delete, "Cupon")
-                {
-                    Content = JsonContent.Create(dto, options: _jsonOptions)
-                };
-
-                var response = await _httpClient.SendAsync(request);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al eliminar cupón: {ex.Message}");
-                return false;
-            }
+            return await _httpService.DeleteAsync("Cupon", dto);
         }
     }
 }

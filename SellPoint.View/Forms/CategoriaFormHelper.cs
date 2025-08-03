@@ -1,10 +1,12 @@
-﻿using SellPoint.Aplication.Dtos.Categoria;
+﻿using SellPoint.View.Models.ModelsCategoria;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 namespace SellPoint.View.Helpers
 {
     public static class CategoriaFormHelper
     {
+        [SupportedOSPlatform("windows")]
         public static bool ValidarFormulario(TextBox txtNombre, TextBox txtDescripcion, ErrorProvider errorProvider)
         {
             bool valido = true;
@@ -24,10 +26,11 @@ namespace SellPoint.View.Helpers
 
             return valido;
         }
-
-        public static SaveCategoriaDTO ConstruirSaveDTO(TextBox txtNombre, TextBox txtDescripcion, CheckBox chkActivo, CheckBox chkEliminado)
+        
+        [SupportedOSPlatform("windows")]
+        public static SaveCategoriaModel ConstruirSaveModel(TextBox txtNombre, TextBox txtDescripcion, CheckBox chkActivo, CheckBox chkEliminado)
         {
-            return new SaveCategoriaDTO
+            return new SaveCategoriaModel
             {
                 Nombre = txtNombre.Text.Trim(),
                 Descripcion = txtDescripcion.Text.Trim(),
@@ -36,11 +39,12 @@ namespace SellPoint.View.Helpers
             };
         }
 
-        public static UpdateCategoriaDTO? ConstruirUpdateDTO(TextBox txtId, TextBox txtNombre, TextBox txtDescripcion, CheckBox chkActivo, CheckBox chkEliminado)
+        [SupportedOSPlatform("windows")]
+        public static UpdateCategoriaModel? ConstruirUpdateModel(TextBox txtId, TextBox txtNombre, TextBox txtDescripcion, CheckBox chkActivo, CheckBox chkEliminado)
         {
             if (!int.TryParse(txtId.Text, out int id)) return null;
 
-            return new UpdateCategoriaDTO
+            return new UpdateCategoriaModel
             {
                 Id = id,
                 Nombre = txtNombre.Text.Trim(),
@@ -51,3 +55,4 @@ namespace SellPoint.View.Helpers
         }
     }
 }
+

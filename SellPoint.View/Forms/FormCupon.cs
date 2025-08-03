@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Versioning;
-using SellPoint.Aplication.Dtos.Cupon;
 using SellPoint.View.Helpers;
 using SellPoint.View.Models.ModelsCupon;
 using SellPoint.View.Services.CuponApiClient;
@@ -32,14 +31,14 @@ namespace SellPoint.View
         {
             if (!CuponFormHelper.ValidarFormulario(txtCodigo, txtDescuento, _errorProvider)) return;
 
-            var dto = CuponFormHelper.ConstruirSaveDTO(txtCodigo, txtDescuento, dtpFechaVencimiento);
-            await ProcesarResultadoAsync(await _cuponApiClient.CrearAsync(dto), "creado");
+            var model = CuponFormHelper.ConstruirSaveModel(txtCodigo, txtDescuento, dtpFechaVencimiento);
+            await ProcesarResultadoAsync(await _cuponApiClient.CrearAsync(model), "creado");
         }
 
         private async void btnActualizar_Click(object? sender, EventArgs e)
         {
-            var dto = CuponFormHelper.ConstruirUpdateDTO(txtId, txtCodigo, txtDescuento, dtpFechaVencimiento);
-            if (dto == null)
+            var model = CuponFormHelper.ConstruirUpdateModel(txtId, txtCodigo, txtDescuento, dtpFechaVencimiento);
+            if (model == null)
             {
                 MessageBox.Show("ID inválido.");
                 return;
@@ -47,19 +46,19 @@ namespace SellPoint.View
 
             if (!CuponFormHelper.ValidarFormulario(txtCodigo, txtDescuento, _errorProvider)) return;
 
-            await ProcesarResultadoAsync(await _cuponApiClient.ActualizarAsync(dto), "actualizado");
+            await ProcesarResultadoAsync(await _cuponApiClient.ActualizarAsync(model), "actualizado");
         }
 
         private async void btnEliminar_Click(object? sender, EventArgs e)
         {
-            var dto = CuponFormHelper.ConstruirRemoveDTO(txtId);
-            if (dto == null)
+            var model = CuponFormHelper.ConstruirRemoveModel(txtId);
+            if (model == null)
             {
                 MessageBox.Show("ID inválido.");
                 return;
             }
 
-            await ProcesarResultadoAsync(await _cuponApiClient.EliminarAsync(dto), "eliminado");
+            await ProcesarResultadoAsync(await _cuponApiClient.EliminarAsync(model), "eliminado");
         }
 
         private async Task CargarCuponesAsync()
@@ -105,6 +104,7 @@ namespace SellPoint.View
         }
     }
 }
+
 
 
 

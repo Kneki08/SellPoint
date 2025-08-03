@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCupon
 {
-    public class CuponModelResponse : BaseResponse
+    public class SaveCuponModel : BaseCuponModel
     {
-        public List<CuponModel>? data { get; set; }
     }
 }

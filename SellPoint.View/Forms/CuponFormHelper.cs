@@ -1,10 +1,12 @@
-﻿using SellPoint.Aplication.Dtos.Cupon;
+﻿using SellPoint.View.Models.ModelsCupon;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 namespace SellPoint.View.Helpers
 {
     public static class CuponFormHelper
     {
+        [SupportedOSPlatform("windows")]
         public static bool ValidarFormulario(TextBox txtCodigo, TextBox txtDescuento, ErrorProvider errorProvider)
         {
             errorProvider.Clear();
@@ -24,10 +26,11 @@ namespace SellPoint.View.Helpers
 
             return valido;
         }
+        [SupportedOSPlatform("windows")]
 
-        public static SaveCuponDTO ConstruirSaveDTO(TextBox txtCodigo, TextBox txtDescuento, DateTimePicker dtpFechaVencimiento)
+        public static SaveCuponModel ConstruirSaveModel(TextBox txtCodigo, TextBox txtDescuento, DateTimePicker dtpFechaVencimiento)
         {
-            return new SaveCuponDTO
+            return new SaveCuponModel
             {
                 Codigo = txtCodigo.Text.Trim(),
                 ValorDescuento = decimal.Parse(txtDescuento.Text),
@@ -35,11 +38,12 @@ namespace SellPoint.View.Helpers
             };
         }
 
-        public static UpdateCuponDTO? ConstruirUpdateDTO(TextBox txtId, TextBox txtCodigo, TextBox txtDescuento, DateTimePicker dtpFechaVencimiento)
+        [SupportedOSPlatform("windows")]
+        public static UpdateCuponModel? ConstruirUpdateModel(TextBox txtId, TextBox txtCodigo, TextBox txtDescuento, DateTimePicker dtpFechaVencimiento)
         {
             if (!int.TryParse(txtId.Text, out int id)) return null;
 
-            return new UpdateCuponDTO
+            return new UpdateCuponModel
             {
                 Id = id,
                 Codigo = txtCodigo.Text.Trim(),
@@ -48,14 +52,16 @@ namespace SellPoint.View.Helpers
             };
         }
 
-        public static RemoveCuponDTIO? ConstruirRemoveDTO(TextBox txtId)
+        [SupportedOSPlatform("windows")]
+        public static RemoveCuponModel? ConstruirRemoveModel(TextBox txtId)
         {
             if (!int.TryParse(txtId.Text, out int id)) return null;
 
-            return new RemoveCuponDTIO
+            return new RemoveCuponModel
             {
                 Id = id
             };
         }
     }
 }
+

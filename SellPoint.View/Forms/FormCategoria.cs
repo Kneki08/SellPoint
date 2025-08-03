@@ -1,5 +1,4 @@
 using System.Runtime.Versioning;
-using SellPoint.Aplication.Dtos.Categoria;
 using SellPoint.View.Helpers;
 using SellPoint.View.Models.ModelsCategoria;
 using SellPoint.View.Services.CategoriaApiClient;
@@ -45,14 +44,14 @@ namespace SellPoint.View
         {
             if (!CategoriaFormHelper.ValidarFormulario(txtNombre, txtDescripcion, _errorProvider)) return;
 
-            var dto = CategoriaFormHelper.ConstruirSaveDTO(txtNombre, txtDescripcion, chkActivo, chkEliminado);
-            await ProcesarResultadoAsync(await _categoriaApiClient.CrearAsync(dto), "creada");
+            var model = CategoriaFormHelper.ConstruirSaveModel(txtNombre, txtDescripcion, chkActivo, chkEliminado);
+            await ProcesarResultadoAsync(await _categoriaApiClient.CrearAsync(model), "creada");
         }
 
         private async void btnActualizar_Click(object? sender, EventArgs e)
         {
-            var dto = CategoriaFormHelper.ConstruirUpdateDTO(txtId, txtNombre, txtDescripcion, chkActivo, chkEliminado);
-            if (dto == null)
+            var model = CategoriaFormHelper.ConstruirUpdateModel(txtId, txtNombre, txtDescripcion, chkActivo, chkEliminado);
+            if (model == null)
             {
                 MessageBox.Show("ID inválido.");
                 return;
@@ -60,7 +59,7 @@ namespace SellPoint.View
 
             if (!CategoriaFormHelper.ValidarFormulario(txtNombre, txtDescripcion, _errorProvider)) return;
 
-            await ProcesarResultadoAsync(await _categoriaApiClient.ActualizarAsync(dto), "actualizada");
+            await ProcesarResultadoAsync(await _categoriaApiClient.ActualizarAsync(model), "actualizada");
         }
 
         private async void btnEliminar_Click(object? sender, EventArgs e)
@@ -71,7 +70,8 @@ namespace SellPoint.View
                 return;
             }
 
-            await ProcesarResultadoAsync(await _categoriaApiClient.EliminarAsync(new RemoveCategoriaDTO { Id = id }), "eliminada");
+            var model = new RemoveCategoriaModel { Id = id };
+            await ProcesarResultadoAsync(await _categoriaApiClient.EliminarAsync(model), "eliminada");
         }
 
         private void btnLimpiar_Click(object? sender, EventArgs e) => LimpiarFormulario();

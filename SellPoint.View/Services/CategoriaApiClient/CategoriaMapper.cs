@@ -1,33 +1,36 @@
-﻿using SellPoint.Aplication.Dtos.Categoria;
-using SellPoint.View.Models.ModelsCategoria;
+﻿using SellPoint.View.Models.ModelsCategoria;
 
-namespace SellPoint.View.Services.CategoriaApiClient
+namespace SellPoint.View.Mappers.Categoria
 {
     public interface ICategoriaMapper
     {
-        CategoriaDTO Convert(CategoriaModel model);
-        IEnumerable<CategoriaDTO> Convert(IEnumerable<CategoriaModel> models);
+        UpdateCategoriaModel ConvertToUpdate(CategoriaModel model);
+        SaveCategoriaModel ConvertToSave(CategoriaModel model);
     }
 
     public class CategoriaMapper : ICategoriaMapper
     {
-        public CategoriaDTO Convert(CategoriaModel model)
+        public UpdateCategoriaModel ConvertToUpdate(CategoriaModel model)
         {
-            return new CategoriaDTO
+            return new UpdateCategoriaModel
             {
                 Id = model.Id,
                 Nombre = model.Nombre,
                 Descripcion = model.Descripcion,
                 Activo = model.Activo,
-                EstaEliminado = model.EstaEliminado,   
-                FechaCreacion = model.FechaCreacion,   
-                FechaActualizacion = model.FechaActualizacion
+                EstaEliminado = model.EstaEliminado,
+                FechaActualizacion = DateTime.Now 
             };
         }
 
-        public IEnumerable<CategoriaDTO> Convert(IEnumerable<CategoriaModel> models)
+        public SaveCategoriaModel ConvertToSave(CategoriaModel model)
         {
-            return models.Select(Convert).ToList();
+            return new SaveCategoriaModel
+            {
+                Nombre = model.Nombre,
+                Descripcion = model.Descripcion,
+                Activo = model.Activo
+            };
         }
     }
 }

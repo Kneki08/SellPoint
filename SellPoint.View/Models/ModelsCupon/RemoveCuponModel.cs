@@ -1,5 +1,4 @@
-﻿using SellPoint.View.Models.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Models.ModelsCupon
 {
-    public class CuponModelResponse : BaseResponse
+    public class RemoveCuponModel
     {
-        public List<CuponModel>? data { get; set; }
+        public int Id { get; set; }
     }
 }

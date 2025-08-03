@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SellPoint.View.Models.ModelsCupon
+namespace SellPoint.View.Models.ModelsCategoria
 {
-    public class CuponModelResponse : BaseResponse
+    public class SaveCategoriaModel : BaseCategoriaModel
     {
-        public List<CuponModel>? data { get; set; }
     }
 }

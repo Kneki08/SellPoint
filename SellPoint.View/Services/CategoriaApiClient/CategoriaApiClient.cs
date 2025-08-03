@@ -1,97 +1,59 @@
-﻿using SellPoint.Aplication.Dtos.Categoria;
+﻿using SellPoint.View.Mappers.Categoria;
 using SellPoint.View.Models.ModelsCategoria;
-using System.Net.Http.Json;
-using System.Text.Json;
+
 
 namespace SellPoint.View.Services.CategoriaApiClient
 {
     public class CategoriaApiClient : ICategoriaApiClient
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpServiceBase _httpService;
         private readonly ICategoriaMapper _mapper;
-        private readonly JsonSerializerOptions _jsonOptions;
 
-        public CategoriaApiClient(HttpClient httpClient, ICategoriaMapper mapper, JsonSerializerOptions jsonOptions)
+        public CategoriaApiClient(HttpServiceBase httpService, ICategoriaMapper mapper)
         {
-            _httpClient = httpClient;
+            _httpService = httpService;
             _mapper = mapper;
-            _jsonOptions = jsonOptions;
         }
 
-        public async Task<IEnumerable<CategoriaDTO>> ObtenerTodosAsync()
+        public async Task<IEnumerable<CategoriaModel>> ObtenerTodosAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync("Categoria/ObtenerTodosAsync");
-                response.EnsureSuccessStatusCode();
-
-                var wrapper = await response.Content.ReadFromJsonAsync<CategoriaModelResponse>(_jsonOptions);
-                return _mapper.Convert(wrapper?.data ?? Enumerable.Empty<CategoriaModel>());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al obtener categorías: {ex.Message}");
-                return new List<CategoriaDTO>();
-            }
+            var response = await _httpService.GetAsync<CategoriaModelResponse>("Categoria/ObtenerTodosAsync");
+            return response?.data ?? new List<CategoriaModel>();
         }
 
-        public async Task<CategoriaDTO?> ObtenerPorIdAsync(int id)
+        public async Task<CategoriaModel?> ObtenerPorIdAsync(int id)
         {
-            try
-            {
-                var response = await _httpClient.GetAsync($"Categoria/{id}");
-                if (!response.IsSuccessStatusCode) return null;
-
-                var wrapper = await response.Content.ReadFromJsonAsync<CategoriaModelResponseSingle>(_jsonOptions);
-                return wrapper?.data != null ? _mapper.Convert(wrapper.data) : null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al obtener categoría por ID: {ex.Message}");
-                return null;
-            }
+            var response = await _httpService.GetAsync<CategoriaModelResponseSingle>($"Categoria/{id}");
+            return response?.data;
         }
 
-        public async Task<bool> CrearAsync(SaveCategoriaDTO dto)
+        public async Task<bool> CrearAsync(SaveCategoriaModel dto)
         {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("Categoria/SaveCategoriaDTO", dto, _jsonOptions);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al crear categoría: {ex.Message}");
-                return false;
-            }
+            var result = await _httpService.PostAsync<object>("Categoria", dto);
+            return result != null;
         }
 
-        public async Task<bool> ActualizarAsync(UpdateCategoriaDTO dto)
+        public async Task<bool> CrearDesdeModeloAsync(CategoriaModel model)
         {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync("Categoria/UpdateCategoriaDTO", dto, _jsonOptions);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al actualizar categoría: {ex.Message}");
-                return false;
-            }
+            var dto = _mapper.ConvertToSave(model);
+            return await CrearAsync(dto);
         }
 
-        public async Task<bool> EliminarAsync(RemoveCategoriaDTO dto)
+        public async Task<bool> ActualizarAsync(UpdateCategoriaModel dto)
         {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("Categoria/RemoveCategoriaDTO", dto, _jsonOptions);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al eliminar categoría: {ex.Message}");
-                return false;
-            }
+            var result = await _httpService.PutAsync<object>("Categoria", dto);
+            return result != null;
+        }
+
+        public async Task<bool> ActualizarDesdeModeloAsync(CategoriaModel model)
+        {
+            var dto = _mapper.ConvertToUpdate(model);
+            return await ActualizarAsync(dto);
+        }
+
+        public async Task<bool> EliminarAsync(RemoveCategoriaModel dto)
+        {
+            return await _httpService.DeleteAsync("Categoria", dto);
         }
     }
 }
