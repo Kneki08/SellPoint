@@ -1,13 +1,11 @@
-﻿using System;
-using SellPoint.View.Models.Pedido;
+﻿using SellPoint.View.Models.Pedido;
 using SellPoint.View.Models.ViewModels;
 
 namespace SellPoint.View.Mappers
 {
-    public static class PedidoViewModelMapper
+    public class PedidoViewModelMapper : IPedidoViewModelMapper
     {
-        // De DTO a ViewModel
-        public static PedidoViewModel ToViewModel(PedidoDTO dto)
+        public PedidoViewModel ToViewModel(PedidoDTO dto)
         {
             return new PedidoViewModel
             {
@@ -27,8 +25,7 @@ namespace SellPoint.View.Mappers
             };
         }
 
-        // De ViewModel a SavePedidoDTO (para agregar)
-        public static SavePedidoDTO ToSaveDTO(PedidoViewModel vm)
+        public SavePedidoDTO ToSaveDTO(PedidoViewModel vm)
         {
             return new SavePedidoDTO
             {
@@ -47,8 +44,7 @@ namespace SellPoint.View.Mappers
             };
         }
 
-        // De ViewModel a UpdatePedidoDTO (para actualizar)
-        public static UpdatePedidoDTO ToUpdateDTO(PedidoViewModel vm)
+        public UpdatePedidoDTO ToUpdateDTO(PedidoViewModel vm)
         {
             return new UpdatePedidoDTO
             {
