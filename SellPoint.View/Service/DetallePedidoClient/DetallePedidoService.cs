@@ -7,12 +7,12 @@ using System.Net;
 
 namespace SellPoint.View.Service
 {
-    public class DetallePedidoRepository : IDetallePedidoRepository
+    public class DetallePedidoService : IDetallePedidoService
     {
         private readonly IHttpApiClient _httpClient;
-        private readonly ILogger<DetallePedidoRepository> _logger;
+        private readonly ILogger<DetallePedidoService> _logger;
 
-        public DetallePedidoRepository(IHttpApiClient httpClient, ILogger<DetallePedidoRepository> logger)
+        public DetallePedidoService(IHttpApiClient httpClient, ILogger<DetallePedidoService> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
@@ -211,4 +211,5 @@ namespace SellPoint.View.Service
             }
         }
     }
+
 }
