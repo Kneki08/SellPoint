@@ -7,7 +7,6 @@ using SellPoint.View.Models;
 using SellPoint.View.Models.Pedido;
 using SellPoint.View.Services.Pedido.Api.Client;
 using SellPoint.View.Validations;
-using SellPoint.View.Validations.Pedidos;
 
 namespace SellPoint.View.Services.Pedido.Pedido.Service
 {
