@@ -1,12 +1,13 @@
 using System;
 using System.Windows.Forms;
+using Microsoft.Extensions.Logging;
+using SellPoint.View.Factories;
 using SellPoint.View.Helpers;
 using SellPoint.View.Mappers;
 using SellPoint.View.Models.Pedido;
 using SellPoint.View.Models.ViewModels;
 using SellPoint.View.Services.Pedido;
 using SellPoint.View.Validations;
-using SellPoint.View.Factories;
 
 namespace SellPoint.View.Forms
 {
@@ -18,14 +19,15 @@ namespace SellPoint.View.Forms
         private readonly IPedidoViewModelMapper _viewModelMapper;
         private readonly IPedidoValidator _validator;
         private readonly IPedidoCamposService _camposService;
-
+        private readonly ILogger<PedidoForm> _logger;
         public PedidoForm(
             IPedidoService pedidoService,
             IPedidoDtoFactory dtoFactory,
             IPedidoFormMapper formMapper,
             IPedidoViewModelMapper viewModelMapper,
             IPedidoValidator validator,
-            IPedidoCamposService camposService)
+            IPedidoCamposService camposService,
+            ILogger<PedidoForm> logger)
         {
             _pedidoService = pedidoService;
             _dtoFactory = dtoFactory;
@@ -33,6 +35,7 @@ namespace SellPoint.View.Forms
             _viewModelMapper = viewModelMapper;
             _validator = validator;
             _camposService = camposService;
+            _logger = logger;
 
             InitializeComponent();
 
