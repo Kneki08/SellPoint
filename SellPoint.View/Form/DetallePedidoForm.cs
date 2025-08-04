@@ -8,10 +8,10 @@ namespace SellPoint.View
     {
         private readonly IDetallePedidoRepository _repository;
 
-        public Form1(IDetallePedidoRepository repository)
+        public Form1(IDetallePedidoService Service)
         {
             InitializeComponent();
-            _repository = repository;
+            _Service = Service;
             ConfigurarInterfaz();
             _ = VerificarAPIAsync();
         }
@@ -20,7 +20,7 @@ namespace SellPoint.View
         {
             try
             {
-                var response = await _repository.GetAllAsync();
+                var response = await _Service.GetAllAsync();
 
                 if (!response.Success)
                 {
@@ -93,7 +93,7 @@ namespace SellPoint.View
                 btnCargar.Enabled = false;
                 Cursor = Cursors.WaitCursor;
 
-                var response = await _repository.GetAllAsync();
+                var response = await _Service.GetAllAsync();
 
                 if (response.Success)
                 {
@@ -129,7 +129,7 @@ namespace SellPoint.View
                     PrecioUnitario = decimal.Parse(txtPrecio.Text)
                 };
 
-                var response = await _repository.CreateAsync(nuevo);
+                var response = await _Service.CreateAsync(nuevo);
 
                 if (response.Success)
                 {
@@ -166,7 +166,7 @@ namespace SellPoint.View
                     PrecioUnitario = decimal.Parse(txtPrecio.Text)
                 };
 
-                var response = await _repository.UpdateAsync(actualizado);
+                var response = await _Service.UpdateAsync(actualizado);
 
                 if (response.Success)
                 {
@@ -196,7 +196,7 @@ namespace SellPoint.View
             {
                 try
                 {
-                    var response = await _repository.DeleteAsync(int.Parse(txtId.Text));
+                    var response = await _Service.DeleteAsync(int.Parse(txtId.Text));
 
                     if (response.Success)
                     {
@@ -217,7 +217,7 @@ namespace SellPoint.View
 
         private async Task RecargarDatos()
         {
-            var response = await _repository.GetAllAsync();
+            var response = await _Service.GetAllAsync();
             if (response.Success)
             {
                 dgvDetallePedido.DataSource = response.Data?.ToList();
@@ -249,4 +249,5 @@ namespace SellPoint.View
         }
     }
 }
+
 
