@@ -6,16 +6,31 @@ using SellPoint.View.Models.Pedido;
 using SellPoint.View.Models.ViewModels;
 using SellPoint.View.Services.Pedido;
 using SellPoint.View.Validations;
+using SellPoint.View.Factories;
 
 namespace SellPoint.View.Forms
 {
     public partial class PedidoForm : Form
     {
         private readonly IPedidoService _pedidoService;
+        private readonly IPedidoDtoFactory _dtoFactory;
+        private readonly IPedidoFormMapper _formMapper;
+        private readonly IPedidoViewModelMapper _viewModelMapper;
+        private readonly IPedidoValidator _validator;
 
-        public PedidoForm(IPedidoService pedidoService)
+        public PedidoForm(
+            IPedidoService pedidoService,
+            IPedidoDtoFactory dtoFactory,
+            IPedidoFormMapper formMapper,
+            IPedidoViewModelMapper viewModelMapper,
+            IPedidoValidator validator)
         {
             _pedidoService = pedidoService;
+            _dtoFactory = dtoFactory;
+            _formMapper = formMapper;
+            _viewModelMapper = viewModelMapper;
+            _validator = validator;
+
             InitializeComponent();
 
             CargarUsuariosCombo();
@@ -25,8 +40,6 @@ namespace SellPoint.View.Forms
 
             CargarPedidosAsync();
         }
-
-        #region Métodos de carga de combos
 
         private void CargarUsuariosCombo()
         {
@@ -57,10 +70,6 @@ namespace SellPoint.View.Forms
             cmbEstado.SelectedIndex = 0;
         }
 
-        #endregion
-
-        #region Métodos auxiliares
-
         private void LimpiarCampos()
         {
             foreach (Control c in groupBoxDatos.Controls)
@@ -71,10 +80,6 @@ namespace SellPoint.View.Forms
                     cb.SelectedIndex = 0;
             }
         }
-
-        #endregion
-
-        #region CRUD
 
         private async void CargarPedidosAsync()
         {
@@ -90,9 +95,28 @@ namespace SellPoint.View.Forms
 
         private async void btnAgregar_Click(object sender, EventArgs e)
         {
-            var vm = PedidoFormMapper.FormToViewModel(this);
-            vm.FechaPedido = DateTime.Now; 
-            var dto = PedidoViewModelMapper.ToSaveDTO(vm);
+            var campos = PedidoCamposParser.TryParseCampos(
+                cmbUsuarios.SelectedItem?.ToString() ?? "",
+                cmbDirecciones.SelectedItem?.ToString() ?? "",
+                txtSubtotal.Text,
+                txtDescuento.Text,
+                txtCostoEnvio.Text,
+                txtTotal.Text
+            );
+
+            if (!campos.Success)
+            {
+                MessageBoxHelper.MostrarAdvertencia(campos.Message, PedidoMensajes.Validacion);
+                return;
+            }
+
+            var dto = _dtoFactory.CrearSaveDTO(
+                campos,
+                cmbMetodoPago.SelectedItem?.ToString() ?? "PayPal",
+                txtReferencia.Text ?? "",
+                cmbEstado.SelectedItem?.ToString() ?? "EnPreparacion",
+                txtNotas.Text ?? ""
+            );
 
             var respuesta = await _pedidoService.AgregarAsync(dto);
 
@@ -112,11 +136,30 @@ namespace SellPoint.View.Forms
         {
             if (dgvPedidos.CurrentRow?.DataBoundItem is not PedidoDTO dtoSeleccionado)
                 return;
-            var vm = PedidoFormMapper.FormToViewModel(this);
-            vm.Id = dtoSeleccionado.Id;
-            vm.FechaPedido = dtoSeleccionado.FechaPedido;
 
-            var dto = PedidoViewModelMapper.ToUpdateDTO(vm);
+            var campos = PedidoCamposParser.TryParseCampos(
+                cmbUsuarios.SelectedItem?.ToString() ?? "",
+                cmbDirecciones.SelectedItem?.ToString() ?? "",
+                txtSubtotal.Text,
+                txtDescuento.Text,
+                txtCostoEnvio.Text,
+                txtTotal.Text
+            );
+
+            if (!campos.Success)
+            {
+                MessageBoxHelper.MostrarAdvertencia(campos.Message, PedidoMensajes.Validacion);
+                return;
+            }
+
+            var dto = _dtoFactory.CrearUpdateDTO(
+                campos,
+                dtoSeleccionado,
+                cmbMetodoPago.SelectedItem?.ToString() ?? "PayPal",
+                txtReferencia.Text ?? "",
+                cmbEstado.SelectedItem?.ToString() ?? "EnPreparacion",
+                txtNotas.Text ?? ""
+            );
 
             var respuesta = await _pedidoService.ActualizarAsync(dto);
 
@@ -137,7 +180,7 @@ namespace SellPoint.View.Forms
             if (dgvPedidos.CurrentRow?.DataBoundItem is not PedidoDTO pedido)
                 return;
 
-            var (valido, mensaje) = RemovePedidoValidator.Validar(pedido.Id);
+            var (valido, mensaje) = _validator.ValidarEliminar(pedido.Id);
             if (!valido)
             {
                 MessageBoxHelper.MostrarAdvertencia(mensaje, PedidoMensajes.Validacion);
@@ -164,7 +207,7 @@ namespace SellPoint.View.Forms
         {
             if (!string.IsNullOrWhiteSpace(txtBuscarId.Text) && int.TryParse(txtBuscarId.Text, out int id))
             {
-                var (valido, mensaje) = PedidoIdValidator.Validar(id);
+                var (valido, mensaje) = _validator.ValidarId(id);
                 if (!valido)
                 {
                     MessageBoxHelper.MostrarAdvertencia(mensaje, PedidoMensajes.Validacion);
@@ -174,8 +217,8 @@ namespace SellPoint.View.Forms
                 var respuesta = await _pedidoService.ObtenerPorIdAsync(id);
                 if (respuesta.IsSuccess && respuesta.Data != null)
                 {
-                    var vm = PedidoViewModelMapper.ToViewModel(respuesta.Data);
-                    PedidoFormMapper.ViewModelToForm(vm, this);
+                    var vm = _viewModelMapper.ToViewModel(respuesta.Data);
+                    _formMapper.ViewModelToForm(vm, this);
 
                     dgvPedidos.DataSource = new List<PedidoDTO> { respuesta.Data };
                     MessageBoxHelper.MostrarExito(PedidoMensajes.PedidoCargadoCorrectamente, PedidoMensajes.Exito);
@@ -198,18 +241,13 @@ namespace SellPoint.View.Forms
             LimpiarCampos();
         }
 
-        #endregion
-
-        #region Mapear datos seleccionados del DataGridView
-
         private void dgvPedidos_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvPedidos.CurrentRow?.DataBoundItem is not PedidoDTO dto)
                 return;
-            var vm = PedidoViewModelMapper.ToViewModel(dto);
-            PedidoFormMapper.ViewModelToForm(vm, this);
-        }
 
-        #endregion
+            var vm = _viewModelMapper.ToViewModel(dto);
+            _formMapper.ViewModelToForm(vm, this);
+        }
     }
 }
