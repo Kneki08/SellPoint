@@ -7,6 +7,8 @@ using SellPoint.View.Mappers;
 using SellPoint.View.Models.Pedido;
 using SellPoint.View.Models.ViewModels;
 using SellPoint.View.Services.Pedido;
+using SellPoint.View.Services.Pedido.Campos.Service;
+using SellPoint.View.Services.Pedido.Pedido.Service;
 using SellPoint.View.Validations;
 
 namespace SellPoint.View.Forms
@@ -19,7 +21,9 @@ namespace SellPoint.View.Forms
         private readonly IPedidoViewModelMapper _viewModelMapper;
         private readonly IPedidoValidator _validator;
         private readonly IPedidoCamposService _camposService;
+        private readonly IPedidoOpcionesService _opcionesService;
         private readonly ILogger<PedidoForm> _logger;
+
         public PedidoForm(
             IPedidoService pedidoService,
             IPedidoDtoFactory dtoFactory,
@@ -27,6 +31,7 @@ namespace SellPoint.View.Forms
             IPedidoViewModelMapper viewModelMapper,
             IPedidoValidator validator,
             IPedidoCamposService camposService,
+            IPedidoOpcionesService opcionesService,
             ILogger<PedidoForm> logger)
         {
             _pedidoService = pedidoService;
@@ -35,45 +40,54 @@ namespace SellPoint.View.Forms
             _viewModelMapper = viewModelMapper;
             _validator = validator;
             _camposService = camposService;
+            _opcionesService = opcionesService;
             _logger = logger;
 
             InitializeComponent();
 
-            CargarUsuariosCombo();
-            CargarDireccionesCombo();
-            CargarMetodoPagoCombo();
-            CargarEstadoCombo();
+            // Cargar combos desde API
+            _ = CargarUsuariosComboAsync();
+            _ = CargarDireccionesComboAsync();
+            _ = CargarMetodoPagoComboAsync();
+            _ = CargarEstadoComboAsync();
 
             CargarPedidosAsync();
         }
 
-        private void CargarUsuariosCombo()
+        private async Task CargarUsuariosComboAsync()
         {
             cmbUsuarios.Items.Clear();
-            int[] idsUsuarios = { 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
-            cmbUsuarios.Items.AddRange(idsUsuarios.Cast<object>().ToArray());
-            cmbUsuarios.SelectedIndex = 0;
+            var usuarios = await _opcionesService.ObtenerUsuariosAsync();
+            cmbUsuarios.Items.AddRange(usuarios.Cast<object>().ToArray());
+            if (usuarios.Any())
+                cmbUsuarios.SelectedIndex = 0;
         }
 
-        private void CargarDireccionesCombo()
+        private async Task CargarDireccionesComboAsync()
         {
             cmbDirecciones.Items.Clear();
-            cmbDirecciones.Items.Add(1);
-            cmbDirecciones.SelectedIndex = 0;
+            var direcciones = await _opcionesService.ObtenerDireccionesAsync();
+            cmbDirecciones.Items.AddRange(direcciones.Cast<object>().ToArray());
+            if (direcciones.Any())
+                cmbDirecciones.SelectedIndex = 0;
         }
 
-        private void CargarMetodoPagoCombo()
+        private async Task CargarMetodoPagoComboAsync()
         {
             cmbMetodoPago.Items.Clear();
-            cmbMetodoPago.Items.AddRange(new[] { "PayPal", "TransferenciaBancaria", "Tarjeta" });
-            cmbMetodoPago.SelectedIndex = 0;
+            var metodos = await _opcionesService.ObtenerMetodosPagoAsync();
+            cmbMetodoPago.Items.AddRange(metodos.Cast<object>().ToArray());
+            if (metodos.Any())
+                cmbMetodoPago.SelectedIndex = 0;
         }
 
-        private void CargarEstadoCombo()
+        private async Task CargarEstadoComboAsync()
         {
             cmbEstado.Items.Clear();
-            cmbEstado.Items.AddRange(new[] { "EnPreparacion", "Enviado", "Entregado", "Cancelado" });
-            cmbEstado.SelectedIndex = 0;
+            var estados = await _opcionesService.ObtenerEstadosAsync();
+            cmbEstado.Items.AddRange(estados.Cast<object>().ToArray());
+            if (estados.Any())
+                cmbEstado.SelectedIndex = 0;
         }
 
         private void LimpiarCampos()

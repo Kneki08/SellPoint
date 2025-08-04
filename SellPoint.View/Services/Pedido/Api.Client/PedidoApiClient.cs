@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SellPoint.View.Models;
 using SellPoint.View.Models.Pedido;
 
-namespace SellPoint.View.Services.Pedido
+namespace SellPoint.View.Services.Pedido.Api.Client
 {
     public class PedidoApiClient : BaseApiClient, IPedidoApiClient
     {

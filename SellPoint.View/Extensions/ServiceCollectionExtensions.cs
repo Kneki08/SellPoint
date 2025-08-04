@@ -5,8 +5,11 @@ using System.Text.Json;
 using SellPoint.View.Factories;
 using SellPoint.View.Forms;
 using SellPoint.View.Mappers;
-using SellPoint.View.Services.Pedido;
 using SellPoint.View.Validations;
+using SellPoint.View.Services.Pedido.Pedido.Service;
+using SellPoint.View.Services.Pedido.Api.Client;
+using SellPoint.View.Services.Pedido.Campos.Service;
+using SellPoint.View.Services.Pedido;
 
 namespace SellPoint.View.Extensions
 {
@@ -21,23 +24,30 @@ namespace SellPoint.View.Extensions
                 WriteIndented = true
             });
 
-            // HttpClient configurado por DI con URL base
+            var baseUrl = configuration["ApiSettings:PedidoBaseUrl"]
+                ?? throw new InvalidOperationException("Falta la ruta PedidoBaseUrl en appsettings.json");
+
+            // API Clients
             services.AddHttpClient<IPedidoApiClient, PedidoApiClient>(client =>
             {
-                var baseUrl = configuration["ApiSettings:PedidoBaseUrl"]
-                    ?? throw new InvalidOperationException("Falta la ruta PedidoBaseUrl en appsettings.json");
-
                 client.BaseAddress = new Uri(baseUrl);
             });
 
-            // Registro de servicios y formulario
+            services.AddHttpClient<IPedidoOpcionesService, PedidoOpcionesService>(client =>
+            {
+                client.BaseAddress = new Uri(baseUrl);
+            });
+
+            // Servicios principales
             services.AddScoped<IPedidoService, PedidoService>();
-            services.AddScoped<PedidoForm>();
             services.AddScoped<IPedidoDtoFactory, PedidoDtoFactory>();
             services.AddScoped<IPedidoFormMapper, PedidoFormMapper>();
             services.AddScoped<IPedidoValidator, PedidoValidator>();
             services.AddScoped<IPedidoViewModelMapper, PedidoViewModelMapper>();
             services.AddScoped<IPedidoCamposService, PedidoCamposService>();
+
+            // Formulario
+            services.AddScoped<PedidoForm>();
 
             return services;
         }

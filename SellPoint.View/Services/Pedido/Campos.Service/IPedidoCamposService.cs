@@ -1,6 +1,6 @@
 ﻿using SellPoint.View.Models.Pedido;
 
-namespace SellPoint.View.Services.Pedido
+namespace SellPoint.View.Services.Pedido.Campos.Service
 {
     public interface IPedidoCamposService
     {

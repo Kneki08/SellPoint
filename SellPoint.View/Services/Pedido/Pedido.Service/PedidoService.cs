@@ -3,8 +3,9 @@ using SellPoint.View.Models;
 using SellPoint.View.Validations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SellPoint.View.Services.Pedido.Api.Client;
 
-namespace SellPoint.View.Services.Pedido
+namespace SellPoint.View.Services.Pedido.Pedido.Service
 {
     public class PedidoService : IPedidoService
     {

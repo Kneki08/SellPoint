@@ -3,7 +3,7 @@ using SellPoint.View.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SellPoint.View.Services.Pedido
+namespace SellPoint.View.Services.Pedido.Api.Client
 {
     public interface IPedidoApiClient
     {

@@ -1,7 +1,7 @@
 ﻿using SellPoint.View.Models.Pedido;
 using SellPoint.View.Validations;
 
-namespace SellPoint.View.Services.Pedido
+namespace SellPoint.View.Services.Pedido.Campos.Service
 {
     public class PedidoCamposService : IPedidoCamposService
     {
