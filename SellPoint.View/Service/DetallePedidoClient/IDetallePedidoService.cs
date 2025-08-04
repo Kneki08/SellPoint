@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SellPoint.View.Service
 {
-    public interface IDetallePedidoRepository
+    public interface IDetallePedidoService
     {
         Task<ApiResponse<IEnumerable<DetalleDto>>> GetAllAsync();
         Task<ApiResponse<DetalleDto>> GetByIdAsync(int id);
@@ -18,3 +18,4 @@ namespace SellPoint.View.Service
     
     }
 }
+
