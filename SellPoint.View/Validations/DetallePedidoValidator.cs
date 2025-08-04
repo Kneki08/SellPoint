@@ -1,41 +1,29 @@
-using SellPoint.Aplication.Dtos.DetallePedido;
-using SellPoint.View.Models.ModelDetallePedido;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SellPoint.View.Models.ModelDetallePedido.Request;
+using SellPoint.View.Models.ModelDetallePedido.Dtos;
 
 namespace SellPoint.View.Validations
 {
     public static class DetallePedidoValidator
     {
-        public static void Validate(SaveDetallePedidoDTO dto)
+        public static bool Validate(SaveDto dto, out List<string> errors)
         {
-            var request = new DetallePedidoRequest
-            {
-                PedidoId = dto.PedidoId,
-                ProductoId = dto.ProductoId,
-                Cantidad = dto.Cantidad,
-                PrecioUnitario = dto.PrecioUnitario
-            };
+            errors = new List<string>();
 
-            Validator.ValidateObject(request, new ValidationContext(request), true);
+            if (dto.PedidoId <= 0) errors.Add("El ID de pedido debe ser mayor a 0");
+            if (dto.ProductoId <= 0) errors.Add("El ID de producto debe ser mayor a 0");
+            if (dto.Cantidad <= 0) errors.Add("La cantidad debe ser mayor a 0");
+            if (dto.PrecioUnitario <= 0) errors.Add("El precio unitario debe ser mayor a 0");
+
+            return errors.Count == 0;
         }
 
-        public static void Validate(UpdateDetallePedidoDTO dto)
+        public static bool ValidateId(int id, out string error)
         {
-            var request = new DetallePedidoRequest
-            {
-                PedidoId = dto.PedidoId,
-                ProductoId = dto.ProductoId,
-                Cantidad = dto.Cantidad,
-                PrecioUnitario = dto.PrecioUnitario
-            };
-
-            Validator.ValidateObject(request, new ValidationContext(request), true);
+            error = id > 0 ? null : "El ID debe ser mayor a 0";
+            return error == null;
         }
     }
 }
