@@ -151,12 +151,7 @@
             Controls.Add(txtPedidoId);
             Controls.Add(txtProductoId);
 
-            Name = "Form1";
-            Text = "Gestión de Detalles de Pedido";
-            Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvDetallePedido).EndInit();
-            ResumeLayout(false);
-            PerformLayout();
+           
         }
     }
 }
