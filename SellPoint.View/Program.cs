@@ -1,43 +1,66 @@
 using Microsoft.Extensions.DependencyInjection;
-using SellPoint.View.Service.DetallePedidoClient.Contract;
-using SellPoint.View.Service.DetallePedidoClient.Implement;
-using SellPoint.View.Repositories;
-
+using SellPoint.View.Extensions;
+using System.Text.Json;
 
 namespace SellPoint.View
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             ApplicationConfiguration.Initialize();
 
-            // Configurar el servicio
-            var services = new ServiceCollection();
-
-            // Configurar HttpClient
-            services.AddHttpClient<IDetallePedidoApiClient, DetallePedidoApiClient>(client =>
+            try
             {
-                client.BaseAddress = new Uri("http://localhost:5271/");
-                client.Timeout = TimeSpan.FromSeconds(105);
-            });
+                var services = new ServiceCollection();
+                var config = LoadConfiguration();
+                
+                services.AddDetallePedidoServices(config.BaseUrl, config.TimeoutSeconds);
 
-            // Registrar servicios
-            services.AddScoped<IDetallePedidoRepository, DetallePedidoRepository>();
-            services.AddTransient<Form1>();
-
-            // Construir el proveedor
-            using var serviceProvider = services.BuildServiceProvider();
-
-            // Ejecutar la aplicación
-            var mainForm = serviceProvider.GetRequiredService<Form1>();
-            Application.Run(mainForm);
+                using var provider = services.BuildServiceProvider();
+                Application.Run(provider.GetRequiredService<Form1>());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}\n\nLa aplicación se cerrará.",
+                              "Error de Configuración",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Error);
+            }
         }
 
-        
+        private static ApiConfig LoadConfiguration()
+        {
+            const string configFileName = "appsettings.json";
+            var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFileName);
+
+            if (!File.Exists(configPath))
+            {
+                // Crear archivo de configuración por defecto si no existe
+                var defaultConfig = new ApiConfig
+                {
+                    BaseUrl = "http://localhost:5271/api/",
+                    TimeoutSeconds = 30
+                };
+
+                File.WriteAllText(configPath, JsonSerializer.Serialize(defaultConfig));
+                return defaultConfig;
+            }
+
+            var json = File.ReadAllText(configPath);
+            var config = JsonSerializer.Deserialize<ApiConfig>(json) ?? throw new InvalidOperationException("Configuración inválida");
+
+            if (string.IsNullOrWhiteSpace(config.BaseUrl))
+                throw new InvalidOperationException("La URL base no está configurada");
+
+            return config;
+        }
+    }
+
+    public class ApiConfig
+    {
+        public string BaseUrl { get; set; }
+        public int TimeoutSeconds { get; set; }
     }
 }
