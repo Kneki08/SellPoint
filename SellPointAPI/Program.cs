@@ -1,6 +1,6 @@
 using Microsoft.OpenApi.Models;
 using SellPoint.IOC.Dependencies;
-using SellPoint.Persistence.Conext;
+//using SellPoint.Persistence.Conext;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -13,10 +13,11 @@ namespace SellPoint.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<SellPointContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("SellPointConnection")
-                ));
+            builder.Configuration["ConnectionStrings:DefaultConnection"] =
+                "Server=LAPTOP-O37G36AL\\SQLEXPRESS;Database=SellPoint2;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True";
 
+            var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine($"Cadena de conexión forzada: {connStr}");
             // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>

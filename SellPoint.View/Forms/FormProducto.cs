@@ -1,12 +1,13 @@
 using SellPoint.View.Models.ModelsProducto;
-
+using SellPoint.View.Models.ModelsProducto.SellPoint.View.Models.ModelsProducto;
+using SellPoint.View.Service.ServiceProducto;
 
 namespace SellPoint.View
 {
     public partial class FormProducto : Form
     {
         private readonly IProductoService _productoService;
-        private readonly ErrorProvider _errorProvider = new ErrorProvider();
+        private readonly ErrorProvider _errorProvider = new();
 
         public FormProducto(IProductoService productoService)
         {
@@ -30,7 +31,7 @@ namespace SellPoint.View
 
             if (!_productoService.ValidarFormulario(producto, out string mensaje))
             {
-                MessageBox.Show(mensaje);
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -53,7 +54,7 @@ namespace SellPoint.View
 
             if (!_productoService.ValidarFormulario(producto, out string mensaje))
             {
-                MessageBox.Show(mensaje);
+                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -121,4 +122,5 @@ namespace SellPoint.View
         }
     }
 }
+
 

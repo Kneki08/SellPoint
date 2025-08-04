@@ -1,4 +1,5 @@
 ﻿using SellPoint.View.Models.ModelsCarito;
+using SellPoint.View.Models.ModelsCarrito;
 using SellPoint.View.Service.ServiceCarrito;
 
 namespace SellPoint.View.Forms
@@ -22,23 +23,20 @@ namespace SellPoint.View.Forms
         {
             var carrito = ObtenerDesdeFormulario();
 
-            if (!_carritoService.ValidarFormulario(carrito, out string mensaje))
+            if (!_carritoService.Validar(carrito, out string mensaje))
             {
-                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MostrarMensaje(mensaje, "Advertencia");
                 return;
             }
 
-            var exito = await _carritoService.AgregarAsync(carrito);
-
-            if (exito)
+            if (await _carritoService.AgregarAsync(carrito))
             {
-                MessageBox.Show("Carrito agregado correctamente.");
-                await CargarCarritosAsync();
-                LimpiarCampos();
+                MostrarMensaje("Carrito agregado correctamente.");
+                await RefrescarFormularioAsync();
             }
             else
             {
-                MessageBox.Show("Error al agregar carrito.");
+                MostrarMensaje("Error al agregar carrito.", "Error");
             }
         }
 
@@ -46,23 +44,20 @@ namespace SellPoint.View.Forms
         {
             var carrito = ObtenerDesdeFormulario();
 
-            if (!_carritoService.ValidarFormulario(carrito, out string mensaje))
+            if (!_carritoService.Validar(carrito, out string mensaje))
             {
-                MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MostrarMensaje(mensaje, "Advertencia");
                 return;
             }
 
-            var exito = await _carritoService.ActualizarAsync(carrito);
-
-            if (exito)
+            if (await _carritoService.ActualizarAsync(carrito))
             {
-                MessageBox.Show("Carrito actualizado correctamente.");
-                await CargarCarritosAsync();
-                LimpiarCampos();
+                MostrarMensaje("Carrito actualizado correctamente.");
+                await RefrescarFormularioAsync();
             }
             else
             {
-                MessageBox.Show("Error al actualizar carrito.");
+                MostrarMensaje("Error al actualizar carrito.", "Error");
             }
         }
 
@@ -70,21 +65,18 @@ namespace SellPoint.View.Forms
         {
             if (!int.TryParse(txtId.Text, out int id))
             {
-                MessageBox.Show("ID no válido para eliminar.");
+                MostrarMensaje("ID no válido para eliminar.", "Advertencia");
                 return;
             }
 
-            var exito = await _carritoService.EliminarAsync(id);
-
-            if (exito)
+            if (await _carritoService.EliminarAsync(id))
             {
-                MessageBox.Show("Carrito eliminado correctamente.");
-                await CargarCarritosAsync();
-                LimpiarCampos();
+                MostrarMensaje("Carrito eliminado correctamente.");
+                await RefrescarFormularioAsync();
             }
             else
             {
-                MessageBox.Show("Error al eliminar carrito.");
+                MostrarMensaje("Error al eliminar carrito.", "Error");
             }
         }
 
@@ -99,24 +91,41 @@ namespace SellPoint.View.Forms
             dgvCarrito.DataSource = lista;
         }
 
+        private async Task RefrescarFormularioAsync()
+        {
+            await CargarCarritosAsync();
+            LimpiarCampos();
+        }
+
         private CarritoModel ObtenerDesdeFormulario()
         {
+            int.TryParse(txtId.Text, out int id);
+            int.TryParse(txtIdCliente.Text, out int usuarioId);
+            int.TryParse(txtIdProducto.Text, out int productoId);
+            int.TryParse(txtCantidad.Text, out int cantidad);
+
             return new CarritoModel
             {
-                Id = string.IsNullOrWhiteSpace(txtId.Text) ? 0 : Convert.ToInt32(txtId.Text),
-                ClienteId = Convert.ToInt32(txtIdCliente.Text),
-                IdProducto = Convert.ToInt32(txtIdProducto.Text),
-                Cantidad = Convert.ToInt32(txtCantidad.Text)
+                Id = id,
+                UsuarioId = usuarioId,
+                ProductoId = productoId,
+                Cantidad = cantidad
             };
         }
 
         private void LimpiarCampos()
         {
-            txtId.Text = "";
-            txtIdCliente.Text = "";
-            txtIdProducto.Text = "";
-            txtCantidad.Text = "";
+            txtId.Clear();
+            txtIdCliente.Clear();
+            txtIdProducto.Clear();
+            txtCantidad.Clear();
+        }
+
+        private void MostrarMensaje(string mensaje, string titulo = "Información")
+        {
+            MessageBox.Show(mensaje, titulo, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
+
 

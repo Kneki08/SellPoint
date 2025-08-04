@@ -1,4 +1,6 @@
-﻿using SellPoint.Aplication.Dtos.Carrito;
+﻿using SellPoint.View.DTOS.CarritoDTOS;
+using SellPoint.View.Models.ModelsCarrito;
+using SellPoint.View.Models.ModelsCarito;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,9 +8,9 @@ namespace SellPoint.View.Service.ServiceApiCarrito
 {
     public interface ICarritoApiClient
     {
-        Task<List<ObtenerCarritoDTO>> ObtenerTodosAsync();
-        Task<bool> CrearAsync(SaveCarritoDTO dto);
-        Task<bool> ActualizarAsync(UpdateCarritoDTO dto);
-        Task<bool> EliminarAsync(RemoveCarritoDTO dto);
+        Task<List<CarritoModel>> ObtenerTodosAsync();
+        Task<bool> CrearAsync(SaveCarritoModel dto);
+        Task<bool> ActualizarAsync(UpdateCarritoModel dto);
+        Task<bool> EliminarAsync(RemoveCarritoModel dto);
     }
 }

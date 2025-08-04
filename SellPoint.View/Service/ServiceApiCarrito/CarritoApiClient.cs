@@ -1,49 +1,63 @@
-﻿using SellPoint.Aplication.Dtos.Carrito;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Configuration;
+using SellPoint.View.DTOS.CarritoDTOS;
+using SellPoint.View.Models.ModelsCarito;
+using SellPoint.View.Models.ModelsCarrito;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 
 namespace SellPoint.View.Service.ServiceApiCarrito
 {
     public class CarritoApiClient : ICarritoApiClient
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://localhost:7121/api/Carrito";
+        private readonly string _baseUrl;
 
-        public CarritoApiClient(HttpClient httpClient)
+        public CarritoApiClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-        }
-
-        public async Task<List<ObtenerCarritoDTO>> ObtenerTodosAsync()
-        {
-            var response = await _httpClient.GetAsync($"{BaseUrl}/ObtenerTodos");
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<List<ObtenerCarritoDTO>>();
-        }
-
-        public async Task<bool> CrearAsync(SaveCarritoDTO dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/Agregar", dto);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<bool> ActualizarAsync(UpdateCarritoDTO dto)
-        {
-            var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/Actualizar", dto);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<bool> EliminarAsync(RemoveCarritoDTO dto)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Delete, $"{BaseUrl}/Eliminar")
+            _baseUrl = configuration["ApiSettings:CarritoBaseUrl"];
+            if (string.IsNullOrEmpty(_baseUrl))
             {
-                Content = JsonContent.Create(dto)
+                throw new InvalidOperationException("Falta la ruta CarritoBaseUrl en appsettings.json");
+            }
+        }
+
+        public async Task<List<CarritoModel>> ObtenerTodosAsync()
+        {
+            var response = await _httpClient.GetAsync($"{_baseUrl}/ObtenerTodos");
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<CarritoResponses>();
+
+            if (result != null && result.data != null)
+                return result.data;
+
+            return new List<CarritoModel>();
+        }
+
+        public async Task<bool> CrearAsync(SaveCarritoModel model)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/Agregar", model);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> ActualizarAsync(UpdateCarritoModel model)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/Actualizar", model);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> EliminarAsync(RemoveCarritoModel model)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}/Eliminar")
+            {
+                Content = JsonContent.Create(model)
             };
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
     }
 }
+
+
 

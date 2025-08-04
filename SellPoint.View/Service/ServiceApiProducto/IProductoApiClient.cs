@@ -1,13 +1,15 @@
-﻿using SellPoint.Aplication.Dtos.Producto;
-using SellPoint.Aplication.Dtos.ProductoDTO;
+﻿using SellPoint.View.DTOS.ProductoDTOS;
+using SellPoint.View.Models.ModelsProducto;
+using SellPoint.View.Models.ModelsProducto.SellPoint.View.Models.ModelsProducto;
 
 namespace SellPoint.View.Service.ServiceApiProducto
 {
     public interface IProductoApiClient
     {
-        Task<List<ProductoDTO>> ObtenerTodosAsync();
-        Task<bool> CrearAsync(SaveProductoDTO dto);
-        Task<bool> ActualizarAsync(UpdateProductoDTO dto);
-        Task<bool> EliminarAsync(RemoveProductoDTO dto);
+        Task<List<ProductoModel>> ObtenerTodosAsync();
+        Task<bool> CrearAsync(SaveProductoModel model);
+        Task<bool> ActualizarAsync(UpdateProductoModel model);
+        Task<bool> EliminarAsync(RemoveProductoModel model);
     }
 }
+

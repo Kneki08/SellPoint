@@ -4,15 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SellPoint.View.Models.ModelsCarito
+namespace SellPoint.View.DTOS.BaseDTOS
 {
-    public class CarritoModel
+    public  class BaseCarritoDTOS
     {
-        public int Id { get; set; }
         public int UsuarioId { get; set; }
         public int ProductoId { get; set; }
         public int Cantidad { get; set; }
-        public DateTime? FechaAgregado { get; set; }
-        public DateTime? FechaActualizacion { get; set; }
     }
 }

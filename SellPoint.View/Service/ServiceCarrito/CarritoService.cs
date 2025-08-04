@@ -1,5 +1,6 @@
-﻿using SellPoint.Aplication.Dtos.Carrito;
+﻿using SellPoint.View.DTOS.CarritoDTOS;
 using SellPoint.View.Models.ModelsCarito;
+using SellPoint.View.Models.ModelsCarrito;
 using SellPoint.View.Service.ServiceApiCarrito;
 
 namespace SellPoint.View.Service.ServiceCarrito
@@ -15,65 +16,62 @@ namespace SellPoint.View.Service.ServiceCarrito
 
         public async Task<bool> AgregarAsync(CarritoModel model)
         {
-            if (!ValidarFormulario(model, out _)) return false;
-
-            var dto = new SaveCarritoDTO
+            if (!Validar(model, out string mensaje))
             {
-                ProductoId = model.IdProducto,
+                MostrarMensaje(mensaje);
+                return false;
+            }
+
+            var saveModel = new SaveCarritoModel
+            {
+                ProductoId = model.ProductoId,
                 Cantidad = model.Cantidad,
-                ClienteId = (int)model.ClienteId
+                UsuarioId = model.UsuarioId
             };
 
-            return await _carritoApiClient.CrearAsync(dto);
+            return await _carritoApiClient.CrearAsync(saveModel);
         }
 
         public async Task<bool> ActualizarAsync(CarritoModel model)
         {
-            if (!ValidarFormulario(model, out _)) return false;
+            if (!Validar(model, out string mensaje))
+            {
+                MostrarMensaje(mensaje);
+                return false;
+            }
 
-            var dto = new UpdateCarritoDTO
+            var updateModel = new UpdateCarritoModel
             {
                 Id = model.Id,
-                ProductoId = model.IdProducto,
-                NuevaCantidad = model.Cantidad,
-                ClienteId = (int)model.ClienteId
+                ProductoId = model.ProductoId,
+                Cantidad = model.Cantidad,
+                UsuarioId = model.UsuarioId,
+                FechaActualizacion = DateTime.Now
             };
 
-            return await _carritoApiClient.ActualizarAsync(dto);
+            return await _carritoApiClient.ActualizarAsync(updateModel);
         }
 
         public async Task<bool> EliminarAsync(int id)
         {
-            var dto = new RemoveCarritoDTO { Id = id };
-            return await _carritoApiClient.EliminarAsync(dto);
+            var removeModel = new RemoveCarritoModel { Id = id };
+            return await _carritoApiClient.EliminarAsync(removeModel);
         }
 
         public async Task<List<CarritoModel>> ObtenerTodosAsync()
         {
-            var dtos = await _carritoApiClient.ObtenerTodosAsync();
-
-            return dtos.Select(dto => new CarritoModel
-            {
-                Id = dto.Id,
-                IdProducto = dto.ProductoId,
-                Cantidad = dto.Cantidad,
-                ClienteId = dto.ClienteId,
-                PrecioUnitario = dto.Precio,
-                Activo = (bool)dto.Estado,
-                FechaAgregado = dto.FechaAgregado,
-                Estado = dto.Estado
-            }).ToList();
+            return await _carritoApiClient.ObtenerTodosAsync();
         }
 
-        public bool ValidarFormulario(CarritoModel model, out string mensaje)
+        public bool Validar(CarritoModel model, out string mensaje) // Changed to public
         {
-            if (model.ClienteId == null || Convert.ToInt32(model.ClienteId) <= 0)
+            if (model.UsuarioId <= 0)
             {
-                mensaje = "El ID del cliente es obligatorio y debe ser mayor a cero.";
+                mensaje = "El ID del usuario es obligatorio y debe ser mayor a cero.";
                 return false;
             }
 
-            if (model.IdProducto <= 0)
+            if (model.ProductoId <= 0)
             {
                 mensaje = "El ID del producto es obligatorio.";
                 return false;
@@ -88,6 +86,12 @@ namespace SellPoint.View.Service.ServiceCarrito
             mensaje = string.Empty;
             return true;
         }
+
+        private void MostrarMensaje(string mensaje)
+        {
+            MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
     }
 }
+
 
