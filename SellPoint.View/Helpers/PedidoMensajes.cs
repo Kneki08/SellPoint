@@ -26,5 +26,10 @@
 
         public const string LogIntentoCargar = "Intentando cargar pedido con ID: {Id}";
         public const string LogNoSePudoCargar = "No se pudo cargar pedido con ID {Id}: {Mensaje}";
+
+        public const string LogIntentoObtenerTodos = "Obteniendo todos los pedidos.";
+        public const string LogObtenerTodosExito = "Pedidos obtenidos satisfactoriamente: {Count}";
+        public const string LogErrorObtenerTodos = "Error al obtener todos los pedidos: {Mensaje}";
+
     }
 }
