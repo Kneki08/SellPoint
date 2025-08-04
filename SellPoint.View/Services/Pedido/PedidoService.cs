@@ -9,10 +9,12 @@ namespace SellPoint.View.Services.Pedido
     public class PedidoService : IPedidoService
     {
         private readonly IPedidoApiClient _apiClient;
+        private readonly IPedidoValidator _validator;
 
-        public PedidoService(IPedidoApiClient apiClient)
+        public PedidoService(IPedidoApiClient apiClient, IPedidoValidator validator)
         {
             _apiClient = apiClient;
+            _validator = validator;
         }
 
         public async Task<ApiResponse<List<PedidoDTO>>> ObtenerTodosAsync()
@@ -22,7 +24,7 @@ namespace SellPoint.View.Services.Pedido
 
         public async Task<ApiResponse<PedidoDTO>> ObtenerPorIdAsync(int id)
         {
-            var (valido, mensaje) = PedidoIdValidator.Validar(id);
+            var (valido, mensaje) = _validator.ValidarId(id);
             if (!valido)
             {
                 return new ApiResponse<PedidoDTO>
@@ -32,12 +34,13 @@ namespace SellPoint.View.Services.Pedido
                     Data = null
                 };
             }
+
             return await _apiClient.ObtenerPorIdAsync(id);
         }
 
         public async Task<ApiResponse<bool>> AgregarAsync(SavePedidoDTO dto)
         {
-            var (valido, mensaje) = SavePedidoValidator.Validar(dto);
+            var (valido, mensaje) = _validator.ValidarGuardar(dto);
             if (!valido)
             {
                 return new ApiResponse<bool>
@@ -47,12 +50,13 @@ namespace SellPoint.View.Services.Pedido
                     Data = false
                 };
             }
+
             return await _apiClient.AgregarAsync(dto);
         }
 
         public async Task<ApiResponse<bool>> ActualizarAsync(UpdatePedidoDTO dto)
         {
-            var (valido, mensaje) = UpdatePedidoValidator.Validar(dto);
+            var (valido, mensaje) = _validator.ValidarActualizar(dto);
             if (!valido)
             {
                 return new ApiResponse<bool>
@@ -62,12 +66,13 @@ namespace SellPoint.View.Services.Pedido
                     Data = false
                 };
             }
+
             return await _apiClient.ActualizarAsync(dto);
         }
 
         public async Task<ApiResponse<bool>> EliminarAsync(int id)
         {
-            var (valido, mensaje) = RemovePedidoValidator.Validar(id);
+            var (valido, mensaje) = _validator.ValidarEliminar(id);
             if (!valido)
             {
                 return new ApiResponse<bool>
@@ -77,6 +82,7 @@ namespace SellPoint.View.Services.Pedido
                     Data = false
                 };
             }
+
             return await _apiClient.EliminarAsync(id);
         }
     }

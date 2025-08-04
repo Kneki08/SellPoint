@@ -2,49 +2,34 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using SellPoint.View.Models.Pedido;
 using SellPoint.View.Models;
+using SellPoint.View.Models.Pedido;
 
 namespace SellPoint.View.Services.Pedido
 {
-    public class PedidoApiClient : IPedidoApiClient
+    public class PedidoApiClient : BaseApiClient, IPedidoApiClient
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl;
+        private const string Endpoint = "Pedido";
 
-        public PedidoApiClient(string baseUrl)
+        public PedidoApiClient(HttpClient httpClient, JsonSerializerOptions jsonOptions)
+            : base(jsonOptions)
         {
-            _httpClient = new HttpClient();
-            _baseUrl = baseUrl;
+            _httpClient = httpClient;
         }
 
         public async Task<ApiResponse<List<PedidoDTO>>> ObtenerTodosAsync()
         {
             try
             {
-                var response = await _httpClient.GetAsync(_baseUrl);
-                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<PedidoDTO>>>();
-                if (response.IsSuccessStatusCode && apiResponse != null)
-                    return apiResponse;
-
-                return new ApiResponse<List<PedidoDTO>>
-                {
-                    IsSuccess = false,
-                    Message = apiResponse?.Message ?? "Error al obtener los pedidos.",
-                    Data = new List<PedidoDTO>()
-                };
+                var response = await _httpClient.GetAsync(Endpoint);
+                return await LeerRespuesta<List<PedidoDTO>>(response, "Error al obtener los pedidos.");
             }
             catch (Exception ex)
             {
-                return new ApiResponse<List<PedidoDTO>>
-                {
-                    IsSuccess = false,
-                    Message = $"Excepción al obtener pedidos: {ex.Message}",
-                    Data = new List<PedidoDTO>()
-                };
+                return Error<List<PedidoDTO>>($"Excepción al obtener pedidos: {ex.Message}");
             }
         }
 
@@ -52,26 +37,12 @@ namespace SellPoint.View.Services.Pedido
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_baseUrl}/{id}");
-                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<PedidoDTO>>();
-                if (response.IsSuccessStatusCode && apiResponse != null)
-                    return apiResponse;
-
-                return new ApiResponse<PedidoDTO>
-                {
-                    IsSuccess = false,
-                    Message = apiResponse?.Message ?? "No se encontró el pedido.",
-                    Data = default
-                };
+                var response = await _httpClient.GetAsync($"{Endpoint}/{id}");
+                return await LeerRespuesta<PedidoDTO>(response, "No se encontró el pedido.");
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PedidoDTO>
-                {
-                    IsSuccess = false,
-                    Message = $"Excepción al buscar pedido: {ex.Message}",
-                    Data = default
-                };
+                return Error<PedidoDTO>($"Excepción al buscar pedido: {ex.Message}");
             }
         }
 
@@ -79,30 +50,12 @@ namespace SellPoint.View.Services.Pedido
         {
             try
             {
-                var json = JsonSerializer.Serialize(dto);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.PostAsync(_baseUrl, content);
-                var resultado = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
-
-                if (response.IsSuccessStatusCode && resultado != null)
-                    return resultado;
-
-                return new ApiResponse<bool>
-                {
-                    IsSuccess = false,
-                    Message = resultado?.Message ?? "Error desconocido al agregar el pedido.",
-                    Data = false
-                };
+                var response = await _httpClient.PostAsJsonAsync(Endpoint, dto);
+                return await LeerRespuesta<bool>(response, "Error desconocido al agregar el pedido.");
             }
             catch (Exception ex)
             {
-                return new ApiResponse<bool>
-                {
-                    IsSuccess = false,
-                    Message = $"Excepción al agregar: {ex.Message}",
-                    Data = false
-                };
+                return Error<bool>($"Excepción al agregar: {ex.Message}");
             }
         }
 
@@ -110,31 +63,12 @@ namespace SellPoint.View.Services.Pedido
         {
             try
             {
-                var json = JsonSerializer.Serialize(dto);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var url = $"{_baseUrl}/{dto.Id}";
-                var response = await _httpClient.PutAsync(url, content);
-                var resultado = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
-
-                if (response.IsSuccessStatusCode && resultado != null)
-                    return resultado;
-
-                return new ApiResponse<bool>
-                {
-                    IsSuccess = false,
-                    Message = resultado?.Message ?? "Error desconocido al actualizar el pedido.",
-                    Data = false
-                };
+                var response = await _httpClient.PutAsJsonAsync($"{Endpoint}/{dto.Id}", dto);
+                return await LeerRespuesta<bool>(response, "Error desconocido al actualizar el pedido.");
             }
             catch (Exception ex)
             {
-                return new ApiResponse<bool>
-                {
-                    IsSuccess = false,
-                    Message = $"Excepción al actualizar: {ex.Message}",
-                    Data = false
-                };
+                return Error<bool>($"Excepción al actualizar: {ex.Message}");
             }
         }
 
@@ -142,27 +76,12 @@ namespace SellPoint.View.Services.Pedido
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"{_baseUrl}/{id}");
-                var resultado = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
-
-                if (response.IsSuccessStatusCode && resultado != null)
-                    return resultado;
-
-                return new ApiResponse<bool>
-                {
-                    IsSuccess = false,
-                    Message = resultado?.Message ?? "Error desconocido al eliminar el pedido.",
-                    Data = false
-                };
+                var response = await _httpClient.DeleteAsync($"{Endpoint}/{id}");
+                return await LeerRespuesta<bool>(response, "Error desconocido al eliminar el pedido.");
             }
             catch (Exception ex)
             {
-                return new ApiResponse<bool>
-                {
-                    IsSuccess = false,
-                    Message = $"Excepción al eliminar: {ex.Message}",
-                    Data = false
-                };
+                return Error<bool>($"Excepción al eliminar: {ex.Message}");
             }
         }
     }
