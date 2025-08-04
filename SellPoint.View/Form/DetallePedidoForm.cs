@@ -1,13 +1,6 @@
-using SellPoint.Aplication.Dtos.DetallePedido;
-using SellPoint.View.Models.ModelDetallePedido;
-using System.Windows.Forms;
-using Nest;
+using SellPoint.View.Models.ModelDetallePedido.Dtos;
+using SellPoint.View.Service;
 using System.Net.Http;
-using SellPoint.View.Service.DetallePedidoClient.Implement;
-using System.Text.Json;
-using System.ComponentModel.DataAnnotations;
-using SellPoint.View.Validations;
-using SellPoint.View.Repositories;
 
 namespace SellPoint.View
 {
@@ -15,13 +8,12 @@ namespace SellPoint.View
     {
         private readonly IDetallePedidoRepository _repository;
 
-        public Form1( IDetallePedidoRepository repository)
+        public Form1(IDetallePedidoRepository repository)
         {
             InitializeComponent();
             _repository = repository;
             ConfigurarInterfaz();
             _ = VerificarAPIAsync();
-            ConfigurarDataGridView();
         }
 
         private async Task VerificarAPIAsync()
@@ -29,38 +21,59 @@ namespace SellPoint.View
             try
             {
                 var response = await _repository.GetAllAsync();
+
                 if (!response.Success)
                 {
                     DeshabilitarControles();
-                    MessageBox.Show("API no responde correctamente", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error al conectar con la API: {response.Message}",
+                                  "Error de API",
+                                  MessageBoxButtons.OK,
+                                  MessageBoxIcon.Error);
                 }
             }
-            catch
+            catch (HttpRequestException ex)
             {
                 DeshabilitarControles();
-                MessageBox.Show("No se pudo conectar al API", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"No se pudo conectar con la API: {ex.Message}\n\nVerifique que la API esté corriendo.",
+                              "Error de conexión",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Error);
             }
+        
         }
 
         private void ConfigurarInterfaz()
         {
+            // Configuración básica del DataGridView
             dgvDetallePedido.AutoGenerateColumns = false;
-            dgvDetallePedido.Columns.Add("Id", "ID");
-            dgvDetallePedido.Columns.Add("PedidoId", "ID Pedido");
-            dgvDetallePedido.Columns.Add("ProductoId", "ID Producto");
-            dgvDetallePedido.Columns.Add("Cantidad", "Cantidad");
-            dgvDetallePedido.Columns.Add("PrecioUnitario", "Precio Unitario");
+            dgvDetallePedido.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
+            // Configurar columnas
+            var columns = new[]
+            {
+                new DataGridViewTextBoxColumn { Name = "Id", HeaderText = "ID", DataPropertyName = "Id" },
+                new DataGridViewTextBoxColumn { Name = "PedidoId", HeaderText = "ID Pedido", DataPropertyName = "PedidoId" },
+                new DataGridViewTextBoxColumn { Name = "ProductoId", HeaderText = "ID Producto", DataPropertyName = "ProductoId" },
+                new DataGridViewTextBoxColumn { Name = "Cantidad", HeaderText = "Cantidad", DataPropertyName = "Cantidad" },
+                new DataGridViewTextBoxColumn { Name = "PrecioUnitario", HeaderText = "Precio Unitario", DataPropertyName = "PrecioUnitario" }
+            };
+
+            dgvDetallePedido.Columns.AddRange(columns);
+
+            // Evento de selección
             dgvDetallePedido.SelectionChanged += (s, e) =>
             {
                 if (dgvDetallePedido.SelectedRows.Count > 0)
                 {
-                    var fila = dgvDetallePedido.SelectedRows[0];
-                    txtId.Text = fila.Cells["Id"].Value?.ToString() ?? "";
-                    txtPedidoId.Text = fila.Cells["PedidoId"].Value?.ToString() ?? "";
-                    txtProductoId.Text = fila.Cells["ProductoId"].Value?.ToString() ?? "";
-                    txtCantidad.Text = fila.Cells["Cantidad"].Value?.ToString() ?? "";
-                    txtPrecio.Text = fila.Cells["PrecioUnitario"].Value?.ToString() ?? "";
+                    var fila = dgvDetallePedido.SelectedRows[0].DataBoundItem as DetalleDto;
+                    if (fila != null)
+                    {
+                        txtId.Text = fila.Id.ToString();
+                        txtPedidoId.Text = fila.PedidoId.ToString();
+                        txtProductoId.Text = fila.ProductoId.ToString();
+                        txtCantidad.Text = fila.Cantidad.ToString();
+                        txtPrecio.Text = fila.PrecioUnitario.ToString("N2");
+                    }
                 }
             };
         }
@@ -73,64 +86,42 @@ namespace SellPoint.View
             btnEliminar.Enabled = false;
         }
 
-        private void ConfigurarDataGridView()
-        {
-            dgvDetallePedido.AutoGenerateColumns = false;
-            dgvDetallePedido.Columns.Clear();
-
-            var colId = new DataGridViewTextBoxColumn { HeaderText = "ID", DataPropertyName = "Id", Name = "Id" };
-            var colPedidoId = new DataGridViewTextBoxColumn { HeaderText = "ID Pedido", DataPropertyName = "PedidoId", Name = "PedidoId" };
-            var colProductoId = new DataGridViewTextBoxColumn { HeaderText = "ID Producto", DataPropertyName = "ProductoId", Name = "ProductoId" };
-            var colCantidad = new DataGridViewTextBoxColumn { HeaderText = "Cantidad", DataPropertyName = "Cantidad", Name = "Cantidad" };
-            var colPrecio = new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Precio Unitario",
-                DataPropertyName = "PrecioUnitario",
-                Name = "PrecioUnitario",
-                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" }
-            };
-
-            dgvDetallePedido.Columns.AddRange(colId, colPedidoId, colProductoId, colCantidad, colPrecio);
-        }
-
         private async void btnCargar_Click(object sender, EventArgs e)
         {
             try
             {
-                Cursor = Cursors.WaitCursor;
                 btnCargar.Enabled = false;
+                Cursor = Cursors.WaitCursor;
 
                 var response = await _repository.GetAllAsync();
 
-                if (response.Success && response.Data != null)
+                if (response.Success)
                 {
-                    Console.WriteLine($"Datos recibidos: {JsonSerializer.Serialize(response.Data)}");
-                    dgvDetallePedido.DataSource = response.Data.ToList();
-                    dgvDetallePedido.AutoResizeColumns();
+                    dgvDetallePedido.DataSource = response.Data?.ToList();
                 }
                 else
                 {
-                    MessageBox.Show(response.Message ?? "No se recibieron datos", "Error al cargar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(response.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al cargar: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
-                Cursor = Cursors.Default;
                 btnCargar.Enabled = true;
+                Cursor = Cursors.Default;
             }
         }
 
         private async void btnCrear_Click(object sender, EventArgs e)
         {
+            if (!ValidarCampos()) return;
+
             try
             {
-                if (!ValidarCampos()) return;
-
-                var nuevo = new SaveDetallePedidoDTO
+                var nuevo = new SaveDto
                 {
                     PedidoId = int.Parse(txtPedidoId.Text),
                     ProductoId = int.Parse(txtProductoId.Text),
@@ -142,105 +133,8 @@ namespace SellPoint.View
 
                 if (response.Success)
                 {
-                    MessageBox.Show("Detalle creado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    await RecargarDatosAsync();
-                }
-                else
-                {
-                    MessageBox.Show(response.Message, "Error al crear", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (ValidationException vex)
-            {
-                MessageBox.Show(vex.ValidationResult.ErrorMessage, "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async void btnActualizar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!ValidarCampos() || string.IsNullOrEmpty(txtId.Text))
-                {
-                    MessageBox.Show("Seleccione un registro y complete los campos", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var actualizado = new UpdateDetallePedidoDTO
-                {
-                    Id = int.Parse(txtId.Text),
-                    PedidoId = int.Parse(txtPedidoId.Text),
-                    ProductoId = int.Parse(txtProductoId.Text),
-                    Cantidad = int.Parse(txtCantidad.Text),
-                    PrecioUnitario = decimal.Parse(txtPrecio.Text)
-                };
-
-                var response = await _repository.UpdateAsync(actualizado);
-
-                if (response.Success)
-                {
-                    MessageBox.Show("Detalle actualizado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    await RecargarDatosAsync();
-                }
-                else
-                {
-                    MessageBox.Show(response.Message, "Error al actualizar", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (ValidationException vex)
-            {
-                MessageBox.Show(vex.ValidationResult.ErrorMessage, "Error de validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async void btnEliminar_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(txtId.Text))
-            {
-                MessageBox.Show("Seleccione un registro para eliminar", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (MessageBox.Show("¿Confirmar eliminación?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                return;
-
-            try
-            {
-                var response = await _repository.DeleteAsync(int.Parse(txtId.Text));
-
-                if (response.Success)
-                {
-                    MessageBox.Show("Detalle eliminado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    await RecargarDatosAsync();
-                }
-                else
-                {
-                    MessageBox.Show(response.Message, "Error al eliminar", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async Task RecargarDatosAsync()
-        {
-            try
-            {
-                var response = await _repository.GetAllAsync();
-                if (response.Success)
-                {
-                    dgvDetallePedido.DataSource = response.Data.ToList();
-                    LimpiarFormulario();
+                    MessageBox.Show("Registro creado", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await RecargarDatos();
                 }
                 else
                 {
@@ -253,23 +147,92 @@ namespace SellPoint.View
             }
         }
 
-        private bool ValidarCampos()
+        private async void btnActualizar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtPedidoId.Text) ||
-                string.IsNullOrWhiteSpace(txtProductoId.Text) ||
-                string.IsNullOrWhiteSpace(txtCantidad.Text) ||
-                string.IsNullOrWhiteSpace(txtPrecio.Text))
+            if (!ValidarCampos() || string.IsNullOrEmpty(txtId.Text))
             {
-                MessageBox.Show("Todos los campos son requeridos", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                MessageBox.Show("Seleccione un registro y complete los campos", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
+            try
+            {
+                var actualizado = new UpdateDto
+                {
+                    Id = int.Parse(txtId.Text),
+                    PedidoId = int.Parse(txtPedidoId.Text),
+                    ProductoId = int.Parse(txtProductoId.Text),
+                    Cantidad = int.Parse(txtCantidad.Text),
+                    PrecioUnitario = decimal.Parse(txtPrecio.Text)
+                };
+
+                var response = await _repository.UpdateAsync(actualizado);
+
+                if (response.Success)
+                {
+                    MessageBox.Show("Registro actualizado", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await RecargarDatos();
+                }
+                else
+                {
+                    MessageBox.Show(response.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnEliminar_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtId.Text))
+            {
+                MessageBox.Show("Seleccione un registro", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show("¿Eliminar este registro?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    var response = await _repository.DeleteAsync(int.Parse(txtId.Text));
+
+                    if (response.Success)
+                    {
+                        MessageBox.Show("Registro eliminado", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        await RecargarDatos();
+                    }
+                    else
+                    {
+                        MessageBox.Show(response.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private async Task RecargarDatos()
+        {
+            var response = await _repository.GetAllAsync();
+            if (response.Success)
+            {
+                dgvDetallePedido.DataSource = response.Data?.ToList();
+                LimpiarFormulario();
+            }
+        }
+
+        private bool ValidarCampos()
+        {
             if (!int.TryParse(txtPedidoId.Text, out _) ||
                 !int.TryParse(txtProductoId.Text, out _) ||
                 !int.TryParse(txtCantidad.Text, out _) ||
                 !decimal.TryParse(txtPrecio.Text, out _))
             {
-                MessageBox.Show("Ingrese valores numéricos válidos", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Ingrese valores válidos", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
@@ -284,10 +247,6 @@ namespace SellPoint.View
             txtCantidad.Clear();
             txtPrecio.Clear();
         }
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            // Configurar el evento de selección del DataGridView
-          
-        }
     }
 }
+
