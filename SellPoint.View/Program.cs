@@ -58,6 +58,7 @@ namespace SellPoint.View
                     services.AddScoped<IPedidoFormMapper, PedidoFormMapper>();
                     services.AddScoped<IPedidoValidator, PedidoValidator>();
                     services.AddScoped<IPedidoViewModelMapper, PedidoViewModelMapper>();
+                    services.AddScoped<IPedidoCamposService, PedidoCamposService>();
                 });
     }
 }

@@ -17,19 +17,22 @@ namespace SellPoint.View.Forms
         private readonly IPedidoFormMapper _formMapper;
         private readonly IPedidoViewModelMapper _viewModelMapper;
         private readonly IPedidoValidator _validator;
+        private readonly IPedidoCamposService _camposService;
 
         public PedidoForm(
             IPedidoService pedidoService,
             IPedidoDtoFactory dtoFactory,
             IPedidoFormMapper formMapper,
             IPedidoViewModelMapper viewModelMapper,
-            IPedidoValidator validator)
+            IPedidoValidator validator,
+            IPedidoCamposService camposService)
         {
             _pedidoService = pedidoService;
             _dtoFactory = dtoFactory;
             _formMapper = formMapper;
             _viewModelMapper = viewModelMapper;
             _validator = validator;
+            _camposService = camposService;
 
             InitializeComponent();
 
@@ -95,7 +98,7 @@ namespace SellPoint.View.Forms
 
         private async void btnAgregar_Click(object sender, EventArgs e)
         {
-            var campos = PedidoCamposParser.TryParseCampos(
+            var campos = _camposService.TryParseCampos(
                 cmbUsuarios.SelectedItem?.ToString() ?? "",
                 cmbDirecciones.SelectedItem?.ToString() ?? "",
                 txtSubtotal.Text,
@@ -137,7 +140,7 @@ namespace SellPoint.View.Forms
             if (dgvPedidos.CurrentRow?.DataBoundItem is not PedidoDTO dtoSeleccionado)
                 return;
 
-            var campos = PedidoCamposParser.TryParseCampos(
+            var campos = _camposService.TryParseCampos(
                 cmbUsuarios.SelectedItem?.ToString() ?? "",
                 cmbDirecciones.SelectedItem?.ToString() ?? "",
                 txtSubtotal.Text,

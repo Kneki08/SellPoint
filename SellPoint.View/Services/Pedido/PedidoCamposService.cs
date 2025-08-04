@@ -1,25 +1,11 @@
 ﻿using SellPoint.View.Models.Pedido;
+using SellPoint.View.Validations;
 
-namespace SellPoint.View.Validations
+namespace SellPoint.View.Services.Pedido
 {
-    public record PedidoCamposResult
-    (
-        bool Success,
-        string Message,
-        int IdUsuario,
-        int IdDireccion,
-        decimal Subtotal,
-        decimal Descuento,
-        decimal CostoEnvio,
-        decimal Total
-    );
-
-    public static class PedidoCamposParser
+    public class PedidoCamposService : IPedidoCamposService
     {
-        public static PedidoCamposResult TryParseCampos(
-            string idUsuario, string idDireccion,
-            string subtotal, string descuento,
-            string costoEnvio, string total)
+        public PedidoCamposResult TryParseCampos(string idUsuario, string idDireccion, string subtotal, string descuento, string costoEnvio, string total)
         {
             if (!int.TryParse(idUsuario, out int idUsr))
                 return Error(MensajesValidacion.ErrorIdUsuario);
