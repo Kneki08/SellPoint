@@ -81,12 +81,8 @@ namespace SellPoint.View.HTTP
                 };
             }
         }
-
-        private static string NormalizeEndpoint(string endpoint)
-        {
-            return endpoint.TrimStart('/');
-        }
     }
 }
+
 
 
