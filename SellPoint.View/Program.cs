@@ -1,7 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using SellPoint.View.Settings;
-using SellPoint.View.Services.Pedido;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using SellPoint.View.Factories;
 using SellPoint.View.Forms;
+using SellPoint.View.Mappers;
+using SellPoint.View.Services.Pedido;
+using SellPoint.View.Validations;
 
 namespace SellPoint.View
 {
@@ -12,22 +17,47 @@ namespace SellPoint.View
         {
             ApplicationConfiguration.Initialize();
 
-            // Carga configuración
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .Build();
+            var host = CreateHostBuilder().Build();
 
-            var apiSettings = configuration.GetSection("ApiSettings").Get<ApiSettings>();
-
-            // Inyección de dependencias 
-            var pedidoApiClient = new PedidoApiClient(
-                apiSettings!.PedidoBaseUrl
-                    ?? throw new InvalidOperationException("Falta la ruta PedidoBaseUrl en appsettings.json")
-            );
-            var pedidoService = new PedidoService(pedidoApiClient);
-
-            Application.Run(new PedidoForm(pedidoService));
+            // Ejecutar el formulario desde el contenedor de servicios
+            var form = host.Services.GetRequiredService<PedidoForm>();
+            Application.Run(form);
         }
+
+        static IHostBuilder CreateHostBuilder() =>
+            Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration(config =>
+                {
+                    config.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    var configuration = context.Configuration;
+
+                    // Configuración JSON global
+                    services.AddSingleton(new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                        WriteIndented = true
+                    });
+
+                    // HttpClient configurado por DI con URL base
+                    services.AddHttpClient<IPedidoApiClient, PedidoApiClient>(client =>
+                    {
+                        var baseUrl = configuration["ApiSettings:PedidoBaseUrl"]
+                            ?? throw new InvalidOperationException("Falta la ruta PedidoBaseUrl en appsettings.json");
+
+                        client.BaseAddress = new Uri(baseUrl);
+                    });
+
+                    // Registro de servicios y formulario
+                    services.AddScoped<IPedidoService, PedidoService>();
+                    services.AddScoped<PedidoForm>();
+                    services.AddScoped<IPedidoDtoFactory, PedidoDtoFactory>();
+                    services.AddScoped<IPedidoFormMapper, PedidoFormMapper>();
+                    services.AddScoped<IPedidoValidator, PedidoValidator>();
+                    services.AddScoped<IPedidoViewModelMapper, PedidoViewModelMapper>();
+                });
     }
 }
