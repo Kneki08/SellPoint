@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 
-
 namespace SellPoint.View.Services
 {
     public class HttpServiceBase
@@ -10,16 +9,32 @@ namespace SellPoint.View.Services
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonOptions;
         private readonly ILogger<HttpServiceBase> _logger;
+        private readonly string _baseUrl;
 
-        public HttpServiceBase(HttpClient httpClient, JsonSerializerOptions jsonOptions, ILogger<HttpServiceBase> logger)
+        public HttpServiceBase(
+            HttpClient httpClient,
+            JsonSerializerOptions jsonOptions,
+            ILogger<HttpServiceBase> logger,
+            ApiSettings apiSettings) 
         {
             _httpClient = httpClient;
             _jsonOptions = jsonOptions;
             _logger = logger;
+            _baseUrl = apiSettings.BaseUrl?.TrimEnd('/') ?? string.Empty; 
         }
 
-        public async Task<T?> GetAsync<T>(string url)
+        private string BuildUrl(string relativePath)
         {
+            if (string.IsNullOrWhiteSpace(_baseUrl))
+                return relativePath;
+
+            return $"{_baseUrl}/{relativePath.TrimStart('/')}";
+        }
+
+        public async Task<T?> GetAsync<T>(string relativePath)
+        {
+            var url = BuildUrl(relativePath);
+
             try
             {
                 var response = await _httpClient.GetAsync(url);
@@ -34,8 +49,10 @@ namespace SellPoint.View.Services
             }
         }
 
-        public async Task<T?> PostAsync<T>(string url, object body)
+        public async Task<T?> PostAsync<T>(string relativePath, object body)
         {
+            var url = BuildUrl(relativePath);
+
             try
             {
                 var response = await _httpClient.PostAsJsonAsync(url, body, _jsonOptions);
@@ -50,8 +67,10 @@ namespace SellPoint.View.Services
             }
         }
 
-        public async Task<T?> PutAsync<T>(string url, object body)
+        public async Task<T?> PutAsync<T>(string relativePath, object body)
         {
+            var url = BuildUrl(relativePath);
+
             try
             {
                 var response = await _httpClient.PutAsJsonAsync(url, body, _jsonOptions);
@@ -66,8 +85,10 @@ namespace SellPoint.View.Services
             }
         }
 
-        public async Task<bool> DeleteAsync(string url, object body)
+        public async Task<bool> DeleteAsync(string relativePath, object body)
         {
+            var url = BuildUrl(relativePath);
+
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Delete, url)

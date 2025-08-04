@@ -1,7 +1,6 @@
 ﻿using SellPoint.View.Mappers.Cupon;
 using SellPoint.View.Models.ModelsCupon;
 
-
 namespace SellPoint.View.Services.CuponApiClient
 {
     public class CuponApiClient : ICuponApiClient
@@ -17,31 +16,23 @@ namespace SellPoint.View.Services.CuponApiClient
 
         public async Task<IEnumerable<CuponModel>> ObtenerTodosAsync()
         {
-            var response = await _httpService.GetAsync<CuponModelResponse>("Cupon/ObtenerTodosAsync");
-            return response?.data ?? new List<CuponModel>();
+            var result = await _httpService.GetAsync<CuponModelResponse>("Cupon/ObtenerTodosAsync");
+            return result?.data ?? new List<CuponModel>();
         }
 
-        public async Task<CuponModel?> ObtenerPorIdAsync(int id)
-        {
-            var response = await _httpService.GetAsync<CuponModelResponseSingle>($"Cupon/{id}");
-            return response?.data;
-        }
+        public Task<CuponModel?> ObtenerPorIdAsync(int id) =>
+            _httpService.GetAsync<CuponModelResponseSingle>($"Cupon/{id}")
+                        .ContinueWith(t => t.Result?.data);
 
-        public async Task<bool> CrearAsync(SaveCuponModel dto)
-        {
-            var result = await _httpService.PostAsync<object>("Cupon", dto);
-            return result != null;
-        }
+        public Task<bool> CrearAsync(SaveCuponModel model) =>
+            _httpService.PostAsync<object>("Cupon", model)
+                        .ContinueWith(t => t.Result != null);
 
-        public async Task<bool> ActualizarAsync(UpdateCuponModel dto)
-        {
-            var result = await _httpService.PutAsync<object>("Cupon", dto);
-            return result != null;
-        }
+        public Task<bool> ActualizarAsync(UpdateCuponModel model) =>
+            _httpService.PutAsync<object>("Cupon", model)
+                        .ContinueWith(t => t.Result != null);
 
-        public async Task<bool> EliminarAsync(RemoveCuponModel dto)
-        {
-            return await _httpService.DeleteAsync("Cupon", dto);
-        }
+        public Task<bool> EliminarAsync(RemoveCuponModel model) =>
+            _httpService.DeleteAsync("Cupon", model);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using SellPoint.View.Mappers.Categoria;
 using SellPoint.View.Models.ModelsCategoria;
 
-
 namespace SellPoint.View.Services.CategoriaApiClient
 {
     public class CategoriaApiClient : ICategoriaApiClient
@@ -17,45 +16,33 @@ namespace SellPoint.View.Services.CategoriaApiClient
 
         public async Task<IEnumerable<CategoriaModel>> ObtenerTodosAsync()
         {
-            var response = await _httpService.GetAsync<CategoriaModelResponse>("Categoria/ObtenerTodosAsync");
-            return response?.data ?? new List<CategoriaModel>();
+            var result = await _httpService.GetAsync<CategoriaModelResponse>("Categoria/ObtenerTodosAsync");
+            return result?.data ?? new List<CategoriaModel>();
         }
 
-        public async Task<CategoriaModel?> ObtenerPorIdAsync(int id)
-        {
-            var response = await _httpService.GetAsync<CategoriaModelResponseSingle>($"Categoria/{id}");
-            return response?.data;
-        }
+        public Task<CategoriaModel?> ObtenerPorIdAsync(int id) =>
+            _httpService.GetAsync<CategoriaModelResponseSingle>($"Categoria/{id}")
+                        .ContinueWith(t => t.Result?.data);
 
-        public async Task<bool> CrearAsync(SaveCategoriaModel dto)
-        {
-            var result = await _httpService.PostAsync<object>("Categoria", dto);
-            return result != null;
-        }
+        public Task<bool> CrearAsync(SaveCategoriaModel model) =>
+            _httpService.PostAsync<object>("Categoria", model)
+                        .ContinueWith(t => t.Result != null);
 
-        public async Task<bool> CrearDesdeModeloAsync(CategoriaModel model)
-        {
-            var dto = _mapper.ConvertToSave(model);
-            return await CrearAsync(dto);
-        }
+        public Task<bool> ActualizarAsync(UpdateCategoriaModel model) =>
+            _httpService.PutAsync<object>("Categoria", model)
+                        .ContinueWith(t => t.Result != null);
 
-        public async Task<bool> ActualizarAsync(UpdateCategoriaModel dto)
-        {
-            var result = await _httpService.PutAsync<object>("Categoria", dto);
-            return result != null;
-        }
+        public Task<bool> EliminarAsync(RemoveCategoriaModel model) =>
+            _httpService.DeleteAsync("Categoria", model);
 
-        public async Task<bool> ActualizarDesdeModeloAsync(CategoriaModel model)
-        {
-            var dto = _mapper.ConvertToUpdate(model);
-            return await ActualizarAsync(dto);
-        }
+        public Task<bool> CrearDesdeModeloAsync(CategoriaModel model) =>
+            CrearAsync(_mapper.ConvertToSave(model));
 
-        public async Task<bool> EliminarAsync(RemoveCategoriaModel dto)
-        {
-            return await _httpService.DeleteAsync("Categoria", dto);
-        }
+        public Task<bool> ActualizarDesdeModeloAsync(CategoriaModel model) =>
+            ActualizarAsync(_mapper.ConvertToUpdate(model));
     }
 }
+
+
 
 
