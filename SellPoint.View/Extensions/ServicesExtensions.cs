@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SellPoint.View.Forms;
+using SellPoint.View.Http.ServiceApiProducto;
 using SellPoint.View.Service.ServiceApiCarrito;
 using SellPoint.View.Service.ServiceApiProducto;
 using SellPoint.View.Service.ServiceCarrito;
@@ -37,4 +38,4 @@ namespace SellPoint.View.Extensions
         }
     }
 }
-}
+

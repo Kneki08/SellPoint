@@ -1,9 +1,9 @@
 ﻿using SellPoint.Aplication.Dtos.Producto;
 using SellPoint.Aplication.Dtos.ProductoDTO;
 using SellPoint.View.DTOS.ProductoDTOS;
+using SellPoint.View.Http.ServiceApiProducto;
 using SellPoint.View.Models.ModelsProducto;
 using SellPoint.View.Models.ModelsProducto.SellPoint.View.Models.ModelsProducto;
-using SellPoint.View.Service.ServiceApiProducto;
 
 namespace SellPoint.View.Service.ServiceProducto
 {

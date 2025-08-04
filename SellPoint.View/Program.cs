@@ -3,11 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SellPoint.View.Extensions;
 using SellPoint.View.Forms;
-using SellPoint.View.Service.ServiceApiCarrito;
-using SellPoint.View.Service.ServiceApiProducto;
-using SellPoint.View.Service.ServiceCarrito;
-using SellPoint.View.Service.ServiceProducto;
-//using SellPoint.View.Service.ServiceProducto;
 using System.Text.Json;
 
 namespace SellPoint.View
@@ -20,9 +15,23 @@ namespace SellPoint.View
             ApplicationConfiguration.Initialize();
             var host = CreateHostBuilder().Build();
 
-            // Cambia aquí el formulario a lanzar (Producto o Carrito)
-            var form = host.Services.GetRequiredService<FormCarrito>();
-            Application.Run(form);
+            var result = MessageBox.Show(
+                "¿Quieres abrir el módulo de Producto?",
+                "Seleccionar módulo",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                var formProducto = host.Services.GetRequiredService<FormProducto>();
+                Application.Run(formProducto);
+            }
+            else
+            {
+                var formCarrito = host.Services.GetRequiredService<FormCarrito>();
+                Application.Run(formCarrito);
+            }
         }
 
         static IHostBuilder CreateHostBuilder() =>

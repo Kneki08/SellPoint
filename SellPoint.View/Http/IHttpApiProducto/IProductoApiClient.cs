@@ -2,7 +2,7 @@
 using SellPoint.View.Models.ModelsProducto;
 using SellPoint.View.Models.ModelsProducto.SellPoint.View.Models.ModelsProducto;
 
-namespace SellPoint.View.Service.ServiceApiProducto
+namespace SellPoint.View.Http.ServiceApiProducto
 {
     public interface IProductoApiClient
     {
